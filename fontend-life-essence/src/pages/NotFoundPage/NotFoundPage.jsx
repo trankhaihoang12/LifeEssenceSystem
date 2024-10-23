@@ -2,7 +2,7 @@ import React from 'react'
 
 const NotFoundPage = () => {
   return (
-    <div>NotFoundPage</div>
+    <div style={{ height: '100vh', backgroundColor: '#ccc' }}>NotFoundPage</div>
   )
 }
 

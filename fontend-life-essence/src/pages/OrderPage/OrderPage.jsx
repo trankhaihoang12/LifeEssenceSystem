@@ -2,7 +2,7 @@ import React from 'react'
 
 const OrderPage = () => {
   return (
-    <div>OrderPage</div>
+    <div style={{ height: '100vh', backgroundColor: '#ccc' }}>OrderPage</div>
   )
 }
 

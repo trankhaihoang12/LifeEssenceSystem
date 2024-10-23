@@ -14,7 +14,7 @@ const FooterComponent = () => {
                             <div style={{
                                 color: 'black', fontWeight: 'bold', textAlign: 'left'
                             }}>Address</div>
-                            <h4>9066 Green Lake Drive Chevy Chase, MD 20815</h4>
+                            <h4 style={{ color: 'black', fontSize: '14px' }}>9066 Green Lake Drive Chevy Chase, MD 20815</h4>
                         </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -23,7 +23,7 @@ const FooterComponent = () => {
                             <div style={{
                                 color: 'black', fontWeight: 'bold', textAlign: 'left'
                             }}>Nguyễn Tiến Mạnh</div>
-                            <h4>(1800)-88-66-990</h4>
+                            <h4 style={{ color: 'black', fontSize: '14px'}}>(1800)-88-66-990</h4>
                         </div>
 
 
@@ -35,7 +35,7 @@ const FooterComponent = () => {
                         <div style={{width: '240px',color: 'black', fontSize: '12px', fontWeight: 'bold'}}>Life Essence is proud of being a best Pharmacy Online shops in VietNam with high-quality medicines, supplements, healthcare product, …</div>
                     </div>
                     <FooterSection className="footer-links">
-                        <h4 style={{ fontWeight: 'bold', textTransform: 'uppercase' }}>Liên Kết</h4>
+                        <h4 style={{ color: 'black', fontWeight: 'bold', textTransform: 'uppercase' }}>Liên Kết</h4>
                         <FooterLinks>
                             <FooterLink><a href="/">Trang Chủ</a></FooterLink>
                             <FooterLink><a href="/about">Giới Thiệu</a></FooterLink>
@@ -44,12 +44,12 @@ const FooterComponent = () => {
                         </FooterLinks>
                     </FooterSection>
                     <div className="footer-contact" style={{margin: '10px'}}>
-                        <h4 style={{ fontWeight: 'bold', textTransform: 'uppercase' }} >Thông Tin Liên Hệ</h4>
+                        <h4 style={{ fontWeight: 'bold', textTransform: 'uppercase', color: 'black', }} >Thông Tin Liên Hệ</h4>
                         <h5 style={{fontWeight: 'bold'}}>Email: contact@yourcompany.com</h5>
                         <h5 style={{ fontWeight: 'bold' }}>Số điện thoại: +84 123 456 789</h5>
                     </div>
                     <div className="footer-social" style={{ margin: '10px' }}>
-                        <h4 style={{ fontWeight: 'bold', textTransform: 'uppercase' }}>Mạng Xã Hội</h4>
+                        <h4 style={{ fontWeight: 'bold', textTransform: 'uppercase', color: 'black', }}>Mạng Xã Hội</h4>
                         <ul>
                             <li><a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a></li>
                             <li><a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter</a></li>
