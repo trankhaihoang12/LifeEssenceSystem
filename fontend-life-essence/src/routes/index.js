@@ -33,6 +33,13 @@ export const routes = [
         isShowFooter: true
 
     },
+    // {
+    //     path: '/ProductsPage',
+    //     page: DetailsProductPage,
+    //     isShowHeader: true,
+    //     isShowFooter: true
+
+    // },
     {
         path: '*',
         page: NotFoundPage

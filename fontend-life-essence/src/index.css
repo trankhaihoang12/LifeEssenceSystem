@@ -1,5 +1,5 @@
 
-body {
+/* body {
   margin: 0;
  box-sizing: border-box;
  padding: 0;
@@ -7,4 +7,7 @@ body {
 
 html {
   font-size: 62.5%;
-}
+} */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
