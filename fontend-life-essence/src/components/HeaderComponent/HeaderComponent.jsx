@@ -1,15 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FaGoogle, FaTwitter } from 'react-icons/fa';
 import { RiCameraFill, RiFacebookFill } from "react-icons/ri";
 import { LuSearch } from "react-icons/lu";
 import { FaRegHeart } from "react-icons/fa6";
 import { TiShoppingCart } from 'react-icons/ti';
 import Logo from '../../assets/images/Logo_Essence.png'
-import { WrapperButton, WrapperHeaderOn, WrapperHeaderUnder, WrapperInput, WrapperItem, WrapperLogo } from './Style';
+import { ForgotPasswordLink, FormContainer, FormTitle, HeaderContainer, IconsContainer, Input, LoginButton, SignInText, Tab, Tabs, WrapperButton, WrapperHeaderOn, WrapperHeaderUnder, WrapperInput, WrapperItem, WrapperLogo } from './Style';
 
 
 const HeaderComponent = () => {
-
+  const [isHovered, setIsHovered] = useState(false);
   return (
     <div>
       <WrapperHeaderOn>
@@ -44,14 +44,37 @@ const HeaderComponent = () => {
             </WrapperItem>
           </div>
         </div>
+        <HeaderContainer
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <SignInText>SIGN IN / SIGN UP</SignInText>
+          <IconsContainer>
+            <FaRegHeart style={{ fontSize: '2rem' }} />
+            <TiShoppingCart style={{ fontSize: '2rem' }} />
+          </IconsContainer>
 
-        <div style={{ display: 'flex', width: '220px', gap: '20px' }}>
-          <div style={{ fontSize: '15px', fontWeight: 'bold' }}>SIGN IN / SIGN UP</div>
-          <div style={{ display: 'flex', gap: '10px' }} >
-            <FaRegHeart style={{ fontSize: '25px' }} />
-            <TiShoppingCart style={{ fontSize: '25px' }} />
-          </div>
-        </div>
+          {isHovered && (
+            <FormContainer>
+              <FormTitle>Sign in</FormTitle>
+              <Tabs>
+                <Tab active>Sign in</Tab>
+                <Tab>Create an Account</Tab>
+              </Tabs>
+              <div>
+                <label>Username or email *</label>
+                <Input type="text" placeholder="Username" />
+                <label>Password *</label>
+                <Input type="password" placeholder="Password" />
+                <LoginButton>LOGIN</LoginButton>
+                <ForgotPasswordLink href="#">Lost your password?</ForgotPasswordLink>
+              </div>
+            </FormContainer>
+          )}
+        </HeaderContainer>
+
+
+        
       </WrapperHeaderUnder>
 
     </div>
