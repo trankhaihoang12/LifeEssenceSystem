@@ -19,6 +19,7 @@ export const WrapperLogo = styled.img`
    width: 190px; 
    height: 72px; 
    margin-right: 200px;
+   cursor: pointer;
 `;
 export const WrapperInput = styled.input`
   border: none; 
