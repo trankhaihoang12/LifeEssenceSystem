@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { FaBriefcaseMedical } from "react-icons/fa6";
 import line from '../../assets/images/line.png';
 import Slide1 from '../../assets/images/Slide1.png';
@@ -12,7 +12,7 @@ import Home_deal1 from '../../assets/images/Home_deal1.png';
 import { FaHeartbeat, FaLongArrowAltRight } from 'react-icons/fa';
 import { GiHeartPlus, GiNotebook } from 'react-icons/gi';
 import { RiPsychotherapyLine } from 'react-icons/ri';
-import { Icon, IconWrapper, Separator, Subtitle, TextWrapper, Title, WrraperItem } from './Style';
+import { Button, Icon, IconWrapper, ProductsContainer, ProductsWrapper, Separator, Subtitle, TextWrapper, Title, WrraperItem } from './Style';
 import { Rate } from 'antd';
 import SliderComponent from '../../components/SliderComponent/SliderComponent';
 import CardComponent from '../../components/CardComponent/CardComponent';
@@ -21,15 +21,33 @@ import IntroductionComponent from '../../components/IntroductionComponent/Introd
 import PopularCategories from '../../components/PopularCategoriesComponent/PopularCategories';
 
 
+
+
+
 const HomePage = () => {
- 
+
+  const scrollRef = useRef(null);
+  const scrollAmount = 300; // Số pixel cuộn mỗi lần, điều chỉnh để khớp với kích thước sản phẩm của bạn.
+
+  const handlePrevious = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft -= scrollAmount;
+    }
+  };
+
+  const handleNext = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft += scrollAmount;
+    }
+  };
+
   return (
     <div style={{ height: 'auto', backgroundColor: '#f0f9fb' }}>
       <div style={{ height: '80px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <div style={{ height: '40px', width: '75%', alignItems: 'center', display: 'flex', margin: 'auto', justifyContent: 'space-between', }}>
 
           <WrraperItem>
-            <IconWrapper style={{ backgroundColor: '#24AEB1'}}>
+            <IconWrapper style={{ backgroundColor: '#24AEB1' }}>
               <Icon>
                 <FaBriefcaseMedical />
               </Icon>
@@ -93,35 +111,37 @@ const HomePage = () => {
       </div>
 
       {/* Giới thiệu */}
-      <IntroductionComponent/>
+      <IntroductionComponent />
 
       {/* Giới thiệu số lượng sản phẩm */}
-      <PopularCategories/>
+      <PopularCategories />
       {/* Sản phẩm healthy */}
 
       <div style={{ height: '460px', position: 'relative' }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <span style={{ fontSize: '30px', fontWeight: 'bold', marginTop: '10px' }}>Health Products</span>
         </div>
-
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', gap: '20px' }}>
-          {/* Các sản phẩm ở đây */}
-          {/* Ví dụ sản phẩm */}
-          <CardComponent/>
-          <CardComponent/>
-          <CardComponent/>
-          <CardComponent/>
-          <CardComponent/>
-
-          {/* Thêm nhiều sản phẩm tương tự ở đây */}
-        </div>
-
-        <div style={{ position: 'absolute', top: '50%', left: '0', transform: 'translateY(-50%)' }}>
-          <button style={{ backgroundColor: '#2EA5B6', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px' }}>Previous</button>
-        </div>
-        <div style={{ position: 'absolute', top: '50%', right: '0', transform: 'translateY(-50%)' }}>
-          <button style={{ backgroundColor: '#2EA5B6', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px' }}>Next</button>
-        </div>
+        <ProductsContainer ref={scrollRef}>
+          <ProductsWrapper>
+            {/* Các sản phẩm */}
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+          </ProductsWrapper>
+        </ProductsContainer>
+        <Button position="left" onClick={handlePrevious}>
+          Previous
+        </Button>
+        <Button position="right" onClick={handleNext}>
+          Next
+        </Button>
       </div>
       {/* Giới thiệu 2 */}
 
@@ -155,21 +175,27 @@ const HomePage = () => {
           <span style={{ fontSize: '30px', fontWeight: 'bold', marginTop: '10px' }}>Trending Products</span>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', gap: '20px' }}>
-          {/* Các sản phẩm ở đây */}
-          <CardComponent />
-          <CardComponent />
-          <CardComponent />
-          <CardComponent />
-          <CardComponent />
-        </div>
-
-        <div style={{ position: 'absolute', top: '50%', left: '0', transform: 'translateY(-50%)' }}>
-          <button style={{ backgroundColor: '#2EA5B6', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px' }}>Previous</button>
-        </div>
-        <div style={{ position: 'absolute', top: '50%', right: '0', transform: 'translateY(-50%)' }}>
-          <button style={{ backgroundColor: '#2EA5B6', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px' }}>Next</button>
-        </div>
+        <ProductsContainer ref={scrollRef}>
+          <ProductsWrapper>
+            {/* Các sản phẩm */}
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+          </ProductsWrapper>
+        </ProductsContainer>
+        <Button position="left" onClick={handlePrevious}>
+          Previous
+        </Button>
+        <Button position="right" onClick={handleNext}>
+          Next
+        </Button>
       </div>
 
       {/* Giới thiệu 3 */}
@@ -215,18 +241,20 @@ const HomePage = () => {
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <span style={{ fontSize: '30px', fontWeight: 'bold', marginTop: '10px' }}>Latest Articles & Blogs</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', gap: '30px' }}>
-          <BlogCardComponent/>
-          <BlogCardComponent/>
-          <BlogCardComponent/>
-        </div>
+        <ProductsContainer ref={scrollRef}>
+          <ProductsWrapper>
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+          </ProductsWrapper>
+        </ProductsContainer>
 
-        <div style={{ position: 'absolute', top: '50%', left: '0', transform: 'translateY(-50%)' }}>
-          <button style={{ backgroundColor: '#2EA5B6', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px' }}>Previous</button>
-        </div>
-        <div style={{ position: 'absolute', top: '50%', right: '0', transform: 'translateY(-50%)' }}>
-          <button style={{ backgroundColor: '#2EA5B6', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px' }}>Next</button>
-        </div>
+        <Button position="left" onClick={handlePrevious}>
+          Previous
+        </Button>
+        <Button position="right" onClick={handleNext}>
+          Next
+        </Button>
       </div>
 
 

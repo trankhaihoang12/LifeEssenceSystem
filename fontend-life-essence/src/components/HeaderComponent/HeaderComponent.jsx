@@ -61,7 +61,7 @@ const HeaderComponent = () => {
               <FormTitle>Sign in</FormTitle>
               <Tabs>
                 <Tab active>Sign in</Tab>
-                <Tab onClick={()=>navigate('/signIn')}>Create an Account</Tab>
+                <Tab onClick={()=>navigate('/signUp')}>Create an Account</Tab>
               </Tabs>
               <div>
                 <label>Username or email *</label>
