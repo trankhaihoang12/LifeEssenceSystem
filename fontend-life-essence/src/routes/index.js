@@ -1,4 +1,4 @@
-import AdminPage from "../pages/AdminPage/AdminPage";
+import AdminPage from '../pages/AdminPage/AdminPage';
 import DetailsProductPage from "../pages/DetailsProductPage/DetailsProductPage";
 import HomePage from "../pages/HomePage/HomePage";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
