@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import { FaBriefcaseMedical } from "react-icons/fa6";
 import line from '../../assets/images/line.png';
 import Slide1 from '../../assets/images/Slide1.png';
@@ -19,6 +19,7 @@ import CardComponent from '../../components/CardComponent/CardComponent';
 import BlogCardComponent from '../../components/BlogCardComponent/BlogCardComponent';
 import IntroductionComponent from '../../components/IntroductionComponent/IntroductionComponent';
 import PopularCategories from '../../components/PopularCategoriesComponent/PopularCategories';
+import useHorizontalScroll from '../../hooks/useHorizontalScroll';
 
 
 
@@ -26,20 +27,9 @@ import PopularCategories from '../../components/PopularCategoriesComponent/Popul
 
 const HomePage = () => {
 
-  const scrollRef = useRef(null);
-  const scrollAmount = 300; // Số pixel cuộn mỗi lần, điều chỉnh để khớp với kích thước sản phẩm của bạn.
-
-  const handlePrevious = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollLeft -= scrollAmount;
-    }
-  };
-
-  const handleNext = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollLeft += scrollAmount;
-    }
-  };
+  const healthyScroll = useHorizontalScroll(300);
+  const trendingScroll = useHorizontalScroll(300);
+  const blogScroll = useHorizontalScroll(300);
 
   return (
     <div style={{ height: 'auto', backgroundColor: '#f0f9fb' }}>
@@ -121,7 +111,7 @@ const HomePage = () => {
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <span style={{ fontSize: '30px', fontWeight: 'bold', marginTop: '10px' }}>Health Products</span>
         </div>
-        <ProductsContainer ref={scrollRef}>
+        <ProductsContainer ref={healthyScroll.scrollRef}>
           <ProductsWrapper>
             {/* Các sản phẩm */}
             <CardComponent />
@@ -136,12 +126,8 @@ const HomePage = () => {
             <CardComponent />
           </ProductsWrapper>
         </ProductsContainer>
-        <Button position="left" onClick={handlePrevious}>
-          Previous
-        </Button>
-        <Button position="right" onClick={handleNext}>
-          Next
-        </Button>
+        <Button position="left" onClick={healthyScroll.scrollPrevious}>Previous</Button>
+        <Button position="right" onClick={healthyScroll.scrollNext}>Next</Button>
       </div>
       {/* Giới thiệu 2 */}
 
@@ -174,10 +160,10 @@ const HomePage = () => {
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <span style={{ fontSize: '30px', fontWeight: 'bold', marginTop: '10px' }}>Trending Products</span>
         </div>
-
-        <ProductsContainer ref={scrollRef}>
+        <Button position="left" onClick={trendingScroll.scrollPrevious}>Previous</Button>
+        <ProductsContainer ref={trendingScroll.scrollRef}>
           <ProductsWrapper>
-            {/* Các sản phẩm */}
+            {/* Các sản phẩm  */}
             <CardComponent />
             <CardComponent />
             <CardComponent />
@@ -190,12 +176,8 @@ const HomePage = () => {
             <CardComponent />
           </ProductsWrapper>
         </ProductsContainer>
-        <Button position="left" onClick={handlePrevious}>
-          Previous
-        </Button>
-        <Button position="right" onClick={handleNext}>
-          Next
-        </Button>
+
+        <Button position="right" onClick={trendingScroll.scrollNext}>Next</Button>
       </div>
 
       {/* Giới thiệu 3 */}
@@ -235,24 +217,30 @@ const HomePage = () => {
 
       {/* Bài viết và blog */}
 
-
-
       <div style={{ height: '460px', position: 'relative' }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <span style={{ fontSize: '30px', fontWeight: 'bold', marginTop: '10px' }}>Latest Articles & Blogs</span>
         </div>
-        <ProductsContainer ref={scrollRef}>
+        <ProductsContainer ref={blogScroll.scrollRef}>
           <ProductsWrapper>
             <BlogCardComponent />
             <BlogCardComponent />
             <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
           </ProductsWrapper>
-        </ProductsContainer>
-
-        <Button position="left" onClick={handlePrevious}>
+        </ProductsContainer> 
+        <Button position="left" onClick={blogScroll.scrollPrevious}>
           Previous
         </Button>
-        <Button position="right" onClick={handleNext}>
+        <Button position="right" onClick={blogScroll.scrollNext}>
           Next
         </Button>
       </div>
