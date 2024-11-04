@@ -44,3 +44,84 @@ export const WrapperItem = styled.div`
   font-weight: bold; 
   margin-top: 13px;
 `;
+
+// Form nhỏ khi hover vào đăng ký
+
+export const HeaderContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 220px;
+  padding: 10px;
+  box-sizing: border-box;
+  position: relative;
+`;
+
+export const SignInText = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+`;
+
+export const IconsContainer = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+export const FormContainer = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300px;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 10;
+`;
+
+export const FormTitle = styled.h3`
+  margin: 0;
+  margin-bottom: 10px;
+`;
+
+export const Tabs = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+`;
+
+export const Tab = styled.span`
+  cursor: pointer;
+  border-bottom: ${props => (props.active ? '2px solid teal' : 'none')};
+  color: ${props => (props.active ? 'black' : 'teal')};
+`;
+
+export const Input = styled.input`
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+`;
+
+export const LoginButton = styled.button`
+  width: 100%;
+  background-color: teal;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+`;
+
+export const ForgotPasswordLink = styled.a`
+  color: teal;
+  text-decoration: none;
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+`;

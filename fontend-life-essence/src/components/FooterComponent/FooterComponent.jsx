@@ -5,7 +5,7 @@ import logoAddress from '../../assets/images/web-address-icon.png';
 import logoCall from '../../assets/images/call-icon.png';
 const FooterComponent = () => {
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: 'rgb(239, 239, 239)' }}>
+        <div style={{height: '450px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: 'rgb(239, 239, 239)' }}>
             <Footer className="footer" >
                 <WrapperHeaderFooter>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

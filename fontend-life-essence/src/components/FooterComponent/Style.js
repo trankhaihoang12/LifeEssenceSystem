@@ -1,21 +1,17 @@
 import styled from 'styled-components';
 
 export const Footer = styled.footer`
-    /* display: flex; Sử dụng flexbox */
     justify-content: center; /* Căn giữa nội dung theo chiều ngang */
-    //align-items: center; /* Căn giữa nội dung theo chiều dọc */
     padding: 5px 20px; /* Tăng padding cho footer */
     background-color: #ffffff; 
     color: #ffffff; /* Màu chữ sáng */
     text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đường bóng cho footer */
     position: relative;
     bottom: 0;
     width: 100%; /* Đặt chiều rộng 100% để chiếm toàn bộ không gian */
-    max-width: 1270px; /* Giới hạn chiều rộng tối đa */
     margin: 0 auto; /* Căn giữa footer */
     font-family: 'Arial', sans-serif;
-    border-radius: 15px;
+    height: 450px;
 
     @media (max-width: 768px) {
         padding: 20px; /* Giảm padding trên màn hình nhỏ */

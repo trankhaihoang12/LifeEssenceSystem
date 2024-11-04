@@ -1,9 +1,11 @@
+import AdminPage from "../pages/AdminPage/AdminPage";
 import DetailsProductPage from "../pages/DetailsProductPage/DetailsProductPage";
 import HomePage from "../pages/HomePage/HomePage";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 import OrderPage from "../pages/OrderPage/OrderPage";
 import PaymentPage from "../pages/PaymentPage/PaymentPage";
 import ProductsPage from "../pages/ProductsPage/ProductsPage";
+import Wishlist from "../pages/WishlistPage/Wishlist";
 
 export const routes = [
     {
@@ -35,11 +37,24 @@ export const routes = [
 
     },
     {
+
         path: '/payment',
         page: PaymentPage,
         isShowHeader: true,
         isShowFooter: true
+    },
+    {
+        path: '/admin',
+        page:  AdminPage,
 
+
+    },
+    {
+
+        path: '/wishlist',
+        page: Wishlist,
+        isShowHeader: true,
+        isShowFooter: true
     },
     {
         path: '*',
