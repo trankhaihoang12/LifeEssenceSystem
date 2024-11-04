@@ -4,6 +4,7 @@ import HomePage from "../pages/HomePage/HomePage";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 import OrderPage from "../pages/OrderPage/OrderPage";
 import ProductsPage from "../pages/ProductsPage/ProductsPage";
+import Profile from '../pages/Profile/Profile';
 import ResetPassword from "../pages/ResetPassword/ResetPassword";
 import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
@@ -51,6 +52,13 @@ export const routes = [
     {
         path: '/details-product',
         page: DetailsProductPage,
+        isShowHeader: true,
+        isShowFooter: true
+
+    },
+    {
+        path: '/profile-user',
+        page: Profile,
         isShowHeader: true,
         isShowFooter: true
 
