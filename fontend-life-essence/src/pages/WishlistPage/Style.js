@@ -10,7 +10,7 @@ export const WishlistContainer = styled.div`
 `;
 
 export const WishlistTitle = styled.h1`
-    text-align: center;
+    text-align: left;
     font-size: 24px;
     margin-bottom: 30px; /* Increased space below the title */
     font-weight: bold; /* Bold title */
