@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from 'react';
 import AdminHistoryComponent from '../../components/AdminHistoryComponnent/AdminHistoryComponnent'; 
 
@@ -30,13 +31,68 @@ import {
   FaUsers,
 } from 'react-icons/fa';
 import Chart from 'react-apexcharts';
+=======
+import React, { useState } from 'react';
+import {Container, Sidebar,Profile,Navigation,MainContent} from './Style';
+import {FaUser,FaProductHunt,FaShoppingCart,FaFileInvoice,FaHistory,FaCog,FaSignOutAlt,FaTachometerAlt} from 'react-icons/fa';
+import AdminDashboard from '../../components/AdminDashboard/AdminDashboard';
+import AdminUsersComponnent from '../../components/AdminUsersComponnent/AdminUsersComponnent';
+import AdminProductsComponent from '../../components/AdminProductsComponnent/AdminProductsComponent';
+import AdminOrdersComponnent from '../../components/AdminOrdersComponnent/AdminOrdersComponnent';
+import AdminInvoiceComponent from '../../components/AdminInvoiceComponent/AdminInvoiceComponent';
+import AdminHistoryComponnent from '../../components/AdminHistoryComponnent/AdminHistoryComponnent';
+import AdminSettingComponnent from '../../components/AdminSettingComponnent/AdminSettingComponnent';
+>>>>>>> cba73495b786f94bce8f92644d4ac1d24648c9df
 
 const AdminPage = () => {
   // Hàm xử lý đăng xuất
   const handleLogout = () => {
     alert("Bạn đã đăng xuất!"); // Thay thế bằng logic thực tế
   };
+  const rootSubmenuKeys = ['dashboard','user', 'product', 'order','invoice', 'history', 'setting'];
+  const [openKeys, setOpenKeys] = useState(['user']);
+  const [keySelected, setKeySelected] = useState('dashboard');
+  
+  const renderPage = (key) => {
+    switch (key) {
+      case 'dashboard':
+        return (
+          <AdminDashboard/>
+        )
+      case 'user':
+        return (
+          <AdminUsersComponnent/>
+        )
+      case 'product':
+        return (
+          <AdminProductsComponent />
+        )
+      case 'order':
+        return (
+          <AdminOrdersComponnent />
+        )
+      case 'invoice':
+        return (
+          <AdminInvoiceComponent/>
+        )
+      case 'history':
+        return (
+          <AdminHistoryComponnent />
+        )
+      case 'setting':
+        return (
+          <AdminSettingComponnent />
+        )
+      default:
+        return <></>
+    }
+  }
 
+  const handleOnClick = ({ key }) => {
+    setKeySelected(key)
+  }
+
+<<<<<<< HEAD
   const barChartOptions = {
     chart: {
       toolbar: { show: false },
@@ -118,6 +174,10 @@ const AdminPage = () => {
     name: 'Customers',
     data: [100, 200, 150, 300, 250, 400, 350],
   }];
+=======
+
+  
+>>>>>>> cba73495b786f94bce8f92644d4ac1d24648c9df
 
   return (
     <Container>
@@ -128,25 +188,43 @@ const AdminPage = () => {
           <h2>VĂN LÂN</h2>
           <p>ADMIN</p>
         </Profile>
+
         <Navigation>
           <ul>
-            <li><FaTachometerAlt /> Dashboard</li>
-            <li><FaUser /> Customer</li>
-            <li><FaProductHunt /> Products</li>
-            <li><FaShoppingCart /> Orders</li>
-            <li><FaFileInvoice /> Invoice</li>
-            <li><FaHistory /> History</li>
-            <li><FaCog /> Settings</li>
-            {/* Bỏ Reports và Login */}
+            <li onClick={() => handleOnClick({ key: 'dashboard' })}>
+              <FaTachometerAlt /> Dashboard
+            </li>
+            <li onClick={() => handleOnClick({ key: 'user' })}>
+              <FaUser /> User
+            </li>
+            <li onClick={() => handleOnClick({ key: 'product' })}>
+              <FaProductHunt /> Products
+            </li>
+            <li onClick={() => handleOnClick({ key: 'order' })}>
+              <FaShoppingCart /> Orders
+            </li>
+            <li onClick={() => handleOnClick({ key: 'invoice' })}>
+              <FaFileInvoice /> Invoice
+            </li>
+            <li onClick={() => handleOnClick({ key: 'history' })}>
+              <FaHistory /> History
+            </li>
+            <li onClick={() => handleOnClick({ key: 'setting' })}>
+              <FaCog /> Settings
+            </li>
             <li onClick={handleLogout}>
               <FaSignOutAlt /> Logout
             </li>
           </ul>
         </Navigation>
-      </Sidebar>
 
+
+      </Sidebar>
       {/* Main Content */}
+
+
       <MainContent>
+<<<<<<< HEAD
         <Header>
           <SearchContainer>
             <input type="text" placeholder="Search" />
@@ -236,7 +314,12 @@ const AdminPage = () => {
         {/* Thêm AdminHistoryComponent vào đây */}
         <AdminHistoryComponent />
         
+=======
+        {renderPage(keySelected)}
+>>>>>>> cba73495b786f94bce8f92644d4ac1d24648c9df
       </MainContent>
+
+
     </Container>
   );
 };
