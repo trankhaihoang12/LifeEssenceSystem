@@ -1,71 +1,50 @@
 import React, { useState } from 'react';
-import {Container, Sidebar,Profile,Navigation,MainContent} from './Style';
-import {FaUser,FaProductHunt,FaShoppingCart,FaFileInvoice,FaHistory,FaCog,FaSignOutAlt,FaTachometerAlt} from 'react-icons/fa';
+import {Container,Sidebar,Profile,Navigation,MainContent,} from './Style';
 import AdminDashboard from '../../components/AdminDashboard/AdminDashboard';
-import AdminUsersComponnent from '../../components/AdminUsersComponnent/AdminUsersComponnent';
-import AdminProductsComponent from '../../components/AdminProductsComponnent/AdminProductsComponent';
-import AdminOrdersComponnent from '../../components/AdminOrdersComponnent/AdminOrdersComponnent';
+import AdminUsersComponent from '../../components/AdminUsersComponent/AdminUsersComponent';
+import AdminOrdersComponent from '../../components/AdminOrdersComponent/AdminOrdersComponent';
 import AdminInvoiceComponent from '../../components/AdminInvoiceComponent/AdminInvoiceComponent';
-import AdminHistoryComponnent from '../../components/AdminHistoryComponnent/AdminHistoryComponnent';
-import AdminSettingComponnent from '../../components/AdminSettingComponnent/AdminSettingComponnent';
+import AdminHistoryComponent from '../../components/AdminHistoryComponent/AdminHistoryComponent';
+import AdminSettingComponent from '../../components/AdminSettingComponent/AdminSettingComponent';
+import AdminProductsComponent from '../../components/AdminProductsComponent/AdminProductsComponent';
+import { FaUser, FaProductHunt, FaShoppingCart, FaFileInvoice, FaHistory, FaCog, FaSignOutAlt, FaTachometerAlt } from 'react-icons/fa';
 
 
 const AdminPage = () => {
-  // Hàm xử lý đăng xuất
   const handleLogout = () => {
-    alert("Bạn đã đăng xuất!"); // Thay thế bằng logic thực tế
+    alert("Bạn đã đăng xuất!"); 
   };
 
-  const rootSubmenuKeys = ['dashboard','user', 'product', 'order','invoice', 'history', 'setting'];
-  const [openKeys, setOpenKeys] = useState(['user']);
   const [keySelected, setKeySelected] = useState('dashboard');
-  
+
   const renderPage = (key) => {
     switch (key) {
       case 'dashboard':
-        return (
-          <AdminDashboard/>
-        )
+        return <AdminDashboard />;
       case 'user':
-        return (
-          <AdminUsersComponnent/>
-        )
-      case 'product':
-        return (
-          <AdminProductsComponent />
-        )
+        return <AdminUsersComponent />;
+      case 'products':
+        return <AdminProductsComponent />; // Render AdminProductsComponent
       case 'order':
-        return (
-          <AdminOrdersComponnent />
-        )
+        return <AdminOrdersComponent />;
       case 'invoice':
-        return (
-          <AdminInvoiceComponent/>
-        )
+        return <AdminInvoiceComponent />;
       case 'history':
-        return (
-          <AdminHistoryComponnent />
-        )
+        return <AdminHistoryComponent />;
       case 'setting':
-        return (
-          <AdminSettingComponnent />
-        )
+        return <AdminSettingComponent />;
       default:
-        return <></>
+        return null;
     }
-  }
+  };
 
-  const handleOnClick = ({ key }) => {
-    setKeySelected(key)
-  }
-
-
-  
+  const handleOnClick = (key) => {
+    setKeySelected(key);
+  };
 
 
   return (
     <Container>
-      {/* Sidebar */}
       <Sidebar>
         <Profile>
           <div className="avatar">A</div>
@@ -73,47 +52,24 @@ const AdminPage = () => {
           <p>ADMIN</p>
         </Profile>
 
-
         <Navigation>
           <ul>
-            <li onClick={() => handleOnClick({ key: 'dashboard' })}>
-              <FaTachometerAlt /> Dashboard
-            </li>
-            <li onClick={() => handleOnClick({ key: 'user' })}>
-              <FaUser /> User
-            </li>
-            <li onClick={() => handleOnClick({ key: 'product' })}>
-              <FaProductHunt /> Products
-            </li>
-            <li onClick={() => handleOnClick({ key: 'order' })}>
-              <FaShoppingCart /> Orders
-            </li>
-            <li onClick={() => handleOnClick({ key: 'invoice' })}>
-              <FaFileInvoice /> Invoice
-            </li>
-            <li onClick={() => handleOnClick({ key: 'history' })}>
-              <FaHistory /> History
-            </li>
-            <li onClick={() => handleOnClick({ key: 'setting' })}>
-              <FaCog /> Settings
-            </li>
-
-            <li onClick={handleLogout}>
-              <FaSignOutAlt /> Logout
-            </li>
+            <li onClick={() => handleOnClick('dashboard')}><FaTachometerAlt /> Dashboard</li>
+            <li onClick={() => handleOnClick('user')}><FaUser /> User</li>
+            <li onClick={() => handleOnClick('products')}><FaProductHunt /> Products</li> {/* Giữ lại mục Products */}
+            <li onClick={() => handleOnClick('order')}><FaShoppingCart /> Orders</li>
+            <li onClick={() => handleOnClick('invoice')}><FaFileInvoice /> Invoice</li>
+            <li onClick={() => handleOnClick('history')}><FaHistory /> History</li>
+            <li onClick={() => handleOnClick('setting')}><FaCog /> Settings</li>
+            <li onClick={handleLogout}><FaSignOutAlt /> Logout</li>
           </ul>
         </Navigation>
-
-
-
       </Sidebar>
-      {/* Main Content */}
-
 
       <MainContent>
+        {/* Render the selected page */}
         {renderPage(keySelected)}
       </MainContent>
-
     </Container>
   );
 };

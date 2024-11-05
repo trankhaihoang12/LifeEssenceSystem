@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { FaPen, FaTrash } from 'react-icons/fa';
-import { StatusBadge, WrapperButton, WrapperContainer, WrapperHeader, WrapperInput, WrapperPagination, WrapperTable, WrapperTableData, WrapperTableHeader, WrapperTableRow } from './Style';
+import { ExportButton, StatusBadge, WrapperButton, WrapperContainer, WrapperHeader, WrapperInput, WrapperPagination, WrapperTable, WrapperTableData, WrapperTableHeader, WrapperTableRow } from './Style';
 import { LuSearch } from 'react-icons/lu';
 
 
@@ -21,6 +21,9 @@ const AdminUsersComponnent = () => {
     const usersPerPage = 10;
     const totalPages = Math.ceil(users.length / usersPerPage);
 
+    const handleExport = () => {
+        alert('Xuất file Excel');
+    };
 
     const handleEdit = (id) => {
         alert(`Edit user with id: ${id}`);
@@ -52,6 +55,9 @@ const AdminUsersComponnent = () => {
                 <h2>Users Management</h2>
                 <span>{users.length} users</span>
             </WrapperHeader>
+            <ExportButton onClick={handleExport}>
+                Export Excel
+            </ExportButton>
             <WrapperTable>
                 <thead>
                     <tr>
