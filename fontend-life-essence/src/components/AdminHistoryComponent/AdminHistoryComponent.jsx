@@ -8,13 +8,10 @@ import {
   ChartContainer, 
   SummaryCard, 
   ChartWrapper, 
-  InfoBox, 
   SideStats, 
-  RatingCircle, 
   TableContainer 
 } from './Style';
 import Chart from 'react-apexcharts';
-
 const AdminHistoryComponent = () => {
   const barChartOptions = {
     chart: { toolbar: { show: false }, background: '#f9f9f9' },
@@ -27,9 +24,7 @@ const AdminHistoryComponent = () => {
       style: { fontSize: '16px', color: '#333' },
     },
   };
-
   const barChartSeries = [{ name: 'Revenue', data: [12000, 18000, 15000, 22000] }];
-
   return (
     <Container>
       <Header>
@@ -88,5 +83,4 @@ const AdminHistoryComponent = () => {
     </Container>
   );
 };
-
 export default AdminHistoryComponent;

@@ -1,12 +1,9 @@
 import styled from 'styled-components';
-
 export const Container = styled.div`
   padding: 20px;
-  max-width: 1200px;
-  margin: auto;
-  font-size: 18px;
+  background-color: #f7f9fc;
+  border-radius: 8px;
 `;
-
 export const AddProduct = styled.div`
   display: flex;
   align-items: center;
@@ -18,118 +15,95 @@ export const AddProduct = styled.div`
   margin-bottom: 20px;
   cursor: pointer;
   transition: background-color 0.3s;
-
   &:hover {
       background-color: #e7f1ff; /* Màu nền khi hover */
   }
-
   i {
       font-size: 36px;
       color: #007bff; /* Màu icon */
   }
 `;
-
 export const ExportButton = styled.button`
   margin-bottom: 20px;
   padding: 10px 20px;
-  font-size: 18px;
+  font-size: 12px;
   background-color: #28a745; /* Màu nền nút xuất */
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
-
   &:hover {
       background-color: #218838; /* Màu khi hover */
   }
 `;
-
-export const ProductTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 10px;
-  overflow: hidden;
-  font-size: 18px;
-
-  th, td {
-      vertical-align: middle;
-      padding: 20px;
-      text-align: center;
-      border: 1px solid #ddd;
+export const WrapperPagination = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  button {
+    border: none;
+    background: #e5e7eb;
+    color: #374151;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    
+    &:hover {
+      background: #d1d5db;
+    }
   }
-
-  th {
-      background-color: #4DB6AC; /* Màu nền giống với thanh điều hướng */
-      color: white; /* Màu chữ trắng */
-      font-weight: bold;
-  }
-
-  td {
-      background-color: #fff; /* Màu nền ô dữ liệu */
-  }
-
-  .table-row:hover {
-      background-color: #f2f2f2; /* Màu nền khi hover hàng */
-  }
-
-  .action-icons {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-  }
-
-  .action-icons i {
-      margin: 0 10px;
+  .page-number {
+    display: flex;
+    gap: 8px;
+    span {
+      padding: 8px 12px;
+      background: #e5e7eb;
+      color: #374151;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 20px;
-  }
-
-  .action-icons i.text-warning {
-      color: #ffc107; /* Màu vàng cho icon chỉnh sửa */
-  }
-
-  .action-icons i.text-danger {
-      color: #dc3545; /* Màu đỏ cho icon xóa */
+      &.active {
+        background: #6366f1;
+        color: #ffffff;
+      }
+    }
   }
 `;
-
-export const Pagination = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-
-  button {
-      font-size: 18px;
-      padding: 10px 20px;
-      margin: 0 10px;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-
-      &:hover {
-          background-color: #0056b3; /* Màu khi hover nút */
-      }
-
-      &:disabled {
-          background-color: #ccc;
-          cursor: not-allowed;
-      }
+export const WrapperTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+`;
+export const WrapperTableHeader = styled.th`
+  padding: 12px;
+  font-weight: 600;
+  color: white; /* Màu chữ trắng */
+  text-align: left;
+  background-color: #4DB6AC; /* Màu nền giống với thanh điều hướng */
+  font-size: 14px;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+`;
+export const WrapperTableData = styled.td`
+  padding: 12px;
+  font-size: 14px;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  white-space: nowrap; /* Prevent stacking */
+`;
+export const WrapperTableRow = styled.tr`
+  display: table-row;
+  width: 100%;
+  &:nth-child(even) {
+    background-color: #f9fafb;
   }
-
-  .page-number {
-      display: flex;
-      align-items: center;
-      font-size: 18px;
-
-      span {
-          margin: 0 8px;
-          cursor: pointer;
-
-          &.active {
-              font-weight: bold;
-              text-decoration: underline;
-              color: #007bff; /* Màu cho trang hiện tại */
-          }
-      }
+  &:hover {
+    background-color: #f1f5f9;
   }
 `;
