@@ -5,11 +5,13 @@ import { LuSearch } from "react-icons/lu";
 import { FaRegHeart } from "react-icons/fa6";
 import { TiShoppingCart } from 'react-icons/ti';
 import Logo from '../../assets/images/Logo_Essence.png'
+import { useNavigate } from 'react-router-dom';
 import { ForgotPasswordLink, FormContainer, FormTitle, HeaderContainer, IconsContainer, Input, LoginButton, SignInText, Tab, Tabs, WrapperButton, WrapperHeaderOn, WrapperHeaderUnder, WrapperInput, WrapperItem, WrapperLogo } from './Style';
 
 
 const HeaderComponent = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
   return (
     <div>
       <WrapperHeaderOn>
@@ -27,7 +29,7 @@ const HeaderComponent = () => {
       <WrapperHeaderUnder>
 
         <div style={{ display: 'flex', width: '70%' }}>
-          <WrapperLogo src={Logo} alt="Logo" />
+          <WrapperLogo src={Logo} alt="Logo" onClick={() => navigate('/')} />
           <div style={{ height: '75px' }}>
             <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', borderRadius: '20px', width: '750px', height: '44px' }}>
               <WrapperInput type="text" placeholder="Tìm kiếm..." />
@@ -48,7 +50,7 @@ const HeaderComponent = () => {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <SignInText>SIGN IN / SIGN UP</SignInText>
+          <SignInText >SIGN IN / SIGN UP</SignInText>
           <IconsContainer>
             <FaRegHeart style={{ fontSize: '2rem' }} />
             <TiShoppingCart style={{ fontSize: '2rem' }} />
@@ -59,7 +61,7 @@ const HeaderComponent = () => {
               <FormTitle>Sign in</FormTitle>
               <Tabs>
                 <Tab active>Sign in</Tab>
-                <Tab>Create an Account</Tab>
+                <Tab onClick={()=>navigate('/signUp')}>Create an Account</Tab>
               </Tabs>
               <div>
                 <label>Username or email *</label>

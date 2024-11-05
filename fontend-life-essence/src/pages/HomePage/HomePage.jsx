@@ -12,24 +12,32 @@ import Home_deal1 from '../../assets/images/Home_deal1.png';
 import { FaHeartbeat, FaLongArrowAltRight } from 'react-icons/fa';
 import { GiHeartPlus, GiNotebook } from 'react-icons/gi';
 import { RiPsychotherapyLine } from 'react-icons/ri';
-import { Icon, IconWrapper, Separator, Subtitle, TextWrapper, Title, WrraperItem } from './Style';
+import { Button, Icon, IconWrapper, ProductsContainer, ProductsWrapper, Separator, Subtitle, TextWrapper, Title, WrraperItem } from './Style';
 import { Rate } from 'antd';
 import SliderComponent from '../../components/SliderComponent/SliderComponent';
 import CardComponent from '../../components/CardComponent/CardComponent';
 import BlogCardComponent from '../../components/BlogCardComponent/BlogCardComponent';
 import IntroductionComponent from '../../components/IntroductionComponent/IntroductionComponent';
 import PopularCategories from '../../components/PopularCategoriesComponent/PopularCategories';
+import useHorizontalScroll from '../../hooks/useHorizontalScroll';
+
+
+
 
 
 const HomePage = () => {
- 
+
+  const healthyScroll = useHorizontalScroll(300);
+  const trendingScroll = useHorizontalScroll(300);
+  const blogScroll = useHorizontalScroll(300);
+
   return (
     <div style={{ height: 'auto', backgroundColor: '#f0f9fb' }}>
       <div style={{ height: '80px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <div style={{ height: '40px', width: '75%', alignItems: 'center', display: 'flex', margin: 'auto', justifyContent: 'space-between', }}>
 
           <WrraperItem>
-            <IconWrapper style={{ backgroundColor: '#24AEB1'}}>
+            <IconWrapper style={{ backgroundColor: '#24AEB1' }}>
               <Icon>
                 <FaBriefcaseMedical />
               </Icon>
@@ -93,35 +101,33 @@ const HomePage = () => {
       </div>
 
       {/* Giới thiệu */}
-      <IntroductionComponent/>
+      <IntroductionComponent />
 
       {/* Giới thiệu số lượng sản phẩm */}
-      <PopularCategories/>
+      <PopularCategories />
       {/* Sản phẩm healthy */}
 
       <div style={{ height: '460px', position: 'relative' }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <span style={{ fontSize: '30px', fontWeight: 'bold', marginTop: '10px' }}>Health Products</span>
         </div>
-
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', gap: '20px' }}>
-          {/* Các sản phẩm ở đây */}
-          {/* Ví dụ sản phẩm */}
-          <CardComponent/>
-          <CardComponent/>
-          <CardComponent/>
-          <CardComponent/>
-          <CardComponent/>
-
-          {/* Thêm nhiều sản phẩm tương tự ở đây */}
-        </div>
-
-        <div style={{ position: 'absolute', top: '50%', left: '0', transform: 'translateY(-50%)' }}>
-          <button style={{ backgroundColor: '#2EA5B6', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px' }}>Previous</button>
-        </div>
-        <div style={{ position: 'absolute', top: '50%', right: '0', transform: 'translateY(-50%)' }}>
-          <button style={{ backgroundColor: '#2EA5B6', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px' }}>Next</button>
-        </div>
+        <ProductsContainer ref={healthyScroll.scrollRef}>
+          <ProductsWrapper>
+            {/* Các sản phẩm */}
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+          </ProductsWrapper>
+        </ProductsContainer>
+        <Button position="left" onClick={healthyScroll.scrollPrevious}>Previous</Button>
+        <Button position="right" onClick={healthyScroll.scrollNext}>Next</Button>
       </div>
       {/* Giới thiệu 2 */}
 
@@ -154,22 +160,24 @@ const HomePage = () => {
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <span style={{ fontSize: '30px', fontWeight: 'bold', marginTop: '10px' }}>Trending Products</span>
         </div>
+        <Button position="left" onClick={trendingScroll.scrollPrevious}>Previous</Button>
+        <ProductsContainer ref={trendingScroll.scrollRef}>
+          <ProductsWrapper>
+            {/* Các sản phẩm  */}
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+            <CardComponent />
+          </ProductsWrapper>
+        </ProductsContainer>
 
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', gap: '20px' }}>
-          {/* Các sản phẩm ở đây */}
-          <CardComponent />
-          <CardComponent />
-          <CardComponent />
-          <CardComponent />
-          <CardComponent />
-        </div>
-
-        <div style={{ position: 'absolute', top: '50%', left: '0', transform: 'translateY(-50%)' }}>
-          <button style={{ backgroundColor: '#2EA5B6', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px' }}>Previous</button>
-        </div>
-        <div style={{ position: 'absolute', top: '50%', right: '0', transform: 'translateY(-50%)' }}>
-          <button style={{ backgroundColor: '#2EA5B6', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px' }}>Next</button>
-        </div>
+        <Button position="right" onClick={trendingScroll.scrollNext}>Next</Button>
       </div>
 
       {/* Giới thiệu 3 */}
@@ -209,24 +217,32 @@ const HomePage = () => {
 
       {/* Bài viết và blog */}
 
-
-
       <div style={{ height: '460px', position: 'relative' }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <span style={{ fontSize: '30px', fontWeight: 'bold', marginTop: '10px' }}>Latest Articles & Blogs</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', gap: '30px' }}>
-          <BlogCardComponent/>
-          <BlogCardComponent/>
-          <BlogCardComponent/>
-        </div>
-
-        <div style={{ position: 'absolute', top: '50%', left: '0', transform: 'translateY(-50%)' }}>
-          <button style={{ backgroundColor: '#2EA5B6', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px' }}>Previous</button>
-        </div>
-        <div style={{ position: 'absolute', top: '50%', right: '0', transform: 'translateY(-50%)' }}>
-          <button style={{ backgroundColor: '#2EA5B6', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px' }}>Next</button>
-        </div>
+        <ProductsContainer ref={blogScroll.scrollRef}>
+          <ProductsWrapper>
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+            <BlogCardComponent />
+          </ProductsWrapper>
+        </ProductsContainer> 
+        <Button position="left" onClick={blogScroll.scrollPrevious}>
+          Previous
+        </Button>
+        <Button position="right" onClick={blogScroll.scrollNext}>
+          Next
+        </Button>
       </div>
 
 
