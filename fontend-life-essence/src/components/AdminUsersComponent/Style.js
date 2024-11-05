@@ -7,6 +7,7 @@ export const WrapperInput = styled.input`
   padding: 10px; 
   border-radius: 20px;
 `;
+
 export const WrapperButton = styled.button`
   background-color: #24AEB1; 
   width: 70px; 
@@ -53,9 +54,9 @@ export const WrapperTable = styled.table`
 export const WrapperTableHeader = styled.th`
   padding: 12px;
   font-weight: 600;
-  color: #4b5563;
+  color: white; /* Màu chữ trắng */
   text-align: left;
-  background-color: #f3f4f6;
+  background-color: #4DB6AC; /* Màu nền giống với thanh điều hướng */
   font-size: 14px;
   border-bottom: 1px solid #e5e7eb;
   white-space: nowrap;
