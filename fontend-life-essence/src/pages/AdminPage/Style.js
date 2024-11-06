@@ -75,7 +75,6 @@ export const MainContent = styled.div`
   padding: 20px;
 `;
 
-// Thêm định nghĩa cho Header
 export const Header = styled.header`
   display: flex;
   justify-content: space-between;
@@ -112,3 +111,4 @@ export const SearchContainer = styled.div`
     }
   }
 `;
+

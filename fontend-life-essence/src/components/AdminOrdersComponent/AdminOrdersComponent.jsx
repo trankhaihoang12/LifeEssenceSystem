@@ -14,9 +14,13 @@ const AdminOrdersComponent = () => {
     { id: '210514640451', customerName: 'Nguyen Khanh', date: '5/27/24 11:26 PM', paymentStatus: 'Paid', amount: '$99.00', paymentMethod: 'PayPal', orderStatus: 'Shipped' },
     { id: '043910464504', customerName: 'Hoang Mai', date: '8/2/24 11:26 PM', paymentStatus: 'COD', amount: '$156.00', paymentMethod: 'PayPal', orderStatus: 'Delivered' },
   ];
+
+
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 10;
   const totalPages = Math.ceil(orders.length / ordersPerPage);
+
+
   const handleAddOrder = () => {
     alert('Add Order');
   };
@@ -37,6 +41,8 @@ const AdminOrdersComponent = () => {
     order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     order.id.includes(searchTerm)
   );
+
+
   return (
     <Container>
       <h1>Order Management</h1>

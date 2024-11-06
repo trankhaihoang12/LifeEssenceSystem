@@ -6,6 +6,7 @@ export const WrapperInput = styled.input`
   flex: 1; 
   padding: 10px; 
   border-radius: 20px;
+  font-size: 16px;
 `;
 
 export const WrapperButton = styled.button`
@@ -142,3 +143,19 @@ export const WrapperPagination = styled.div`
     }
   }
 `;
+export const ExportButton = styled.button`
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  font-size: 12px;
+  background-color: #28a745; /* Màu nền nút xuất */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+      background-color: #218838; /* Màu khi hover */
+  }
+`;
+

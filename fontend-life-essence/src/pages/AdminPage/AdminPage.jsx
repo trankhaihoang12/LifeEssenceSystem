@@ -1,19 +1,14 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  Sidebar,
-  Profile,
-  Navigation,
-  MainContent,
-} from './Style';
+import {Container,Sidebar,Profile,Navigation,MainContent,} from './Style';
 import AdminDashboard from '../../components/AdminDashboard/AdminDashboard';
 import AdminUsersComponent from '../../components/AdminUsersComponent/AdminUsersComponent';
 import AdminOrdersComponent from '../../components/AdminOrdersComponent/AdminOrdersComponent';
 import AdminInvoiceComponent from '../../components/AdminInvoiceComponent/AdminInvoiceComponent';
 import AdminHistoryComponent from '../../components/AdminHistoryComponent/AdminHistoryComponent';
 import AdminSettingComponent from '../../components/AdminSettingComponent/AdminSettingComponent';
-import AdminProductsComponent from '../../components/AdminProductsComponent/AdminProductsComponent'; // Import AdminProductsComponent
+import AdminProductsComponent from '../../components/AdminProductsComponent/AdminProductsComponent';
 import { FaUser, FaProductHunt, FaShoppingCart, FaFileInvoice, FaHistory, FaCog, FaSignOutAlt, FaTachometerAlt } from 'react-icons/fa';
+
 
 const AdminPage = () => {
   const handleLogout = () => {
@@ -47,6 +42,7 @@ const AdminPage = () => {
     setKeySelected(key);
   };
 
+
   return (
     <Container>
       <Sidebar>
@@ -78,4 +74,6 @@ const AdminPage = () => {
   );
 };
 
+
 export default AdminPage;
+
