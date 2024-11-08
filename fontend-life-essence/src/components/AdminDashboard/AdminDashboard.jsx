@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChartBox, ChartSection, Header, SearchContainer, StatsBox, StatsContainer, TableSection } from './Styled';
+import { ChartBox, ChartSection, Header,StatsBox, StatsContainer, TableSection } from './Styled';
 import { FaClipboardList, FaDollarSign, FaSearch, FaUser } from 'react-icons/fa';
 import Chart from 'react-apexcharts';
 
