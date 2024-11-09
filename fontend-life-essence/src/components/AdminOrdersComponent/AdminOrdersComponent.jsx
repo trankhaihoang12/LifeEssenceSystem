@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, ButtonCustom,ButtonGroup, WrapperTable, WrapperTableHeader, WrapperTableData, WrapperTableRow, StatusBadge, WrapperPagination, ExportButton, AddButton } from './Style';
+import { Container,ButtonGroup, WrapperTable, WrapperTableHeader, WrapperTableData, WrapperTableRow, StatusBadge, WrapperPagination, ExportButton, AddButton } from './Style';
 import { FaPlus, FaPen, FaTrash } from 'react-icons/fa';
 import { LuSearch } from 'react-icons/lu';
 const AdminOrdersComponent = () => {

@@ -82,7 +82,7 @@ export const WrapperTableHeader = styled.th`
   font-weight: 600;
   color: white; /* Màu chữ trắng */
   text-align: left;
-  background-color: #4DB6AC; /* Màu nền giống với thanh điều hướng */
+  background-color: #24AEB1;
   font-size: 14px;
   border-bottom: 1px solid #e5e7eb;
   white-space: nowrap;

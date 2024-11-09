@@ -89,7 +89,7 @@ const OrderPage = () => {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "20px" }}>
           <div style={{ backgroundColor: "#fff", borderRadius: "8px", padding: "20px" }}>
             {cartItems.map((item) => (
-              <div key={item.id} style={{ display: "flex", alignItems: "center", padding: "20px 0", borderBottom: "1px solid #eee", position: "relative" }}>
+<div key={item.id} style={{ display: "flex", alignItems: "center", padding: "20px 0", borderBottom: "1px solid #eee", position: "relative" }}>
                 <div style={{ position: "absolute", top: "10px", right: "10px" }}>
                   <FaHeart style={{ color: "#888", cursor: "pointer" }} />
                 </div>
@@ -153,7 +153,7 @@ const OrderPage = () => {
                   border: "none",
                   cursor: "pointer"
                 }}>
-                APPLY COUPON
+APPLY COUPON
               </button>
             </div>
           </div>

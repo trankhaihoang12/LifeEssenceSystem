@@ -1,9 +1,11 @@
 import styled from 'styled-components';
+
 export const Container = styled.div`
   padding: 20px;
   background-color: #f7f9fc;
   border-radius: 8px;
 `;
+
 export const AddProduct = styled.div`
   display: flex;
   align-items: center;
@@ -23,6 +25,7 @@ export const AddProduct = styled.div`
       color: #007bff; /* Màu icon */
   }
 `;
+
 export const ExportButton = styled.button`
   margin-bottom: 20px;
   padding: 10px 20px;
@@ -37,6 +40,7 @@ export const ExportButton = styled.button`
       background-color: #218838; /* Màu khi hover */
   }
 `;
+
 export const WrapperPagination = styled.div`
   display: flex;
   justify-content: space-between;
@@ -71,6 +75,7 @@ export const WrapperPagination = styled.div`
     }
   }
 `;
+
 export const WrapperTable = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -79,16 +84,18 @@ export const WrapperTable = styled.table`
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
+
 export const WrapperTableHeader = styled.th`
   padding: 12px;
   font-weight: 600;
   color: white; /* Màu chữ trắng */
   text-align: left;
-  background-color: #4DB6AC; /* Màu nền giống với thanh điều hướng */
+  background-color: #24AEB1;
   font-size: 14px;
   border-bottom: 1px solid #e5e7eb;
   white-space: nowrap;
 `;
+
 export const WrapperTableData = styled.td`
   padding: 12px;
   font-size: 14px;
@@ -97,6 +104,7 @@ export const WrapperTableData = styled.td`
   text-align: left;
   white-space: nowrap; /* Prevent stacking */
 `;
+
 export const WrapperTableRow = styled.tr`
   display: table-row;
   width: 100%;
@@ -106,4 +114,91 @@ export const WrapperTableRow = styled.tr`
   &:hover {
     background-color: #f1f5f9;
   }
+`;
+
+export const EditFormContainer = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+`;
+
+export const EditForm = styled.div`
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 450px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+`;
+
+export const EditFormTitle = styled.h3`
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+`;
+
+export const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+export const Label = styled.label`
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+`;
+
+export const Input = styled.input`
+  padding: 12px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.3s;
+  &:focus {
+    border-color: #6366F1;
+  }
+`;
+
+export const EditFormButton = styled.button`
+  background-color: #6366F1;
+  color: white;
+  padding: 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #4C51BF;
+  }
+`;
+
+export const CancelButton = styled.button`
+  background-color: #e0e0e0;
+  color: #333;
+  padding: 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #b3b3b3;
+  }
+`;
+export const WarraperInput = styled.input`
+  height: 30px;
+  border-radius: 8px;
 `;
