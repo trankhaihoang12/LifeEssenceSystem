@@ -51,25 +51,25 @@ const Payment = () => {
 
   return (
     <PageContainer>
-      <Title>THÔNG TIN ĐẶT HÀNG</Title>
+      <Title>ORDER INFORMATION</Title>
 
       <SectionContainer>
         <div>
-          <h2>THÔNG TIN VẬN CHUYỂN</h2>
-          <Input type="text" placeholder="Nhập vào Họ Tên" />
-          <Input type="text" placeholder="Nhập vào Số Điện Thoại" />
-          <Input type="email" placeholder="Nhập vào Email" />
-          <Input type="text" placeholder="Nhập vào địa chỉ" />
+          <h2>SHIPPING INFORMATION</h2>
+          <Input type="text" placeholder="Enter Full Name" />
+          <Input type="text" placeholder="Enter Phone Number" />
+          <Input type="email" placeholder="Enter Email" />
+          <Input type="text" placeholder="Enter Address" />
           <div style={{ display: 'flex', gap: '8px' }}>
-            <Select><option>Chọn Thành Phố</option></Select>
-            <Select><option>Chọn Quận/Huyện</option></Select>
-            <Select><option>Chọn Phường/Xã</option></Select>
+            <Select><option>Select City</option></Select>
+            <Select><option>Select District</option></Select>
+            <Select><option>Select Ward/Commune</option></Select>
           </div>
-          <TextArea placeholder="Ghi chú thêm" />
+          <TextArea placeholder="Notes" />
         </div>
 
         <div>
-          <h2>CHI TIẾT ĐƠN HÀNG</h2>
+          <h2>ORDER DETAILS</h2>
           <ProductList>
             {products.map(product => (
               <ProductItem key={product.id}>
@@ -94,22 +94,22 @@ const Payment = () => {
       </SectionContainer>
 
       <PaymentMethodContainer>
-        <h2>PHƯƠNG THỨC THANH TOÁN</h2>
+        <h2>PAYMENT METHOD</h2>
         <PaymentMethod onClick={() => handlePaymentChange("COD")}>
           <input type="radio" checked={paymentMethod === "COD"} readOnly />
-          <FaTruck style={{ color: 'red' ,fontSize:'20px' }} /><span>Thanh toán khi nhận hàng (COD)</span>
+          <FaTruck style={{ color: 'red' ,fontSize:'20px' }} /><span> Cash On Delivery (COD)</span>
           </PaymentMethod>
         <PaymentMethod onClick={() => handlePaymentChange("VNPay")}>
           <input type="radio" checked={paymentMethod === "VNPay"} readOnly />
-          <RiBankCardLine style={{ color: 'yellow',fontSize:'20px' }} /><span>Thanh toán ví điện tử VNPAY</span>
+          <RiBankCardLine style={{ color: 'yellow',fontSize:'20px' }} /><span>VNPAY</span>
         </PaymentMethod>
         <PaymentMethod onClick={() => handlePaymentChange("Paypal")}>
           <input type="radio" checked={paymentMethod === "Paypal"} readOnly />
-          <FaPaypal  style={{ color: 'green' ,fontSize:'20px'}}/><span>Thanh toán qua Paypal</span>
+          <FaPaypal  style={{ color: 'green' ,fontSize:'20px'}}/><span>Paypal</span>
         </PaymentMethod>
       </PaymentMethodContainer>
 
-      <PlaceOrderButton>THANH TOÁN ĐƠN HÀNG</PlaceOrderButton>
+      <PlaceOrderButton>PAYMENT OF ORDER</PlaceOrderButton>
     </PageContainer>
   );
 };

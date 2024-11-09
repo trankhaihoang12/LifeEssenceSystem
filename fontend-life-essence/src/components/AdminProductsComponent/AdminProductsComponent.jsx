@@ -36,15 +36,7 @@ const AdminProductComponent = () => {
         alert(`Delete user with id: ${id}`);
     };
 
-    const handleDeleteProduct = (id) => {
-        if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
-            setProducts(products.filter(product => product.id !== id));
-        }
-    };
 
-    const handleEditProduct = (id) => {
-        alert(`Chỉnh sửa sản phẩm với ID: ${id}`);
-    };
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);

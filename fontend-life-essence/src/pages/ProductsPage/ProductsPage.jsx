@@ -21,7 +21,7 @@ import {
 
 const HealthStore = () => {
   const navigate = useNavigate();
-  const [openCategory, setOpenCategory] = useState(null);
+  const [setOpenCategory] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
 

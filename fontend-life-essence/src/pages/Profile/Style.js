@@ -1,53 +1,78 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-    background-color: #f7fafc;
-    padding: 16px;
-    width: 100%;
-    margin: auto;
+
+  width: 900px;
+  height: 500px;
+  margin: auto;
+  margin-bottom: 20px;
+  padding: 32px;
+  background-color: #ffffff;
+  box-shadow: 3px 6px 8px 10px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
 `;
 
-export const Title = styled.h1`
-    font-size: 2rem;
+export const SectionHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h2 {
+    font-size: 24px;
     font-weight: bold;
-    margin-bottom: 24px;
-`;
+  }
 
-export const Card = styled.div`
-    padding: 24px;
-    width: 1200px;
-`;
-
-export const Label = styled.label`
-    display: block;
-    font-size: 12px;
-    font-weight: 540;
-    margin-bottom: 8px;
-    width: 500px;
-`;
-
-export const Input = styled.input`
-    width: 100%;
-    padding: 8px;
-    height: 35px;
-    font-size: 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 16px;
-`;
-
-export const Button = styled.button`
-    background-color: #00AB94;
-    color: white;
-    width: 135px;
-    height: 40px;
-    font-size: 12px;
-    padding: 10px 20px;
+  button {
+    background-color: #007bff;
+    color: #ffffff;
     border: none;
-    border-radius: 20px;
+    padding: 8px 16px;
+    border-radius: 4px;
     cursor: pointer;
-    margin: 10px 10px 10px 0px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
     &:hover {
-        background-color: #2f855a;
+      background-color: #0056b3;
     }
+  }
+`;
+
+export const InfoSection = styled.div`
+  display: flex;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  justify-content: space-around;
+  margin-bottom: 30px;
+`;
+
+export const AddressSection = styled(InfoSection)`
+  margin-top: 20px;
+`;
+
+export const AddressCard = styled.div`
+  h3 {
+    font-size: 18px;
+    font-weight: bold;
+
+  }
+
+  button {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
 `;
