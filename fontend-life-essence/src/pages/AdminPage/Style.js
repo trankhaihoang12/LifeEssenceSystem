@@ -8,7 +8,7 @@ export const Container = styled.div`
 
 export const Sidebar = styled.div`
   width: 250px;
-  background-color: #4DB6AC;
+  background-color: #24AEB1;
   display: flex;
   flex-direction: column;
   align-items: center;

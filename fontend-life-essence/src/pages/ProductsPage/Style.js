@@ -26,9 +26,11 @@ export const MainContent = styled.div`
 
 export const ProductsContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
   padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
 `;
 
 export const CategoryList = styled.div`
