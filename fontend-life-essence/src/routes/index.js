@@ -10,6 +10,7 @@ import Profile from '../pages/Profile/Profile';
 import ResetPassword from "../pages/ResetPassword/ResetPassword";
 import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
+import ProfileUpdate from '../pages/ProfileUpdate/ProfileUpdate';
 
 
 export const routes = [
@@ -69,6 +70,13 @@ export const routes = [
     {
         path: '/profile-user',
         page: Profile,
+        isShowHeader: true,
+        isShowFooter: true
+
+    },
+    {
+        path: '/profile-upadate',
+        page: ProfileUpdate,
         isShowHeader: true,
         isShowFooter: true
 

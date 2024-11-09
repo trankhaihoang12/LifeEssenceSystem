@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Title, Card, Label, Input, Button } from './Style';
 import { IoCameraOutline } from 'react-icons/io5';
 
-const Profile = () => {
+const ProfileUpdate = () => {
   return (
 
     <Container>
@@ -131,4 +131,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfileUpdate;
