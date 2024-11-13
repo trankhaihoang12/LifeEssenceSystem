@@ -10,6 +10,7 @@ import Profile from '../pages/Profile/Profile';
 import ResetPassword from "../pages/ResetPassword/ResetPassword";
 import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
+import DetailsOderPage from "../pages/DetailsOrderPage/DetailsOrderPage";
 
 
 export const routes = [
@@ -90,4 +91,10 @@ export const routes = [
         path: '*',
         page: NotFoundPage
     },
+    {
+        path: 'details-order',
+        page: DetailsOderPage,
+        isShowHeader: true,
+        isShowFooter: true
+    }
 ];
