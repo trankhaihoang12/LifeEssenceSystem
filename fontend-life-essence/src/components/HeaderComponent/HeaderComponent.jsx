@@ -8,14 +8,46 @@ import { TiShoppingCart } from 'react-icons/ti';
 import Logo from '../../assets/images/Logo_Essence.png'
 import { useNavigate } from 'react-router-dom';
 import { ForgotPasswordLink, FormContainer, FormTitle, HeaderContainer, IconsContainer, Input, LoginButton, SignInText, Tab, Tabs, WrapperButton, WrapperContentPopup, WrapperHeaderOn, WrapperHeaderUnder, WrapperInput, WrapperItem, WrapperLogo } from './Style';
-import { Popover } from 'antd';
+import { Badge, Popover } from 'antd';
+import { useMutation } from '@tanstack/react-query';
+import * as UserService from '../../services/UserService';
+import * as message from '../../components/MessageComponent/Message';
 
 
 const HeaderComponent = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [userData, setUserData] = useState(null);
   const [isOpenPopup, setIsOpenPopup] = useState(false)
   const navigate = useNavigate();
+
+  const mutation = useMutation({
+    mutationFn: (data) => UserService.loginUser(data), // Hàm thực hiện gọi API
+    onSuccess: (response) => {
+      if (response.message === 'Login successfully') {
+        // Lưu dữ liệu vào localStorage
+        const userData = {
+          token: response.data.token,
+          user: response.data.user
+        };
+        localStorage.setItem('userData', JSON.stringify(userData));
+        setUserData(userData); 
+        message.success(response.message);
+        navigate('/'); // Chuyển hướng sau khi đăng nhập thành công
+      } else {
+        message.error(response.message || 'Đã có lỗi xảy ra trong quá trình đăng nhập');
+      }
+    },
+    onError: (error) => {
+      message.error(error?.response?.data?.message || 'Lỗi đăng nhập. Vui lòng kiểm tra lại.');
+    },
+  });
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    mutation.mutate({ email, password }); // Gọi API đăng nhập
+  };
 
   useEffect(() => {
     const storedUserData = localStorage.getItem('userData');
@@ -28,16 +60,24 @@ const HeaderComponent = () => {
     localStorage.removeItem('userData');
     setUserData(null);
     setIsOpenPopup(false);
+    navigate('/')
   };
   const handleClose = () => {
     setIsOpenPopup(false); // Ẩn popover
   };
 
+
   const content = (
-    <div style={{ width: '170px', padding: '5px', borderRadius: '8px', }}>
-      <WrapperContentPopup onClick={() => { navigate('/profile-user');handleClose() }}>Information user</WrapperContentPopup>
-      <WrapperContentPopup onClick={() => { navigate('/myOrders'); handleClose() } }>Order of me</WrapperContentPopup>
-      <WrapperContentPopup onClick={handleSignOut} style={{ color: 'red', textAlign: 'center'}}>LOGOUT</WrapperContentPopup>
+    <div style={{ width: '180px', padding: '5px', borderRadius: '8px'}}>
+      <WrapperContentPopup onClick={() => { navigate('/profile-user'); handleClose() }}>Information user</WrapperContentPopup>
+      {userData?.user?.role === 'admin' && (
+        <WrapperContentPopup onClick={() => { navigate('/admin'); handleClose() }}>Management system</WrapperContentPopup>
+      )}
+      {userData?.user?.role === 'manager' && (
+        <WrapperContentPopup onClick={() => { navigate('/admin'); handleClose() }}>Management product</WrapperContentPopup>
+      )}
+      <WrapperContentPopup onClick={() => { navigate('/myOrders'); handleClose() }}>Order of me</WrapperContentPopup>
+      <WrapperContentPopup onClick={handleSignOut} style={{ color: 'red', textAlign: 'center' }}>LOGOUT</WrapperContentPopup>
     </div>
   );
 
@@ -82,39 +122,53 @@ const HeaderComponent = () => {
           onMouseLeave={() => setIsHovered(false)}
         >
           {userData ? (
-            <Popover content={content} trigger="click" open={isOpenPopup} >
+            <Popover content={content} trigger="click" open={isOpenPopup}>
               <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => setIsOpenPopup((prev) => !prev)}>
-              <AiOutlineUser style={{ fontSize: '3rem', marginRight: '10px' }} />
-              <SignInText >{userData.user.name}</SignInText>
-            </div>
+                <AiOutlineUser style={{ fontSize: '3rem', marginRight: '10px' }} />
+                <SignInText >{userData.user.name}</SignInText>
+              </div>
             </Popover>
           ) : (
             <>
-            <SignInText >SIGN IN / SIGN UP</SignInText>
-            {isHovered && (
-              <FormContainer>
-                <FormTitle>Sign in</FormTitle>
-                <Tabs>
-                  <Tab active>Sign in</Tab>
-                  <Tab onClick={()=>navigate('/signUp')}>Create an Account</Tab>
-                </Tabs>
-                <div>
-                  <label>Username or email *</label>
-                  <Input type="text" placeholder="Username" />
-                  <label>Password *</label>
-                  <Input type="password" placeholder="Password" />
-                  <LoginButton>LOGIN</LoginButton>
-                  <ForgotPasswordLink href="#">Lost your password?</ForgotPasswordLink>
-                </div>
-              </FormContainer>
-                )}
+              <SignInText >SIGN IN / SIGN UP</SignInText>
+              {isHovered && (
+                  <FormContainer onSubmit={handleLogin} >
+                  <FormTitle>Sign in</FormTitle>
+                  <Tabs>
+                    <Tab active>Sign in</Tab>
+                    <Tab onClick={() => navigate('/signUp')}>Create an Account</Tab>
+                  </Tabs>
+                    <div>
+                    <label>Username or email *</label>
+                    <Input
+                      type="text"
+                      placeholder="Username"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <label>Password *</label>
+                    <Input
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <LoginButton type='submit'>LOGIN</LoginButton>
+                    <ForgotPasswordLink href="#">Lost your password?</ForgotPasswordLink>
+                  </div>
+                </FormContainer>
+              )}
             </>
           )}
-            <IconsContainer>
-            <FaRegHeart style={{ fontSize: '2rem', cursor: 'pointer' }} onClick={() => navigate('/wishlist')} />
-            <TiShoppingCart style={{ fontSize: '2rem', cursor: 'pointer' }} onClick={()=> navigate('/order')} />
-            </IconsContainer>
-        </HeaderContainer>        
+          <IconsContainer>
+            <Badge size='small' count={1}>
+            <FaRegHeart style={{ fontSize: '2.3rem', cursor: 'pointer' }} onClick={() => navigate('/wishlist')} />
+            </Badge>
+            <Badge size='small' count={1}>
+            <TiShoppingCart style={{ fontSize: '2.7rem', cursor: 'pointer' }} onClick={() => navigate('/order')} />
+            </Badge>
+          </IconsContainer>
+        </HeaderContainer>
       </WrapperHeaderUnder>
 
     </div>

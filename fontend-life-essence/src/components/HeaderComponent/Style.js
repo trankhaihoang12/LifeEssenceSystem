@@ -67,10 +67,10 @@ export const SignInText = styled.div`
 
 export const IconsContainer = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 15px;
 `;
 
-export const FormContainer = styled.div`
+export const FormContainer = styled.form`
   position: absolute;
   top: 100%;
   right: 0;

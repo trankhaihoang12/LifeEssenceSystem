@@ -2,10 +2,16 @@ import React from 'react'
 import { AddToCartText, AddToCartWrapper, Card, CardContent, CartButton, CartIcon, Category, ImageWrapper, Price, ProductImage, ProductTitle, RatingWrapper } from './Style'
 import { Rate } from 'antd'
 import product_test from '../../assets/images/product-test.jpg';
+import { useNavigate } from 'react-router';
 
 const CardComponent = () => {
+    const navigate = useNavigate()
+
+    const handleDetailsProduct = () => {
+        navigate(`/details-product`)
+    }
   return (
-      <Card>
+      <Card onClick={ handleDetailsProduct}>
           <ImageWrapper>
               <ProductImage src={product_test} alt="product_test" />
           </ImageWrapper>

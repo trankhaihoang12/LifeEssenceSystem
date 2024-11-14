@@ -3,6 +3,7 @@ import { Container, AddProduct, ExportButton, WrapperTableHeader, WrapperTableDa
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FaPen, FaTrash } from 'react-icons/fa';
+import ModalComponent from '../ModalComponent/ModalComponent';
 
 const AdminProductComponent = () => {
     const [products, setProducts] = useState([
@@ -20,12 +21,20 @@ const AdminProductComponent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [isEditing, setIsEditing] = useState(false); // Trạng thái cho form chỉnh sửa
     const [editProduct, setEditProduct] = useState(null); // Dữ liệu sản phẩm cần chỉnh sửa
+    const [isModalOpen, setIsModalOpen] = useState(false); 
+    const [newProduct, setNewProduct] = useState({ name: '', price: '', rating: '', type: '', quantity: '' });
 
     const itemsPerPage = 5;
     const totalPages = Math.ceil(products.length / itemsPerPage);
 
     const handleAddProduct = () => {
-        alert('Thêm sản phẩm');
+        if (!newProduct.name || !newProduct.price || !newProduct.quantity) {
+            alert("Vui lòng điền đầy đủ thông tin.");
+            return;
+        }
+        setProducts([...products, { ...newProduct, id: Date.now() }]);
+        setNewProduct({ name: '', price: '', rating: '', type: '', quantity: '' }); // Reset form
+        setIsModalOpen(false); // Đóng modal
     };
 
     const handleExport = () => {
@@ -81,12 +90,51 @@ const AdminProductComponent = () => {
     return (
         <Container>
             <h1>Product Management</h1>
-            <AddProduct onClick={handleAddProduct}>
+            <AddProduct onClick={() => setIsModalOpen(true)}>
                 <FontAwesomeIcon icon={faPlus} size="4x" />
             </AddProduct>
             <ExportButton onClick={handleExport}>
                 Export Excel
             </ExportButton>
+            {/* Modal thêm sản phẩm */}
+            <ModalComponent
+                title="Thêm Sản Phẩm"
+                isOpen={isModalOpen}
+                onCancel={() => setIsModalOpen(false)}
+                footer={null}
+            >
+                <label>Tên Sản Phẩm:</label>
+                <WarraperInput
+                    type="text"
+                    value={newProduct.name}
+                    onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                />
+                <label>Giá:</label>
+                <WarraperInput
+                    type="number"
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                />
+                <label>Số lượng:</label>
+                <WarraperInput
+                    type="number"
+                    value={newProduct.quantity}
+                    onChange={(e) => setNewProduct({ ...newProduct, quantity: e.target.value })}
+                />
+                <label>Đánh giá:</label>
+                <WarraperInput
+                    type="number"
+                    value={newProduct.rating}
+                    onChange={(e) => setNewProduct({ ...newProduct, rating: e.target.value })}
+                />
+                <label>Loại:</label>
+                <WarraperInput
+                    type="text"
+                    value={newProduct.type}
+                    onChange={(e) => setNewProduct({ ...newProduct, type: e.target.value })}
+                />
+                <EditFormButton onClick={handleAddProduct}>Thêm Sản Phẩm</EditFormButton>
+            </ModalComponent>
 
             {/* Form chỉnh sửa sản phẩm */}
             {isEditing && (
