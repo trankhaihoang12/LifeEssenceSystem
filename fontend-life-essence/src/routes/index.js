@@ -92,7 +92,7 @@ export const routes = [
         page: NotFoundPage
     },
     {
-        path: 'details-order',
+        path: '/details-order',
         page: DetailsOderPage,
         isShowHeader: true,
         isShowFooter: true
