@@ -56,6 +56,7 @@ export const AddressCard = styled.div`
   h3 {
     font-size: 18px;
     font-weight: bold;
+    width: 300px;
 
   }
 

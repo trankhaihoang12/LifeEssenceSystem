@@ -126,3 +126,14 @@ export const ForgotPasswordLink = styled.a`
   text-align: center;
   margin-top: 10px;
 `;
+export const WrapperContentPopup = styled.div`
+  padding: 8px 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #24AEB1; /* Màu nền khi hover */
+  }
+`;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaEdit, FaMapMarkerAlt } from 'react-icons/fa';
 import { Container, SectionHeader, InfoSection, AddressSection, AddressCard } from './Style';
 import { useNavigate } from 'react-router';
@@ -6,7 +6,23 @@ import { useNavigate } from 'react-router';
 
 
 const Profile = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const storedUserData = localStorage.getItem('userData');
+    if (storedUserData) {
+      const parsedData = JSON.parse(storedUserData);
+      setUserData(parsedData);
+    } else {
+      navigate('/signIn');
+    }
+  }, [navigate]);
+
+  if (!userData) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div style={{ backgroundColor: '#E8F3FF', width: '100%', height: '800px', margin: 'auto', display: 'flex' }}>
       <div style={{ width: '1000px', height: '700px', backgroundColor: '#FFFFFF', margin: 'auto', display: 'flex', flexDirection: 'column', border: '1.5px solid #000', borderRadius: '10px' }}>
@@ -18,18 +34,18 @@ const Profile = () => {
               alt="Profile"
             />
           </div>
-          <div style={{ width: '850px', height: '150px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' , gap: '10px'}}>
-            <h1 style={{ margin: '0' }}>Nguyễn Tiến Mạnh</h1>
+          <div style={{ width: '850px', height: '150px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', gap: '10px' }}>
+            <h1 style={{ margin: '0' }}>{userData.user.name}</h1>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <FaMapMarkerAlt style={{ fontSize: '20px',marginRight: '5px', color: '#333' }} />
-              <h2 style={{ margin: '0'}}>Đà Nẵng, Việt Nam</h2>
+              <FaMapMarkerAlt style={{ fontSize: '20px', marginRight: '5px', color: '#333' }} />
+              <h2 style={{ margin: '0' }}>Đà Nẵng, Việt Nam</h2>
             </div>
           </div>
         </div>
         <Container>
           <SectionHeader>
             <h1 style={{ fontWeight: 'bold' }}>Personal Info</h1>
-            <button onClick={()=>navigate('/profile-upadate')} style={{ backgroundColor: '#ccc', border: 'none', padding: '10px 15px', borderRadius: '5px', cursor: 'pointer', color: '#000', fontSize: '1em' }}>
+            <button onClick={() => navigate('/profile-upadate')} style={{ backgroundColor: '#ccc', border: 'none', padding: '10px 15px', borderRadius: '5px', cursor: 'pointer', color: '#000', fontSize: '1em' }}>
               <FaEdit /> Edit
             </button>
           </SectionHeader>
@@ -42,10 +58,10 @@ const Profile = () => {
               <h2 style={{ fontWeight: 'bold', fontSize: '1.5em' }}>Since Member:</h2>
             </div>
             <div style={{ width: '30%' }}>
-              <h2 style={{ fontWeight: '400', fontSize: '1.5em' }}>Trần Khải Hoàng</h2>
-              <h2 style={{ fontWeight: '400', fontSize: '1.5em' }}>0708146105</h2>
-              <h2 style={{ fontWeight: '400', fontSize: '1.5em' }}>hoang2012@gmail.com</h2>
-              <h2 style={{ fontWeight: '400', fontSize: '1.5em' }}>DaNang, VietNam</h2>
+              <h2 style={{ fontWeight: '400', fontSize: '1.5em' }}>{userData.user.name}</h2>
+              <h2 style={{ fontWeight: '400', fontSize: '1.5em' }}>{userData.user.phone || " Chưa có SDT"}</h2>
+              <h2 style={{ fontWeight: '400', fontSize: '1.5em' }}>{userData.user.email}</h2>
+              <h2 style={{ fontWeight: '400', fontSize: '1.5em' }}>{userData.user.default_address || "Chưa có địa chỉ"}</h2>
               <h2 style={{ fontWeight: '400', fontSize: '1.5em' }}>08 Dec, 2023</h2>
             </div>
           </InfoSection>
@@ -63,9 +79,9 @@ const Profile = () => {
                     <FaEdit /> Edit
                   </button>
                 </div>
-                <p style={{ fontWeight: '400', fontSize: '1.3em' }}>Hoàng Trần</p>
-                <p style={{ fontWeight: '400', fontSize: '1.3em' }}>78/10 Lê Thanh Nghị , Hoà Cường Bắc , Hải Châu , TP Đà Nẵng</p>
-                <p style={{ fontWeight: '400', fontSize: '1.3em' }}>Phone (+78) 1234 56789</p>
+                <p style={{ fontWeight: '400', fontSize: '1.3em' }}>{userData.user.name}</p>
+                <p style={{ fontWeight: '400', fontSize: '1.3em' }}>{userData.user.default_address || " Chưa có địa chỉ"}</p>
+                <p style={{ fontWeight: '400', fontSize: '1.3em' }}>{userData.user.phone ||" Chưa có sdt"}</p>
               </AddressCard>
             </div>
             <div style={{ width: '100%', height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid #000', borderRadius: '10px' }}>

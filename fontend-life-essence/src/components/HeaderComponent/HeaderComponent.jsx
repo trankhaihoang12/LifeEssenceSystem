@@ -1,17 +1,48 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaGoogle, FaTwitter } from 'react-icons/fa';
 import { RiCameraFill, RiFacebookFill } from "react-icons/ri";
+import { AiOutlineUser } from "react-icons/ai";
 import { LuSearch } from "react-icons/lu";
 import { FaRegHeart } from "react-icons/fa6";
 import { TiShoppingCart } from 'react-icons/ti';
 import Logo from '../../assets/images/Logo_Essence.png'
 import { useNavigate } from 'react-router-dom';
-import { ForgotPasswordLink, FormContainer, FormTitle, HeaderContainer, IconsContainer, Input, LoginButton, SignInText, Tab, Tabs, WrapperButton, WrapperHeaderOn, WrapperHeaderUnder, WrapperInput, WrapperItem, WrapperLogo } from './Style';
+import { ForgotPasswordLink, FormContainer, FormTitle, HeaderContainer, IconsContainer, Input, LoginButton, SignInText, Tab, Tabs, WrapperButton, WrapperContentPopup, WrapperHeaderOn, WrapperHeaderUnder, WrapperInput, WrapperItem, WrapperLogo } from './Style';
+import { Popover } from 'antd';
 
 
 const HeaderComponent = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [isOpenPopup, setIsOpenPopup] = useState(false)
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUserData = localStorage.getItem('userData');
+    if (storedUserData) {
+      setUserData(JSON.parse(storedUserData));
+    }
+  }, []);
+
+  const handleSignOut = () => {
+    localStorage.removeItem('userData');
+    setUserData(null);
+    setIsOpenPopup(false);
+  };
+  const handleClose = () => {
+    setIsOpenPopup(false); // Ẩn popover
+  };
+
+  const content = (
+    <div style={{ width: '170px', padding: '5px', borderRadius: '8px', }}>
+      <WrapperContentPopup onClick={() => { navigate('/profile-user');handleClose() }}>Information user</WrapperContentPopup>
+      <WrapperContentPopup onClick={() => { navigate('/myOrders'); handleClose() } }>Order of me</WrapperContentPopup>
+      <WrapperContentPopup onClick={handleSignOut} style={{ color: 'red', textAlign: 'center'}}>LOGOUT</WrapperContentPopup>
+    </div>
+  );
+
+
+
   return (
     <div>
       <WrapperHeaderOn>
@@ -50,33 +81,40 @@ const HeaderComponent = () => {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <SignInText >SIGN IN / SIGN UP</SignInText>
-          <IconsContainer>
-            <FaRegHeart style={{ fontSize: '2rem' }} />
-            <TiShoppingCart style={{ fontSize: '2rem' }} />
-          </IconsContainer>
-
-          {isHovered && (
-            <FormContainer>
-              <FormTitle>Sign in</FormTitle>
-              <Tabs>
-                <Tab active>Sign in</Tab>
-                <Tab onClick={()=>navigate('/signUp')}>Create an Account</Tab>
-              </Tabs>
-              <div>
-                <label>Username or email *</label>
-                <Input type="text" placeholder="Username" />
-                <label>Password *</label>
-                <Input type="password" placeholder="Password" />
-                <LoginButton>LOGIN</LoginButton>
-                <ForgotPasswordLink href="#">Lost your password?</ForgotPasswordLink>
-              </div>
-            </FormContainer>
+          {userData ? (
+            <Popover content={content} trigger="click" open={isOpenPopup} >
+              <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => setIsOpenPopup((prev) => !prev)}>
+              <AiOutlineUser style={{ fontSize: '3rem', marginRight: '10px' }} />
+              <SignInText >{userData.user.name}</SignInText>
+            </div>
+            </Popover>
+          ) : (
+            <>
+            <SignInText >SIGN IN / SIGN UP</SignInText>
+            {isHovered && (
+              <FormContainer>
+                <FormTitle>Sign in</FormTitle>
+                <Tabs>
+                  <Tab active>Sign in</Tab>
+                  <Tab onClick={()=>navigate('/signUp')}>Create an Account</Tab>
+                </Tabs>
+                <div>
+                  <label>Username or email *</label>
+                  <Input type="text" placeholder="Username" />
+                  <label>Password *</label>
+                  <Input type="password" placeholder="Password" />
+                  <LoginButton>LOGIN</LoginButton>
+                  <ForgotPasswordLink href="#">Lost your password?</ForgotPasswordLink>
+                </div>
+              </FormContainer>
+                )}
+            </>
           )}
-        </HeaderContainer>
-
-
-        
+            <IconsContainer>
+            <FaRegHeart style={{ fontSize: '2rem', cursor: 'pointer' }} onClick={() => navigate('/wishlist')} />
+            <TiShoppingCart style={{ fontSize: '2rem', cursor: 'pointer' }} onClick={()=> navigate('/order')} />
+            </IconsContainer>
+        </HeaderContainer>        
       </WrapperHeaderUnder>
 
     </div>
