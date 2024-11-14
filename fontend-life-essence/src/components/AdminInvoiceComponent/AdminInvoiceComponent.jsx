@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Header, CardContainer, Card, SearchContainer, TableContainer, Status, TrashIcon, DropdownMenu, DropdownItem, WrapperPagination } from './Style';
 
+
 const customerData = [
   { id: 'TTB30280001', name: 'Neil Collins', email: 'ryan.dyer@toner.com', country: 'Brazil', date: '13 May, 2022 10:45 AM', amount: '$415.96', status: 'Paid' },
   { id: 'TTB30280002', name: 'Alfred Hurst', email: 'alfredH@toner.com', country: 'Brazil', date: '29 Dec, 2022 8:34 AM', amount: '$875', status: 'Unpaid' },
@@ -22,7 +23,9 @@ const customerData = [
 
 const AdminInvoiceComponent = () => {
   const [currentPage, setCurrentPage] = useState(1);
-const [selectedIds, setSelectedIds] = useState([]); // Track selected customer IDs
+
+  const [selectedIds, setSelectedIds] = useState([]); // Track selected customer IDs
+
   const [isMenuOpen, setIsMenuOpen] = useState(null); // Track which menu is open
   const customersPerPage = 5;
   const totalPages = Math.ceil(customerData.length / customersPerPage);
@@ -109,7 +112,7 @@ const [selectedIds, setSelectedIds] = useState([]); // Track selected customer I
           <thead>
             <tr>
               <th>
-<input 
+                <input 
                   type="checkbox" 
                   onChange={handleSelectAll} 
                   checked={selectedIds.length === currentCustomers.length} 
@@ -185,3 +188,4 @@ const [selectedIds, setSelectedIds] = useState([]); // Track selected customer I
 };
 
 export default AdminInvoiceComponent;
+

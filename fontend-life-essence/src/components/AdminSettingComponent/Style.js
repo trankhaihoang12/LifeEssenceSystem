@@ -113,7 +113,7 @@ export const PersonalInfo = styled(SectionContainer)`
     }
 
     p {
-font-size: 16px; /* Giảm kích thước chữ */
+        font-size: 16px; /* Giảm kích thước chữ */
         color: #555;
         margin-bottom: 10px;
 
@@ -235,7 +235,7 @@ export const ApplicationNotifications = styled.div`
     }
 
     h6 {
-font-size: 18px; /* Giảm kích thước chữ */
+        font-size: 18px; /* Giảm kích thước chữ */
         color: #555;
         margin-bottom: 12px; /* Giảm khoảng cách */
     }

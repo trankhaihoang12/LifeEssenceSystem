@@ -121,7 +121,7 @@ export const TableContainer = styled.div`
 
     th {
       font-weight: 600;  /* Đậm chữ ở tiêu đề */
-      background-color: #4DB6AC;  /* Màu nền giống thanh điều hướng */
+      background-color: #24AEB1;
       color: white;  /* Màu chữ trắng */
       font-size: 14px;  /* Kích thước chữ trong tiêu đề */
       border-bottom: 1px solid #e5e7eb;
@@ -149,6 +149,7 @@ export const TableContainer = styled.div`
     }
   }
 `;
+
 export const WrapperPagination = styled.div`
   display: flex;
   justify-content: space-between;
@@ -264,3 +265,5 @@ export const DropdownItem = styled.div`
     border-bottom: 1px solid #ced4da;
   }
 `;
+
+

@@ -19,6 +19,7 @@ export const WrapperButton = styled.button`
   cursor: pointer;
 `;
 
+
 export const WrapperContainer = styled.div`
   padding: 20px;
   background-color: #f7f9fc;
@@ -57,7 +58,8 @@ export const WrapperTableHeader = styled.th`
   font-weight: 600;
   color: white; /* Màu chữ trắng */
   text-align: left;
-  background-color: #4DB6AC; /* Màu nền giống với thanh điều hướng */
+  background-color: #24AEB1; 
+  
   font-size: 14px;
   border-bottom: 1px solid #e5e7eb;
   white-space: nowrap;
@@ -157,5 +159,55 @@ export const ExportButton = styled.button`
   &:hover {
       background-color: #218838; /* Màu khi hover */
   }
+`;
+export const EditFormContainer = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+`;
+
+export const EditForm = styled.div`
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+export const Input = styled.input`
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+`;
+
+export const EditFormButton = styled.button`
+    padding: 10px 15px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+`;
+
+export const CancelButton = styled.button`
+    padding: 10px 15px;
+    background: #FF5733;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 `;
 

@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { Container,ButtonGroup, WrapperTable, WrapperTableHeader, WrapperTableData, WrapperTableRow, StatusBadge, WrapperPagination, ExportButton, AddButton } from './Style';
 import { FaPlus, FaPen, FaTrash } from 'react-icons/fa';
 import { LuSearch } from 'react-icons/lu';
-
 const AdminOrdersComponent = () => {
   const [searchTerm, setSearchTerm] = useState('');
-
   const orders = [
     { id: '5146845648465', customerName: 'Quynh Nhu', date: '2/19/24 11:26 PM', paymentStatus: 'Paid', amount: '$120.00', paymentMethod: 'VNPAY', orderStatus: 'Shipped' },
     { id: '5467819467348', customerName: 'Xuan Quyen', date: '5/7/24 04:26 PM', paymentStatus: 'Paid', amount: '$5103.00', paymentMethod: 'PayPal', orderStatus: 'Processing' },
@@ -17,9 +15,11 @@ const AdminOrdersComponent = () => {
     { id: '043910464504', customerName: 'Hoang Mai', date: '8/2/24 11:26 PM', paymentStatus: 'COD', amount: '$156.00', paymentMethod: 'PayPal', orderStatus: 'Delivered' },
   ];
 
+
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 10;
   const totalPages = Math.ceil(orders.length / ordersPerPage);
+
 
   const handleAddOrder = () => {
     alert('Add Order');
@@ -28,23 +28,19 @@ const AdminOrdersComponent = () => {
   const handleExport = () => {
     alert('Xuất file Excel');
   };
-
   const handleEditOrder = (id) => {
     alert(`Edit order with ID: ${id}`);
   };
-
   const handleDeleteOrder = (id) => {
     alert(`Delete order with ID: ${id}`);
   };
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-
   const filteredOrders = orders.filter(order =>
     order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     order.id.includes(searchTerm)
   );
-
 
 
   return (
@@ -60,7 +56,6 @@ const AdminOrdersComponent = () => {
           Export Excel
         </ExportButton>
       </ButtonGroup>
-
       {/* Thanh tìm kiếm đã được cập nhật */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', borderRadius: '20px', width: '750px', height: '44px', marginBottom: '20px' }}>
@@ -93,7 +88,6 @@ const AdminOrdersComponent = () => {
           </button>
         </div>
       </div>
-
       <WrapperTable>
         <thead>
           <tr>
@@ -129,7 +123,6 @@ const AdminOrdersComponent = () => {
           ))}
         </tbody>
       </WrapperTable>
-
       <WrapperPagination>
         <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Previous</button>
         <div className="page-number">
@@ -148,5 +141,4 @@ const AdminOrdersComponent = () => {
     </Container>
   );
 };
-
 export default AdminOrdersComponent;
