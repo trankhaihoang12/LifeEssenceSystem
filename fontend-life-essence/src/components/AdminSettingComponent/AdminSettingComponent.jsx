@@ -1,10 +1,32 @@
 import React, { useState } from 'react';
 import { FaUser, FaCreditCard, FaLock, FaBell, FaMoneyBillWave, FaMobileAlt, FaPaypal } from 'react-icons/fa';
-import { Container, Row, Col, Sidebar, NavLink, Content, ProfileCard, PersonalInfo, PaymentMethod, PaymentButton, Method, ChangePasswordForm, Input, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, ApplicationNotifications } from './Style';
 
+import {
+    Container,
+    Row,
+    Col,
+    Sidebar,
+    NavLink,
+    Content,
+    ProfileCard,
+    PersonalInfo,
+    PaymentMethod,
+    PaymentButton,
+    Method,
+    ChangePasswordForm,
+    Input,
+    Button,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    ApplicationNotifications // Import the new styled component
+} from './Style';
 
 function AdminSettingComponent() {
     const [activeContent, setActiveContent] = useState('paymentMethod');
+    const [isAddingPaymentMethod, setIsAddingPaymentMethod] = useState(false);
     const [paymentMethodName, setPaymentMethodName] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [notificationSettings, setNotificationSettings] = useState({
@@ -61,7 +83,8 @@ function AdminSettingComponent() {
                                 <FaLock /> Change Password
                             </NavLink>
                             <NavLink onClick={() => showContent('applicationNotifications')} active={activeContent === 'applicationNotifications'}>
-<FaBell /> Application Notifications
+
+                                <FaBell /> Application Notifications
                             </NavLink>
                         </nav>
                     </Sidebar>
@@ -73,7 +96,8 @@ function AdminSettingComponent() {
                                 <ProfileCard className="profile-card text-center">
                                     <img
                                         src="https://storage.googleapis.com/a1aa/image/oaIxHgDva361HdGQS2Refj7MnUYF9X6RRRNhPVm8mGkdHHuTA.jpg"
-                                        alt="Beautiful landscape"
+
+                                        alt="Profile picture of a person"
                                     />
                                     <h5>VoVanLan</h5>
                                     <p>I am Singer</p>
@@ -112,7 +136,8 @@ function AdminSettingComponent() {
                         )}
                         {activeContent === 'changePassword' && (
                             <ChangePasswordForm id="changePassword">
-<h5>Change Password</h5>
+
+                                <h5>Change Password</h5>
                                 <form>
                                     <Input type="password" id="oldPassword" placeholder="Old password*" required />
                                     <Input type="password" id="newPassword" placeholder="New password*" required />
@@ -156,7 +181,7 @@ function AdminSettingComponent() {
                                     <p>Open the activity app on the watch and scroll down to the bottom and tap on "Weekly Summary".</p>
                                 </label>
                                 <h5>Notification from Us</h5>
-<h6>Receive the latest news, update, and industry tutorials for us:</h6>
+                                <h6>Receive the latest news, update, and industry tutorials for us:</h6>
                                 <label>
                                     <input 
                                         type="checkbox" 
@@ -205,8 +230,8 @@ function AdminSettingComponent() {
                                         type="radio" 
                                         name="commentsNotifications" 
                                         value="mentionsOnly" 
-                                        checked={notificationSettings.commentsNotifications === 'mentionsOnly'}
-onChange={handleNotificationChange} 
+                                        checked={notificationSettings.commentsNotifications === 'mentionsOnly'} 
+                                        onChange={handleNotificationChange} 
                                     />
                                     Mentions only
                                 </label>
