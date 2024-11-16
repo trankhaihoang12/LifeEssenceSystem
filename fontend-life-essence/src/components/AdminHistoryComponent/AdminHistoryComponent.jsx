@@ -1,16 +1,7 @@
 import React from 'react';
 import { FaDownload } from 'react-icons/fa';
-import { 
-  Container, 
-  Header, 
-  Title, 
-  Button, 
-  ChartContainer, 
-  SummaryCard, 
-  ChartWrapper, 
-  SideStats, 
-  TableContainer 
-} from './Style';
+import { Container, Header, Title, Button, ChartContainer, SummaryCard, ChartWrapper, SideStats, TableContainer } from './Style';
+
 import Chart from 'react-apexcharts';
 
 const AdminHistoryComponent = () => {

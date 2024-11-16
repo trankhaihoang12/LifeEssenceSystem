@@ -1,17 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  Header,
-  CardContainer,
-  Card,
-  SearchContainer,
-  TableContainer,
-  Status,
-  TrashIcon,
-  DropdownMenu,
-  DropdownItem,
-  WrapperPagination
-} from './Style';
+import { Container, Header, CardContainer, Card, SearchContainer, TableContainer, Status, TrashIcon, DropdownMenu, DropdownItem, WrapperPagination } from './Style';
 
 const customerData = [
   { id: 'TTB30280001', name: 'Neil Collins', email: 'ryan.dyer@toner.com', country: 'Brazil', date: '13 May, 2022 10:45 AM', amount: '$415.96', status: 'Paid' },

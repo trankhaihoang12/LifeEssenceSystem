@@ -1,31 +1,10 @@
 import React, { useState } from 'react';
 import { FaUser, FaCreditCard, FaLock, FaBell, FaMoneyBillWave, FaMobileAlt, FaPaypal } from 'react-icons/fa';
-import {
-    Container,
-    Row,
-    Col,
-    Sidebar,
-    NavLink,
-    Content,
-    ProfileCard,
-    PersonalInfo,
-    PaymentMethod,
-    PaymentButton,
-    Method,
-    ChangePasswordForm,
-    Input,
-    Button,
-    Modal,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    ApplicationNotifications // Import the new styled component
-} from './Style';
+import { Container, Row, Col, Sidebar, NavLink, Content, ProfileCard, PersonalInfo, PaymentMethod, PaymentButton, Method, ChangePasswordForm, Input, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, ApplicationNotifications } from './Style';
+
 
 function AdminSettingComponent() {
     const [activeContent, setActiveContent] = useState('paymentMethod');
-    const [isAddingPaymentMethod, setIsAddingPaymentMethod] = useState(false);
     const [paymentMethodName, setPaymentMethodName] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [notificationSettings, setNotificationSettings] = useState({
@@ -94,7 +73,7 @@ function AdminSettingComponent() {
                                 <ProfileCard className="profile-card text-center">
                                     <img
                                         src="https://storage.googleapis.com/a1aa/image/oaIxHgDva361HdGQS2Refj7MnUYF9X6RRRNhPVm8mGkdHHuTA.jpg"
-                                        alt="Profile picture of a person"
+                                        alt="Beautiful landscape"
                                     />
                                     <h5>VoVanLan</h5>
                                     <p>I am Singer</p>

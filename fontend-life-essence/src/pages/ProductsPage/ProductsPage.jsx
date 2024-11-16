@@ -16,30 +16,29 @@ import {
   ProductImage,
   ProductCategory,
   ProductName,
-  CurrentPrice,
-} from "./Style";
+  CurrentPrice} from "./Style";
 
 const HealthStore = () => {
   const navigate = useNavigate();
-  const [setOpenCategory] = useState(null);
+  const [, setOpenCategory] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
 
   const products = [
-    { id: 1, name: "Product 1", rating: 4.8, category: "Health", price: 29.99 },
-    { id: 2, name: "Product 2", rating: 4.2, category: "Fitness", price: 19.99 },
-    { id: 2, name: "Product 2", rating: 4.2, category: "Fitness", price: 19.99 },
-    { id: 2, name: "Product 2", rating: 4.2, category: "Fitness", price: 19.99 },
-    { id: 2, name: "Product 2", rating: 4.2, category: "Fitness", price: 19.99 },
-    { id: 2, name: "Product 2", rating: 4.2, category: "Fitness", price: 19.99 },
-    { id: 2, name: "Product 2", rating: 4.2, category: "Fitness", price: 19.99 },
-    { id: 2, name: "Product 2", rating: 4.2, category: "Fitness", price: 19.99 },
-    { id: 2, name: "Product 2", rating: 4.2, category: "Fitness", price: 19.99 },
-    { id: 2, name: "Product 2", rating: 4.2, category: "Fitness", price: 19.99 },
-    { id: 2, name: "Product 2", rating: 4.2, category: "Fitness", price: 19.99 },
-    { id: 2, name: "Product 2", rating: 4.2, category: "Fitness", price: 19.99 },
-    { id: 2, name: "Product 2", rating: 4.2, category: "Fitness", price: 19.99 },
-    { id: 2, name: "Product 2", rating: 4.2, category: "Fitness", price: 19.99 },
+    { id: 1, name: "Omega-3 Fish Oil", rating: 4.8, category: "Cardiovascular Support", price: 55.00 },
+    { id: 2, name: "Collagen Plus Vitamin C", rating: 5.0, category: "Anti-Aging and Skin Health", price: 45.00 },
+    { id: 3, name: "Vitamin D3", rating: 4.5, category: "Vitamins and Minerals", price: 35.00 },
+    { id: 4, name: "Calcium Magnesium Zinc", rating: 4.0, category: "Vitamins and Minerals", price: 25.65 },
+    { id: 5, name: "Glucosamine Chondroitin MSM", rating: 5.0, category: "Joint and Bone Support", price: 25.35 },
+    { id: 6, name: "Probiotic 10", rating: 4.0, category: "Digestive Support", price: 19.99 },
+    { id: 7, name: "Vitamin C", rating: 4.5, category: "Vitamins and Minerals", price: 20.05 },
+    { id: 8, name: "Collagen Plus Vitamin C", rating: 4.2, category: "Anti-Aging and Skin Health", price: 20.00 },
+    { id: 9, name: "Biotin", rating: 4.5, category: "Anti-Aging and Skin Health", price: 40.00 },
+    { id: 10, name: "Melatonin", rating: 5.0, category: "Sleep and Nervous System Support", price: 30.05 },
+    { id: 11, name: "Coenzyme Q10", rating: 2.0, category: "Cardiovascular Support", price: 15.99 },
+    { id: 12, name: "Magnesium", rating: 4.2, category: "Sleep and Nervous System Support", price: 19.95 },
+    { id: 12, name: "Multivitamin for Men", rating: 5.0, category: "Energy and Sexual Health", price: 39.99 },
+    { id: 13, name: "Biotin 10,000 mcg", rating: 3.0, category: "Hair and Nail Strengthening", price: 29.99 },
     // Add other products here
   ];
 
@@ -76,7 +75,7 @@ const HealthStore = () => {
   return (
     <PageContainer>
       <Sidebar>
-        <h1>Logo</h1>
+        <h1>Product Category</h1>
         <CategoryList>
           <CategoryItem onClick={toggleSubMenu}>
             Vitamin & Khoáng chất {isSubMenuOpen ? <ChevronUp /> : <ChevronDown />}
@@ -88,6 +87,10 @@ const HealthStore = () => {
           </SubMenu>
           <CategoryItem onClick={() => toggleCategory("Chăm sóc tóc")}>Chăm sóc tóc</CategoryItem>
           <CategoryItem onClick={() => toggleCategory("Tim mạch")}>Tim mạch</CategoryItem>
+          <CategoryItem onClick={() => toggleCategory("Tiểu đường")}>Tiểu đường</CategoryItem>
+          <CategoryItem onClick={() => toggleCategory("Tiểu đường")}>Tiểu đường</CategoryItem>
+          <CategoryItem onClick={() => toggleCategory("Tiểu đường")}>Tiểu đường</CategoryItem>
+          <CategoryItem onClick={() => toggleCategory("Tiểu đường")}>Tiểu đường</CategoryItem>
           <CategoryItem onClick={() => toggleCategory("Tiểu đường")}>Tiểu đường</CategoryItem>
         </CategoryList>
       </Sidebar>
