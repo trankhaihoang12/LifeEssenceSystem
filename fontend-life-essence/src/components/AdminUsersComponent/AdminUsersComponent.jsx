@@ -1,26 +1,53 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaPen, FaTrash } from 'react-icons/fa';
 import { ExportButton, StatusBadge, WrapperButton, WrapperContainer, WrapperHeader, WrapperInput, WrapperPagination, WrapperTable, WrapperTableData, WrapperTableHeader, WrapperTableRow } from './Style';
 import { LuSearch } from 'react-icons/lu';
 import { EditFormContainer, EditForm, Input, EditFormButton, CancelButton } from './Style'; // Thêm vào các styled-component cho form chỉnh sửa
+import * as UserService from '../../services/UserService'
 
 const AdminUsersComponnent = () => {
+    const [users , setUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [showEditForm, setShowEditForm] = useState(false); // State để hiển thị form chỉnh sửa
     const [editUser, setEditUser] = useState(null); // Lưu thông tin người dùng đang chỉnh sửa
 
-    const users = [
-        { id: 1, name: 'Huynh Nhu', username: '@nhuhuynh', status: 'Paid', orders: 22, email: 'nhuhuynh@gmail.com', joinDate: '25/01/2023', country: 'Đà Nẵng' },
-        { id: 2, name: 'Nguyen Manh', username: '@Manh123', status: 'Active', orders: 6, email: 'manh123@gmail.com', joinDate: '12/04/2024', country: 'Quảng Bình' },
-        { id: 3, name: 'Nguyen Hoang', username: '@Hoang123', status: 'Pending', orders: 2, email: 'hoang123@gmail.com', joinDate: '16/07/2023', country: 'Hà Nội' },
-        { id: 4, name: 'Mai Anh', username: '@MaiAnh', status: 'Active', orders: 8, email: 'maianh@gmail.com', joinDate: '20/11/2023', country: 'TP. HCM' },
-        { id: 5, name: 'Linh Ngoc', username: '@LinhNgoc', status: 'Paid', orders: 15, email: 'linhngoc@gmail.com', joinDate: '10/02/2024', country: 'Cần Thơ' },
-        { id: 6, name: 'Trang Tien', username: '@TrangTien', status: 'Active', orders: 5, email: 'trangtien@gmail.com', joinDate: '18/03/2023', country: 'Bình Dương' },
-    ];
-
     const [currentPage, setCurrentPage] = useState(1);
     const usersPerPage = 10;
     const totalPages = Math.ceil(users.length / usersPerPage);
+
+    const getToken = () => {
+        const storedUserData = localStorage.getItem('userData');
+        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+        return parsedUserData ? parsedUserData.token : null;
+    };
+useEffect(() => {
+    const token = getToken();
+
+    if (token) {
+        const fetchUsers = async () => {
+            try {
+                const fetchedUsers = await UserService.getAllUser(token);
+                console.log("Dữ liệu API trả về:", fetchedUsers);
+
+                // Chỉ đặt state khi fetchedUsers.data là mảng
+                if (Array.isArray(fetchedUsers.data)) {
+                    setUsers(fetchedUsers.data);
+                } else {
+                    console.error("Dữ liệu API không phải là mảng:", fetchedUsers.data);
+                    setUsers([]); // Đặt thành mảng rỗng nếu có lỗi
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy danh sách người dùng:", error);
+                setUsers([]); // Đặt thành mảng rỗng nếu có lỗi
+            }
+        };
+
+        fetchUsers();
+    } else {
+        console.error("Không tìm thấy token trong localStorage.");
+    }
+}, []);
+
 
     const handleExport = () => {
         alert('Xuất file Excel');
@@ -31,9 +58,29 @@ const AdminUsersComponnent = () => {
         setShowEditForm(true); // Hiển thị form chỉnh sửa
     };
 
-    const handleDelete = (id) => {
-        alert(`Delete user with id: ${id}`);
+    const handleDelete = async (id) => {
+        const token = getToken(); // Lấy token từ localStorage
+        if (!token) {
+            console.error("Token không tồn tại, không thể xóa user.");
+            return;
+        }
+
+        if (window.confirm("Bạn có chắc chắn muốn xóa người dùng này không?")) {
+            try {
+                // Gọi API deleteUser từ UserService
+                const response = await UserService.deleteUser(id, token);
+                console.log("Xóa thành công:", response);
+
+                // Cập nhật lại danh sách người dùng sau khi xóa
+                setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+                alert("Người dùng đã được xóa thành công!");
+            } catch (error) {
+                console.error("Lỗi khi xóa người dùng:", error);
+                alert("Có lỗi xảy ra khi xóa người dùng.");
+            }
+        }
     };
+
 
     const handleSelectAll = (e) => {
         if (e.target.checked) {
@@ -62,10 +109,34 @@ const AdminUsersComponnent = () => {
         currentPage * usersPerPage
     );
 
-    const handleSaveEdit = () => {
-        alert(`User with id ${editUser.id} updated.`);
-        setShowEditForm(false); // Đóng form chỉnh sửa sau khi lưu
+    const handleSaveEdit = async () => {
+        const token = getToken(); // Lấy token từ localStorage
+        if (!token) {
+            console.error("Token không tồn tại, không thể cập nhật user.");
+            return;
+        }
+
+        try {
+            // Gọi API updateUser từ UserService
+            const updatedUser = await UserService.updateUser(editUser.id, editUser, token);
+            
+
+            setUsers((prevUsers) =>
+                prevUsers.map((user) =>
+                    user.id === editUser.id ? { ...user, ...updatedUser.user } : user
+                )
+            );
+
+
+            setShowEditForm(false); // Đóng form chỉnh sửa
+            setEditUser(null); // Xóa thông tin user đang chỉnh sửa
+        } catch (error) {
+            console.error("Lỗi khi cập nhật user:", error);
+        }
     };
+    
+
+
 
     const handleCancelEdit = () => {
         setShowEditForm(false); // Đóng form nếu người dùng hủy
@@ -94,24 +165,57 @@ const AdminUsersComponnent = () => {
                 <EditFormContainer>
                     <EditForm>
                         <h3>Edit User</h3>
-                        <Input 
-                            type="text" 
-                            value={editUser?.name || ''} 
-                            onChange={(e) => setEditUser({ ...editUser, name: e.target.value })} 
-                            placeholder="Enter name" 
+                        <Input
+                            type="text"
+                            value={editUser?.name || ''}
+                            onChange={(e) => setEditUser({ ...editUser, name: e.target.value })}
+                            placeholder="Enter name"
                         />
-                        <Input 
-                            type="text" 
-                            value={editUser?.email || ''} 
-                            onChange={(e) => setEditUser({ ...editUser, email: e.target.value })} 
-                            placeholder="Enter email" 
+                        <Input
+                            type="email"
+                            value={editUser?.email || ''}
+                            onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
+                            placeholder="Enter email"
                         />
-                        {/* Các input khác tương tự */}
+                        <Input
+                            type="text"
+                            value={editUser?.phone || ''}
+                            onChange={(e) => setEditUser({ ...editUser, phone: e.target.value })}
+                            placeholder="Enter phone number"
+                        />
+                        <Input
+                            type="text"
+                            value={editUser?.default_address || ''}
+                            onChange={(e) => setEditUser({ ...editUser, default_address: e.target.value })}
+                            placeholder="Enter address"
+                        />
+                        <div>
+                            <label htmlFor="role">Role</label>
+                            <select
+                                id="role"
+                                value={editUser?.role || ''}
+                                onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
+                                style={{
+                                    width: '100%',
+                                    padding: '8px',
+                                    marginBottom: '15px',
+                                    borderRadius: '5px',
+                                    border: '1px solid #ccc',
+                                }}
+                            >
+                                <option value="">Select Role</option>
+                                <option value="user">User</option>
+                                <option value="manager">Manager</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+
                         <div>
                             <EditFormButton onClick={handleSaveEdit}>Save</EditFormButton>
                             <CancelButton onClick={handleCancelEdit}>Cancel</CancelButton>
                         </div>
                     </EditForm>
+
                 </EditFormContainer>
             )}
 
@@ -127,10 +231,11 @@ const AdminUsersComponnent = () => {
                         </WrapperTableHeader>
                         <WrapperTableHeader>Name</WrapperTableHeader>
                         <WrapperTableHeader>Status</WrapperTableHeader>
-                        <WrapperTableHeader>Order</WrapperTableHeader>
-                        <WrapperTableHeader>Email address</WrapperTableHeader>
+                        <WrapperTableHeader>Phone</WrapperTableHeader>
+                        <WrapperTableHeader>Email </WrapperTableHeader>
+                        <WrapperTableHeader>Role </WrapperTableHeader>
                         <WrapperTableHeader>Join On</WrapperTableHeader>
-                        <WrapperTableHeader>Country</WrapperTableHeader>
+                        <WrapperTableHeader>Address</WrapperTableHeader>
                         <WrapperTableHeader>Actions</WrapperTableHeader>
                     </tr>
                 </thead>
@@ -144,12 +249,13 @@ const AdminUsersComponnent = () => {
                                     onChange={() => handleSelectUser(user.id)}
                                 />
                             </WrapperTableData>
-                            <WrapperTableData>{user.name} <small>{user.username}</small></WrapperTableData>
+                            <WrapperTableData>{user.name}</WrapperTableData>
                             <WrapperTableData><StatusBadge status={user.status}>{user.status}</StatusBadge></WrapperTableData>
-                            <WrapperTableData>{user.orders}</WrapperTableData>
+                            <WrapperTableData>{user.phone}</WrapperTableData>
                             <WrapperTableData>{user.email}</WrapperTableData>
-                            <WrapperTableData>{user.joinDate}</WrapperTableData>
-                            <WrapperTableData>{user.country}</WrapperTableData>
+                            <WrapperTableData>{user.role}</WrapperTableData>
+                            <WrapperTableData>{user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}</WrapperTableData>
+                            <WrapperTableData>{user.default_address}</WrapperTableData>
                             <WrapperTableData>
                                 <FaPen onClick={() => handleEdit(user)} style={{ cursor: 'pointer', color: '#6366F1' }} />
                                 <FaTrash onClick={() => handleDelete(user.id)} style={{ cursor: 'pointer', color: '#E53E3E', marginLeft: '8px' }} />

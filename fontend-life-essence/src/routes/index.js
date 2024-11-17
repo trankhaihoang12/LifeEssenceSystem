@@ -57,7 +57,7 @@ export const routes = [
 
     },
     {
-        path: '/details-product',
+        path: '/details-product/:id',
         page: DetailsProductPage,
         isShowHeader: true,
         isShowFooter: true

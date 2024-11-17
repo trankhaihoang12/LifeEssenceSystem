@@ -1,40 +1,162 @@
-import React, { useState } from 'react';
-import { Container, AddProduct, ExportButton, WrapperTableHeader, WrapperTableData, WrapperTableRow, WrapperTable, WrapperPagination, EditFormContainer, EditForm, EditFormButton, WarraperInput } from './Style';
+import React, { useEffect, useState } from 'react';
+import { Container, AddProduct, ExportButton, WrapperTableHeader, WrapperTableData, WrapperTableRow, WrapperTable, WrapperPagination, EditFormContainer, EditForm, EditFormButton, WarraperInput, RowWrapper, CancelButton, ButtonWrapper } from './Style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FaPen, FaTrash } from 'react-icons/fa';
 import ModalComponent from '../ModalComponent/ModalComponent';
+import * as ProductsService from '../../services/ProductsService'
 
 const AdminProductComponent = () => {
-    const [products, setProducts] = useState([
-        { id: 1, name: "ManhNhiDeptrai", price: 150000, rating: 3.4, type: "Trắng da", quantity: '10' },
-        { id: 2, name: "Canxi & Vitamin D", price: 300000, rating: 3.4, type: "Canxi & Vitamin D", quantity: '10' },
-        { id: 3, name: "Mạnh đẹp", price: 100000, rating: 3.4, type: "Collagen", quantity: '10' },
-        { id: 4, name: "Hoàng Xấu", price: 300000, rating: 3.4, type: "Dầu cá Omega-3", quantity: '10' },
-        { id: 5, name: "Omega", price: 300000, rating: 3.4, type: "Giảm cân", quantity: '10' },
-        { id: 6, name: "Chết má", price: 300000, rating: 3.4, type: "Glucosamine", quantity: '10' },
-        { id: 7, name: "Nhìn gì", price: 300000, rating: 3.4, type: "Tăng chiều cao", quantity: '10' },
-        { id: 8, name: "Manhhhhhh", price: 300000, rating: 3.4, type: "Trắng da", quantity: '10' },
-        { id: 9, name: "Manhhhhhh", price: 300000, rating: 3.4, type: "Collagen", quantity: '10' },
-    ]);
+    const [products, setProducts] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [isEditing, setIsEditing] = useState(false); // Trạng thái cho form chỉnh sửa
-    const [editProduct, setEditProduct] = useState(null); // Dữ liệu sản phẩm cần chỉnh sửa
-    const [isModalOpen, setIsModalOpen] = useState(false); 
-    const [newProduct, setNewProduct] = useState({ name: '', price: '', rating: '', type: '', quantity: '' });
+    const [editProduct, setEditProduct] = useState({
+        category_id: '',
+        prod_name: '',
+        prod_description: '',
+        price: '',
+        cost: '',
+        quantity: '',
+        prod_percent: '',
+        best_seller: false,
+        ratings: '',
+        expiration_date: '',
+        images: [],
+    }
+    ); // Dữ liệu sản phẩm cần chỉnh sửa
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newProduct, setNewProduct] = useState({
+        category_id: '',
+        prod_name: '',
+        prod_description: '',
+        price: '',
+        cost: '',
+        quantity: '',
+        prod_percent: '',
+        best_seller: false,
+        ratings: '',
+        expiration_date: '',
+        images: [],
+    });
 
-    const itemsPerPage = 5;
+    const itemsPerPage = 10;
     const totalPages = Math.ceil(products.length / itemsPerPage);
 
-    const handleAddProduct = () => {
-        if (!newProduct.name || !newProduct.price || !newProduct.quantity) {
+    const getToken = () => {
+        const storedUserData = localStorage.getItem('userData');
+        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+        return parsedUserData ? parsedUserData.token : null;
+    };
+
+    useEffect(() => {
+        // Lấy token từ localStorage
+        const token = getToken();
+
+        if (token) {
+            // Gọi API với token lấy được từ localStorage
+            const fetchProducts = async () => {
+                try {
+                    const fetchedProducts = await ProductsService.getAllProducts(token); // Truyền token vào API
+                    console.log("Dữ liệu API gửi lên:", fetchedProducts);
+                    setProducts(fetchedProducts);
+                } catch (error) {
+                    console.error("Lỗi khi lấy danh sách sản phẩm:", error);
+                }
+            };
+
+            fetchProducts();
+        } else {
+            console.error("Token không tồn tại trong localStorage.");
+        }
+    }, []);
+
+    const handleAddProduct = async () => {
+        // Kiểm tra tất cả các trường cần thiết
+        const {
+            prod_name,
+            price,
+            quantity,
+            category_id,
+            prod_description,
+            cost,
+            prod_percent,
+            ratings,
+            expiration_date,
+            images,
+        } = newProduct;
+
+        if (!prod_name || !price || !quantity || !category_id || !prod_description || !cost || !prod_percent || !ratings || !expiration_date || images.length === 0) {
             alert("Vui lòng điền đầy đủ thông tin.");
             return;
         }
-        setProducts([...products, { ...newProduct, id: Date.now() }]);
-        setNewProduct({ name: '', price: '', rating: '', type: '', quantity: '' }); // Reset form
-        setIsModalOpen(false); // Đóng modal
+
+        const token = getToken();
+
+        if (!token) {
+            alert("Không tìm thấy token. Vui lòng đăng nhập lại.");
+            return;
+        }
+
+        try {
+            // Tạo FormData để gửi hình ảnh
+            const formData = new FormData();
+            formData.append("category_id", category_id);
+            formData.append("prod_name", prod_name);
+            formData.append("prod_description", prod_description);
+            formData.append("price", price);
+            formData.append("cost", cost);
+            formData.append("quantity", quantity);
+            formData.append("prod_percent", prod_percent);
+            formData.append("best_seller", false);
+            formData.append("ratings", ratings);
+            formData.append("expiration_date", expiration_date);
+
+            // Thêm các hình ảnh vào FormData
+            images.forEach((image) => {
+                formData.append("images", image);
+            });
+
+            // Gọi API để thêm sản phẩm
+            const addedProduct = await ProductsService.addProduct(formData, token);
+            console.log("Sản phẩm đã thêm:", addedProduct);
+
+            if (addedProduct && addedProduct.product && addedProduct.product.id) {
+                setProducts(prevProducts => [...prevProducts, addedProduct.product]);
+
+                // Reset form thông tin sản phẩm mới
+                setNewProduct({
+                    category_id: '',
+                    prod_name: '',
+                    prod_description: '',
+                    price: '',
+                    cost: '',
+                    quantity: '',
+                    prod_percent: '',
+                    best_seller: false,
+                    ratings: '',
+                    expiration_date: '',
+                    images: [],
+                });
+                // Đóng modal
+                setIsModalOpen(false);
+
+                // Hiển thị thông báo thành công
+                alert("Thêm sản phẩm thành công!");
+            } else {
+                // Xử lý khi API không trả về dữ liệu hợp lệ
+                throw new Error("API không trả về dữ liệu sản phẩm mới.");
+            }
+        } catch (error) {
+            // Xử lý lỗi khi gọi API
+            console.error("Lỗi khi thêm sản phẩm:", error);
+
+            // Thông báo lỗi rõ ràng hơn
+            alert(
+                error.response?.data?.message ||
+                "Có lỗi xảy ra khi thêm sản phẩm. Vui lòng thử lại."
+            );
+        }
     };
 
     const handleExport = () => {
@@ -42,26 +164,141 @@ const AdminProductComponent = () => {
     };
 
     const handleEdit = (product) => {
-        setEditProduct(product); // Lưu sản phẩm cần chỉnh sửa
+        if (!product) {
+            console.error("Sản phẩm không hợp lệ.");
+            return;
+        }
+
+        // Chuyển đổi đường dẫn ảnh, thay đổi \\ thành /
+        const processedImages = (product.images || []).map((image) => {
+            const imageUrl = image.url.replace(/\\/g, "/");
+            return `http://localhost:4000/${imageUrl}`; // Hoặc bạn có thể dùng URL gốc của hình ảnh
+        });
+
+        // Cập nhật state để hiển thị hình ảnh trong form
+        setEditProduct({
+            ...product,
+            images: processedImages,  // Cập nhật với các URL hình ảnh cũ
+        });// Lưu sản phẩm cần chỉnh sửa
         setIsEditing(true); // Hiển thị form chỉnh sửa
     };
+    const handleCancelEdit = () => {
+        setIsEditing(false); // Đóng form chỉnh sửa
+        setEditProduct(null); // Xóa dữ liệu sản phẩm đang chỉnh sửa
+    };
 
-    const handleDeleteProduct = (id) => {
+    const handleDeleteProduct = async (id) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
-            setProducts(products.filter(product => product.id !== id));
-            setSelectedProducts(selectedProducts.filter(productId => productId !== id));
+            const token = getToken();
+
+            if (!token) {
+                alert("Không tìm thấy token. Vui lòng đăng nhập lại.");
+                return;
+            }
+
+            try {
+                // Call the API to delete the product from the database
+                await ProductsService.deleteProduct(id, token);
+
+                // If the API call is successful, remove the product from the state
+                setProducts(products.filter(product => product.id !== id));
+                setSelectedProducts(selectedProducts.filter(productId => productId !== id));
+
+                alert("Sản phẩm đã bị xóa.");
+            } catch (error) {
+                console.error("Lỗi khi xóa sản phẩm:", error);
+                alert("Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại.");
+            }
         }
     };
 
-    const handleUpdateProduct = () => {
-        if (!editProduct.name || !editProduct.price || !editProduct.quantity) {
+    const handleUpdateProduct = async () => {
+        // Kiểm tra các trường cần thiết
+        const {
+            prod_name,
+            price,
+            quantity,
+            category_id,
+            prod_description,
+            cost,
+            prod_percent,
+            ratings,
+            expiration_date,
+            images,
+        } = editProduct;
+
+        if (!prod_name || !price || !quantity || !category_id || !prod_description || !cost || !prod_percent || !ratings || !expiration_date) {
             alert("Vui lòng điền đầy đủ thông tin.");
             return;
         }
-        // Cập nhật sản phẩm trong danh sách
-        setProducts(products.map(product => (product.id === editProduct.id ? editProduct : product)));
-        setIsEditing(false); // Ẩn form chỉnh sửa sau khi cập nhật
+
+        const token = getToken();
+
+        if (!token) {
+            alert("Không tìm thấy token. Vui lòng đăng nhập lại.");
+            return;
+        }
+
+        try {
+            // Tạo FormData để gửi hình ảnh
+            const formData = new FormData();
+            formData.append("category_id", category_id);
+            formData.append("prod_name", prod_name);
+            formData.append("prod_description", prod_description);
+            formData.append("price", price);
+            formData.append("cost", cost);
+            formData.append("quantity", quantity);
+            formData.append("prod_percent", prod_percent);
+            formData.append("best_seller", editProduct.best_seller);
+            formData.append("ratings", ratings);
+            formData.append("expiration_date", expiration_date);
+            console.log('images', images)
+
+            // Kiểm tra và thêm các hình ảnh vào FormData
+            images.forEach(image => {
+                formData.append("images", image);
+            });
+
+
+            // Gọi API để cập nhật sản phẩm
+            const updatedProduct = await ProductsService.updateProduct(editProduct.id, formData, token);
+            console.log("Sản phẩm đã cập nhật:", updatedProduct);
+
+            if (updatedProduct && updatedProduct.product && updatedProduct.product.id) {
+                setProducts(prevProducts => prevProducts.map(product =>
+                    product.id === updatedProduct.product.id ? updatedProduct.product : product
+                ));
+
+                // Đóng form chỉnh sửa
+                setIsEditing(false);
+                setEditProduct({
+                    category_id: '',
+                    prod_name: '',
+                    prod_description: '',
+                    price: '',
+                    cost: '',
+                    quantity: '',
+                    prod_percent: '',
+                    best_seller: false,
+                    ratings: '',
+                    expiration_date: '',
+                    images: [],
+                });
+
+                // Hiển thị thông báo thành công
+                alert("Cập nhật sản phẩm thành công!");
+            } else {
+                throw new Error("API không trả về dữ liệu sản phẩm đã cập nhật.");
+            }
+        } catch (error) {
+            console.error("Lỗi khi cập nhật sản phẩm:", error);
+            alert(
+                error.response?.data?.message ||
+                "Có lỗi xảy ra khi cập nhật sản phẩm. Vui lòng thử lại."
+            );
+        }
     };
+
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
@@ -87,6 +324,33 @@ const AdminProductComponent = () => {
         }
     };
 
+
+    const handleImageUpload = (event) => {
+        const files = Array.from(event.target.files);
+        setNewProduct((prev) => ({
+            ...prev,
+            images: [...prev.images, ...files],
+        }));
+    };
+    
+    const handleImageUploadEdit = (event) => {
+        const files = Array.from(event.target.files);  // Lấy mảng các file đã chọn
+        if (files.length > 0) {
+            setEditProduct({
+                ...editProduct,
+                images: [...editProduct.images, ...files]  // Thêm các hình ảnh mới vào mảng images
+            });
+        }
+    };
+
+    const handleRemoveImage = (index) => {
+        const updatedImages = [...editProduct.images];
+        updatedImages.splice(index, 1);  // Xóa ảnh tại index
+        setEditProduct({
+            ...editProduct,
+            images: updatedImages,
+        });
+    };
     return (
         <Container>
             <h1>Product Management</h1>
@@ -98,42 +362,99 @@ const AdminProductComponent = () => {
             </ExportButton>
             {/* Modal thêm sản phẩm */}
             <ModalComponent
-                title="Thêm Sản Phẩm"
+                title="Thêm sản phẩm mới"
                 isOpen={isModalOpen}
                 onCancel={() => setIsModalOpen(false)}
-                footer={null}
+                onAdd={handleAddProduct}
+                width="950px"
+                newProduct={newProduct}
+                setNewProduct={setNewProduct}
             >
-                <label>Tên Sản Phẩm:</label>
-                <WarraperInput
-                    type="text"
-                    value={newProduct.name}
-                    onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                />
-                <label>Giá:</label>
-                <WarraperInput
-                    type="number"
-                    value={newProduct.price}
-                    onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-                />
-                <label>Số lượng:</label>
-                <WarraperInput
-                    type="number"
-                    value={newProduct.quantity}
-                    onChange={(e) => setNewProduct({ ...newProduct, quantity: e.target.value })}
-                />
-                <label>Đánh giá:</label>
-                <WarraperInput
-                    type="number"
-                    value={newProduct.rating}
-                    onChange={(e) => setNewProduct({ ...newProduct, rating: e.target.value })}
-                />
-                <label>Loại:</label>
-                <WarraperInput
-                    type="text"
-                    value={newProduct.type}
-                    onChange={(e) => setNewProduct({ ...newProduct, type: e.target.value })}
-                />
-                <EditFormButton onClick={handleAddProduct}>Thêm Sản Phẩm</EditFormButton>
+                <EditForm>
+                    <label>Category_id:</label>
+                    <WarraperInput
+                        type="text"
+                        value={newProduct.category_id}
+                        onChange={(e) => setNewProduct({ ...newProduct, category_id: e.target.value })}
+                    />
+                    <label>Tên sản phẩm:</label>
+                    <WarraperInput
+                        type="text"
+                        value={newProduct.prod_name}
+                        onChange={(e) => setNewProduct({ ...newProduct, prod_name: e.target.value })}
+                    />
+                    <label>Mô tả sản phẩm:</label>
+                    <WarraperInput
+                        type="text"
+                        value={newProduct.prod_description}
+                        onChange={(e) => setNewProduct({ ...newProduct, prod_description: e.target.value })}
+                    />
+                    <label>Giá:</label>
+                    <WarraperInput
+                        type="number"
+                        value={newProduct.price}
+                        onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                    />
+                    <label>Chi phí:</label>
+                    <WarraperInput
+                        type="number"
+                        value={newProduct.cost}
+                        onChange={(e) => setNewProduct({ ...newProduct, cost: e.target.value })}
+                    />
+                    <label>Số lượng:</label>
+                    <WarraperInput
+                        type="number"
+                        value={newProduct.quantity}
+                        onChange={(e) => setNewProduct({ ...newProduct, quantity: e.target.value })}
+                    />
+                    <label>Tỷ lệ giảm giá:</label>
+                    <WarraperInput
+                        type="number"
+                        value={newProduct.prod_percent}
+                        onChange={(e) => setNewProduct({ ...newProduct, prod_percent: e.target.value })}
+                    />
+                    <label>Best Seller:</label>
+                    <input
+                        type="checkbox"
+                        checked={newProduct.best_seller}
+                        onChange={(e) => setNewProduct({ ...newProduct, best_seller: e.target.checked })}
+                    />
+                    <label>Đánh giá:</label>
+                    <WarraperInput
+                        type="number"
+                        value={newProduct.ratings}
+                        onChange={(e) => setNewProduct({ ...newProduct, ratings: e.target.value })}
+                    />
+                    <label>Ngày hết hạn:</label>
+                    <WarraperInput
+                        type="date"
+                        value={newProduct.expiration_date}
+                        onChange={(e) => setNewProduct({ ...newProduct, expiration_date: e.target.value })}
+                    />
+
+                    <label>Hình ảnh:</label>
+                    <input
+                        type="file"
+                        multiple
+                        name="images"
+                        onChange={handleImageUpload}
+                    />
+                    <div>
+                        {newProduct.images.length > 0 && (
+                            <div>
+                                {Array.from(newProduct.images).map((image, index) => (
+                                    <img
+                                        key={index}
+                                        src={URL.createObjectURL(image)}  // Hiển thị ảnh đã chọn
+                                        alt={`product-preview-${index}`}
+                                        style={{ width: "100px", margin: "10px" }}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                </EditForm>
             </ModalComponent>
 
             {/* Form chỉnh sửa sản phẩm */}
@@ -141,48 +462,214 @@ const AdminProductComponent = () => {
                 <EditFormContainer>
                     <EditForm>
                         <h2>Edit Product</h2>
-                        <label>Name:</label>
-                        <WarraperInput
-                            
-                            type="text" 
-                            value={editProduct.name} 
-                            onChange={(e) => setEditProduct({ ...editProduct, name: e.target.value })} 
-                        />
-                        <label>Price:</label>
-                        <WarraperInput 
-                            type="number" 
-                            value={editProduct.price} 
-                            onChange={(e) => setEditProduct({ ...editProduct, price: e.target.value })} 
-                        />
-                        <label>Quantity:</label>
-                        <WarraperInput 
-                            type="number" 
-                            value={editProduct.quantity} 
-                            onChange={(e) => setEditProduct({ ...editProduct, quantity: e.target.value })} 
-                        />
-                        <label>Rating:</label>
-                        <WarraperInput 
-                            type="number" 
-                            value={editProduct.rating} 
-                            onChange={(e) => setEditProduct({ ...editProduct, rating: e.target.value })} 
-                        />
-                        <label>Category:</label>
-                        <WarraperInput 
-                            type="text" 
-                            value={editProduct.type} 
-                            onChange={(e) => setEditProduct({ ...editProduct, type: e.target.value })} 
-                        />
-                        <EditFormButton onClick={handleUpdateProduct}>Update</EditFormButton>
+                        <div>
+                            <label>Name:</label>
+                            <WarraperInput
+                                type="text"
+                                value={editProduct.prod_name}
+                                onChange={(e) => setEditProduct({ ...editProduct, prod_name: e.target.value })}
+                            />
+                        </div>
+                        <RowWrapper columns="1fr 1fr">
+                            <div>
+                                <label>Price:</label>
+                                <WarraperInput
+                                    type="number"
+                                    value={editProduct.price}
+                                    onChange={(e) => setEditProduct({ ...editProduct, price: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label>Quantity:</label>
+                                <WarraperInput
+                                    type="number"
+                                    value={editProduct.quantity}
+                                    onChange={(e) => setEditProduct({ ...editProduct, quantity: e.target.value })}
+                                />
+                            </div>
+                        </RowWrapper>
+                        <RowWrapper columns="1fr 1fr">
+                            <div>
+                                <label>Rating:</label>
+                                <WarraperInput
+                                    type="number"
+                                    value={editProduct.ratings}
+                                    onChange={(e) => setEditProduct({ ...editProduct, ratings: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label>Category:</label>
+                                <WarraperInput
+                                    type="text"
+                                    value={editProduct.category_id}
+                                    onChange={(e) => setEditProduct({ ...editProduct, category_id: e.target.value })}
+                                />
+                            </div>
+                        </RowWrapper>
+
+                        <RowWrapper columns="1fr 1fr">
+                        <div>
+                            <label>Discount Percent:</label>
+                            <WarraperInput
+                                type="text"
+                                value={editProduct.prod_percent}
+                                onChange={(e) => setEditProduct({ ...editProduct, prod_percent: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Cost:</label>
+                            <WarraperInput
+                                type="text"
+                                value={editProduct.cost}
+                                onChange={(e) => setEditProduct({ ...editProduct, cost: e.target.value })}
+                            />
+                        </div>
+                        </RowWrapper>
+                        <div>
+                            <label>Expiration Date:</label>
+                            <WarraperInput
+                                type="date"
+                                value={editProduct.expiration_date}
+                                onChange={(e) => setEditProduct({ ...editProduct, expiration_date: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Description:</label>
+                            <WarraperInput
+                                type="text"
+                                value={editProduct.prod_description}
+                                onChange={(e) => setEditProduct({ ...editProduct, prod_description: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Images:</label>
+                            <div>
+                                {Array.isArray(editProduct.images) && editProduct.images.length > 0 ? (
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                                        {editProduct.images.map((image, index) => {
+                                            if (image instanceof File) {
+                                                // Kiểm tra xem image có phải là đối tượng File không (là ảnh mới tải lên)
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        style={{
+                                                            position: 'relative',
+                                                            width: '120px',
+                                                            height: '120px',
+                                                            overflow: 'hidden',
+                                                            borderRadius: '8px',
+                                                            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                                                            marginBottom: '10px',
+                                                        }}
+                                                    >
+                                                        <img
+                                                            src={URL.createObjectURL(image)}  // Sử dụng URL.createObjectURL để tạo URL tạm thời
+                                                            alt={`product-image-${index}`}
+                                                            style={{
+                                                                width: '100%',
+                                                                height: '100%',
+                                                                objectFit: 'cover',
+                                                            }}
+                                                        />
+                                                        <button
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: '5px',
+                                                                right: '5px',
+                                                                background: 'rgba(255, 0, 0, 0.7)',
+                                                                color: 'white',
+                                                                border: 'none',
+                                                                borderRadius: '50%',
+                                                                padding: '5px',
+                                                                cursor: 'pointer',
+                                                                fontSize: '14px',
+                                                            }}
+                                                            onClick={() => handleRemoveImage(index)}  // Xử lý xóa ảnh
+                                                        >
+                                                            X
+                                                        </button>
+                                                    </div>
+                                                );
+                                            } else if (typeof image === 'string') {
+                                                // Nếu image là URL từ server (string), hiển thị ảnh
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        style={{
+                                                            position: 'relative',
+                                                            width: '120px',
+                                                            height: '120px',
+                                                            overflow: 'hidden',
+                                                            borderRadius: '8px',
+                                                            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                                                            marginBottom: '10px',
+                                                        }}
+                                                    >
+                                                        <img
+                                                            src={image}  // Đây là URL từ server
+                                                            alt={`product-image-${index}`}
+                                                            style={{
+                                                                width: '100%',
+                                                                height: '100%',
+                                                                objectFit: 'cover',
+                                                            }}
+                                                        />
+                                                        <button
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: '5px',
+                                                                right: '5px',
+                                                                background: 'rgba(255, 0, 0, 0.7)',
+                                                                color: 'white',
+                                                                border: 'none',
+                                                                borderRadius: '50%',
+                                                                padding: '5px',
+                                                                cursor: 'pointer',
+                                                                fontSize: '14px',
+                                                            }}
+                                                            onClick={() => handleRemoveImage(index)}  // Xử lý xóa ảnh
+                                                        >
+                                                            X
+                                                        </button>
+                                                    </div>
+                                                );
+                                            } else {
+                                                return null;  // Nếu không phải File và không phải URL hợp lệ
+                                            }
+                                        })}
+                                    </div>
+                                ) : (
+                                    <p>Không có ảnh nào.</p>
+                                )}
+                            </div>
+
+
+
+                            {/* Input chọn ảnh mới */}
+                            <input
+                                type="file"
+                                multiple
+                                name="images"
+                                accept="image/*"
+                                onChange={handleImageUploadEdit} // Xử lý tải ảnh lên
+                                style={{ marginTop: '10px' }}
+                            />
+                        </div>
+                        <ButtonWrapper>
+                            <EditFormButton onClick={handleUpdateProduct}>Update</EditFormButton>
+                            <CancelButton onClick={handleCancelEdit}>Cancel</CancelButton>
+                        </ButtonWrapper>
                     </EditForm>
                 </EditFormContainer>
+
             )}
 
             <WrapperTable>
                 <thead>
                     <tr>
                         <WrapperTableHeader>
-                            <input 
-                                type="checkbox" 
+                            <input
+                                type="checkbox"
                                 checked={selectedProducts.length === products.length}
                                 onChange={handleSelectAll}
                             />
@@ -199,16 +686,16 @@ const AdminProductComponent = () => {
                     {currentProducts.map(product => (
                         <WrapperTableRow key={product.id}>
                             <WrapperTableData>
-                                <input 
-                                    type="checkbox" 
+                                <input
+                                    type="checkbox"
                                     checked={selectedProducts.includes(product.id)}
                                     onChange={() => handleSelectProduct(product.id)}
                                 />
                             </WrapperTableData>
-                            <WrapperTableData>{product.name}</WrapperTableData>
-                            <WrapperTableData>{product.price.toLocaleString()} đ</WrapperTableData>
-                            <WrapperTableData>{product.rating}</WrapperTableData>
-                            <WrapperTableData>{product.type}</WrapperTableData>
+                            <WrapperTableData>{product.prod_name}</WrapperTableData>
+                            <WrapperTableData>{product.price}</WrapperTableData>
+                            <WrapperTableData>{product.ratings}</WrapperTableData>
+                            <WrapperTableData>{product.category_id}</WrapperTableData>
                             <WrapperTableData>{product.quantity}</WrapperTableData>
                             <WrapperTableData className="action-icons">
                                 <FaPen onClick={() => handleEdit(product)} style={{ cursor: 'pointer', color: '#6366F1' }} />

@@ -4,24 +4,34 @@ import { Rate } from 'antd'
 import product_test from '../../assets/images/product-test.jpg';
 import { useNavigate } from 'react-router';
 
-const CardComponent = () => {
+const CardComponent = ({ product }) => {
     const navigate = useNavigate()
-
-    const handleDetailsProduct = () => {
-        navigate(`/details-product`)
+    if (!product) {
+        return null; // Không render gì cả
     }
+    const handleDetailsProduct = () => {
+        navigate(`/details-product/${product.id}`);
+    }
+    const productImage = product.images && product.images.length > 0
+        ? product.images[0].url
+        : null;  // Nếu không có ảnh, giá trị sẽ là null
   return (
       <Card onClick={ handleDetailsProduct}>
           <ImageWrapper>
-              <ProductImage src={product_test} alt="product_test" />
+              {/* Kiểm tra nếu có ảnh, nếu có thì hiển thị, nếu không thì hiển thị một ảnh mặc định */}
+              {productImage ? (
+                  <ProductImage src={`http://localhost:4000/${productImage}`} alt={product.prod_name} />
+              ) : (
+                  <ProductImage src="path/to/default-image.jpg" alt="Default product image" />
+              )}
           </ImageWrapper>
           <CardContent>
-              <Category>Covid Essentials, Devices, Health Conditions</Category>
-              <ProductTitle>Waterpik WP-100 - Dental Care</ProductTitle>
+              <Category>{product.category_id || 'Uncategorized'}</Category>
+              <ProductTitle>{product.prod_name}</ProductTitle>
               <RatingWrapper>
-                  <Rate allowHalf defaultValue={2.5} style={{ fontSize: '10px' }} />
+                  <Rate allowHalf defaultValue={product.ratings || 0} style={{ fontSize: '10px' }} />
               </RatingWrapper>
-              <Price>$ 165.54</Price>
+              <Price>${product.price || 'N/A'}</Price>
               <AddToCartWrapper>
                   <CartButton>
                       <CartIcon />

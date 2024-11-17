@@ -21,11 +21,11 @@ export const ProductImageContainer = styled.div`
   flex: 1;
 `;
 
-export const ProductImage = styled.img`
-  width: 100%;
-  height: auto;
-  border-radius: 0.75rem;
-`;
+// export const ProductImage = styled.img`
+//   width: 100%;
+//   height: auto;
+//   border-radius: 0.75rem;
+// `;
 
 export const ProductInfo = styled.div`
   flex: 2;
@@ -160,4 +160,36 @@ export const RelatedProductImage = styled.img`
   width: 100%;
   height: auto;
   border-radius: 0.5rem;
+`;
+
+
+// Container cho ảnh nhỏ
+export const ThumbnailContainer = styled.div`
+  display: flex;
+  margin-top: 20px;
+`;
+
+// Style cho từng ảnh nhỏ
+export const ThumbnailImage = styled.img`
+  width: 60px;
+  height: 60px;
+  margin: 0 10px;
+  cursor: pointer;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #333;
+    transform: scale(1.1);
+  }
+`;
+
+// Style cho ảnh lớn
+export const ProductImage = styled.img`
+  width: 400px;  
+  height: 500px;
+  object-fit: cover;
+  margin: 10px;
+  border-radius: 0.75rem;
 `;

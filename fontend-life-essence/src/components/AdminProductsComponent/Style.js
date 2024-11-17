@@ -130,14 +130,28 @@ export const EditFormContainer = styled.div`
 `;
 
 export const EditForm = styled.div`
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 12px;
-  width: 450px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+   width: 900px;
+    background: #fff;
+    padding: 20px;
+    margin: auto;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    h2 {
+        margin-bottom: 10px;
+        font-size: 1.5rem;
+        color: #333;
+        text-align: center;
+    }
+
+    label {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #555;
+    }
 `;
 
 export const EditFormTitle = styled.h3`
@@ -160,45 +174,82 @@ export const Label = styled.label`
 `;
 
 export const Input = styled.input`
-  padding: 12px;
-  font-size: 14px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  outline: none;
-  transition: border 0.3s;
-  &:focus {
-    border-color: #6366F1;
-  }
-`;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s;
 
+    &:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+`;
 export const EditFormButton = styled.button`
-  background-color: #6366F1;
-  color: white;
-  padding: 12px;
-  font-size: 14px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  &:hover {
-    background-color: #4C51BF;
-  }
+   padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #24AEB1;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+        background-color: #007bff;
+    }
+
+    &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
 `;
 
 export const CancelButton = styled.button`
-  background-color: #e0e0e0;
-  color: #333;
-  padding: 12px;
-  font-size: 14px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  &:hover {
-    background-color: #b3b3b3;
-  }
+background-color: #ccc;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: 10px;
+
+    &:hover {
+        background-color: #ff7875;
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 5px rgba(255, 77, 79, 0.5);
+    }
 `;
 export const WarraperInput = styled.input`
-  height: 30px;
-  border-radius: 8px;
+ width: 100%;
+ margin-top: 5px;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s;
+
+    &:focus {
+        border-color: #24AEB1;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+`;
+
+// Wrapper chung cho hàng input
+export const RowWrapper = styled.div`
+    display: grid;
+    grid-template-columns: ${(props) => props.columns || "1fr"}; /* Linh hoạt cột */
+    gap: ${(props) => props.gap || "20px"}; /* Khoảng cách giữa các cột */
+`;
+export const ButtonWrapper = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
 `;

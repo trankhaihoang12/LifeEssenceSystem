@@ -25,3 +25,50 @@ export const loginUser = async (data) => {
         throw error; 
     }
 };
+
+// Hàm lấy tất cả User
+export async function getAllUser(token) {
+    try {
+        const response = await axios.get(`${API_URL}/admin/users`, {
+            headers: {
+                'Authorization': `Bearer ${token}`  // Thêm token vào header
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách user:', error);
+        throw error;
+    }
+}
+
+// Hàm cập nhật thông tin User
+export const updateUser = async (id, data, token) => {
+    try {
+        const response = await axios.put(`${API_URL}/admin/users-update/${id}`, data, {
+            headers: {
+                'Authorization': `Bearer ${token}` // Thêm token vào header
+            }
+        });
+        return response.data; // Trả về dữ liệu phản hồi từ server
+    } catch (error) {
+        console.error("Error during user update:", error);
+        throw error; // Ném lỗi để xử lý ở cấp cao hơn nếu cần
+    }
+};
+
+// Hàm xóa người dùng
+export const deleteUser = async (id, token) => {
+    try {
+        const response = await axios.delete(`${API_URL}/admin/users/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}` // Thêm token vào header
+            }
+        });
+        return response.data; // Trả về dữ liệu phản hồi từ server
+    } catch (error) {
+        console.error("Error during user deletion:", error);
+        throw error; // Ném lỗi để xử lý ở cấp cao hơn nếu cần
+    }
+};
+
+

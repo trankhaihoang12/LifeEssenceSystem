@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaBriefcaseMedical } from "react-icons/fa6";
 import line from '../../assets/images/line.png';
 import Slide1 from '../../assets/images/Slide1.png';
@@ -20,6 +20,7 @@ import BlogCardComponent from '../../components/BlogCardComponent/BlogCardCompon
 import IntroductionComponent from '../../components/IntroductionComponent/IntroductionComponent';
 import PopularCategories from '../../components/PopularCategoriesComponent/PopularCategories';
 import useHorizontalScroll from '../../hooks/useHorizontalScroll';
+import * as ProductsService from '../../services/ProductsService'
 
 
 
@@ -27,9 +28,32 @@ import useHorizontalScroll from '../../hooks/useHorizontalScroll';
 
 const HomePage = () => {
 
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const healthyScroll = useHorizontalScroll(300);
   const trendingScroll = useHorizontalScroll(300);
   const blogScroll = useHorizontalScroll(300);
+
+
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const data = await ProductsService.fetchAllProducts({ page, limit: 4 }); // Không cần token
+      console.log('Dữ liệu sản phẩm nhận được:', data.products); 
+      setProducts(data.products);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error('Lỗi khi tải sản phẩm:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProducts();
+  }, [page]);
 
   return (
     <div style={{ height: 'auto', backgroundColor: '#f0f9fb' }}>
@@ -113,17 +137,9 @@ const HomePage = () => {
         </div>
         <ProductsContainer ref={healthyScroll.scrollRef}>
           <ProductsWrapper>
-            {/* Các sản phẩm */}
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
+            {products.map((product) => (
+              <CardComponent key={product.id} product={product} /> // Truyền dữ liệu vào CardComponent
+            ))}
           </ProductsWrapper>
         </ProductsContainer>
         <Button position="left" onClick={healthyScroll.scrollPrevious}>Previous</Button>

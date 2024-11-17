@@ -20,6 +20,8 @@ const HeaderComponent = () => {
   const [password, setPassword] = useState('');
   const [userData, setUserData] = useState(null);
   const [isOpenPopup, setIsOpenPopup] = useState(false)
+  const [cartCount, setCartCount] = useState(0); // Số lượng trong giỏ hàng
+  const [wishlistCount, setWishlistCount] = useState(0); // Số lượng trong wishlist
   const navigate = useNavigate();
 
   const mutation = useMutation({

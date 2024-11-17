@@ -11,6 +11,7 @@ const Profile = () => {
 
   useEffect(() => {
     const storedUserData = localStorage.getItem('userData');
+    console.log('storedUserData', storedUserData)
     if (storedUserData) {
       const parsedData = JSON.parse(storedUserData);
       setUserData(parsedData);

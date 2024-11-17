@@ -1,6 +1,7 @@
 "use client";
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import * as ProductsService from '../../services/ProductsService'
+import * as OrderService from '../../services/OrderService'
 import {  Star } from "lucide-react";
 
 import {
@@ -23,45 +24,118 @@ import {
   TabContent,
   RelatedProductsContainer,
   RelatedProducts,
-  RelatedProductCard
+  RelatedProductCard,
+  ThumbnailContainer,
+  ThumbnailImage
 } from './Style';
+import { useParams } from "react-router";
+
+
 
 const HealthStore = () => {
   const [selectedTab, setSelectedTab] = useState("description");
+  const { id } = useParams();  // Lấy ID sản phẩm từ URL
+  const [product, setProduct] = useState(null);
+  const [selectedImage, setSelectedImage] = useState("");  // Lưu trữ hình ảnh được chọn
+  const [quantity, setQuantity] = useState(1);
+  const [error, setError] = useState(null);
 
   const handleTabClick = (tab) => {
     setSelectedTab(tab);
+  };
+
+  const getToken = () => {
+    const storedUserData = localStorage.getItem('userData');
+    const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+    return parsedUserData ? parsedUserData.token : null;
+  };
+
+
+  // Hàm xử lý khi thêm sản phẩm vào giỏ
+  const handleAddToCart = async () => {
+    const token = getToken();
+    if (!token) {
+      setError("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      return;
+    }
+
+    try {
+      const response = await OrderService.addToCart(product.id, quantity, token); // Gọi API
+      console.log("Sản phẩm đã được thêm vào giỏ:", response);
+      // Thực hiện xử lý nếu thành công, ví dụ hiển thị thông báo hoặc cập nhật giỏ hàng
+    } catch (error) {
+      setError("Không thể thêm sản phẩm vào giỏ hàng.");
+    }
+  };
+
+  useEffect(() => {
+    // Gọi API để lấy chi tiết sản phẩm
+    const fetchProduct = async () => {
+      try {
+        const data = await ProductsService.getProductById(id);
+        setProduct(data.data);  // Lưu dữ liệu sản phẩm vào state
+        // Đặt hình ảnh mặc định là hình đầu tiên trong danh sách hình ảnh
+        if (data.data.images && data.data.images.length > 0) {
+          setSelectedImage(data.data.images[0].url);
+        }
+      } catch (error) {
+        console.error('Không thể lấy chi tiết sản phẩm:', error);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);  // Khi ID thay đổi, sẽ gọi lại API
+
+  if (!product) {
+    return <div>Loading...</div>;
+  }
+  // Cập nhật các giá trị từ API
+  const { prod_name, prod_description, price, images, ratings } = product;
+  const handleThumbnailClick = (imageUrl) => {
+    setSelectedImage(imageUrl);  // Cập nhật hình ảnh lớn khi click vào ảnh nhỏ
   };
 
   return (
     <PageContainer>
       <ProductDetailContainer>
         <ProductImageContainer>
-          <ProductImage src="https://via.placeholder.com/300" alt="Vitamin D" />
+          <ProductImage src={`http://localhost:4000/${selectedImage}`} alt={prod_name} />
+          {/* Hình ảnh nhỏ */}
+          <ThumbnailContainer>
+            {images && images.length > 0 && images.map((image, index) => (
+              <ThumbnailImage
+                key={index}
+                src={`http://localhost:4000/${image.url}`}
+                alt={`Thumbnail ${index + 1}`}
+                onClick={() => handleThumbnailClick(image.url)}
+              />
+            ))}
+          </ThumbnailContainer>
         </ProductImageContainer>
         <ProductInfo>
-          <ProductTitle>Vitamin D 1000 IU</ProductTitle>
+          <ProductTitle>{prod_name}</ProductTitle>
           <ProductRating>
             <StarRating>
               {[...Array(5)].map((_, index) => (
-                <Star key={index} fill={index < 4 ? "#ffc107" : "#e0e0e0"} />
+                <Star key={index} fill={index < Math.floor(ratings / 100)} color="#ffc107" />
               ))}
             </StarRating>
-            <span>(4.5)</span>
+            <span>({ratings})</span>
           </ProductRating>
-          <ProductPrice>$24.99</ProductPrice>
+          <ProductPrice>${price}</ProductPrice>
           <ProductDescription>
-            A great source of Vitamin D to support your health and immunity.
+            {prod_description}
           </ProductDescription>
           <QuantitySelector>
             <span>Quantity:</span>
             <QuantityInput type="number" min="1" defaultValue="1" />
           </QuantitySelector>
           <ActionButtons>
-            <ActionButton primary>Add to Cart</ActionButton>
+            <ActionButton primary onClick={handleAddToCart}>Add to Cart</ActionButton>
             <ActionButton>Add to Wishlist</ActionButton>
           </ActionButtons>
         </ProductInfo>
+
       </ProductDetailContainer>
       <TabContainer>
         <TabItem active={selectedTab === "description"} onClick={() => handleTabClick("description")}>
@@ -75,7 +149,7 @@ const HealthStore = () => {
         </TabItem>
       </TabContainer>
       <TabContent>
-        {selectedTab === "description" && <p>Product description goes here...</p>}
+        {selectedTab === "description" && <p>{prod_description}</p>}
         {selectedTab === "additional" && <p>Additional information about the product...</p>}
         {selectedTab === "reviews" && <p>Customer reviews will be shown here...</p>}
       </TabContent>
