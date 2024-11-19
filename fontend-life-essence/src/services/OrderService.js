@@ -24,25 +24,65 @@ export const addToCart = async (productId, quantity, token) => {
         throw error;  // Ném lỗi để có thể xử lý trong component
     }
 };
-// Hàm tạo đơn hàng
-export const createOrder = async (orderData, token) => {
+
+// Hàm lấy toàn bộ sản phẩm trong giỏ hàng
+export const getAllCartItems = async (token) => {
     try {
-        const response = await axios.post(
-            `${API_URL}/orders`,
-            orderData,
+        // Gửi request đến backend để lấy danh sách sản phẩm trong giỏ
+        const response = await axios.get(
+            `${API_URL}/cart/all`,
             {
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,  // Thêm token vào header
                 }
             }
         );
-        return response.data;
+        return response.data; // Trả về danh sách sản phẩm từ server
     } catch (error) {
-        console.error('Lỗi khi tạo đơn hàng:', error);
-        throw error;
+        console.error("Lỗi khi lấy sản phẩm trong giỏ:", error.response ? error.response.data : error.message);
+        throw error;  // Ném lỗi để có thể xử lý trong component
     }
 };
+
+// remove cart
+export const removeFromCart = (productId, token) => {
+    return axios.delete(`${API_URL}/cart/remove/${productId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+};
+
+
+// Hàm thêm đơn hàng
+export const addOrder = async (orderData, token) => {
+    try {
+        // Gửi request đến backend để tạo đơn hàng
+        const response = await axios.post(
+            `${API_URL}/orders/add`, // Endpoint thêm đơn hàng
+            orderData, // Dữ liệu đơn hàng gửi lên backend
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Token xác thực
+                    'Content-Type': 'application/json', // Kiểu nội dung
+                }
+            }
+        );
+        // Kiểm tra xem response có chứa orderDetails không
+        if (response.data && response.data.orderDetails) {
+            console.log('Order Details received:', response.data.orderDetails);
+        } else {
+            console.warn('No order details returned from server.');
+        }
+
+        return response.data;  // Trả về kết quả từ server (chi tiết đơn hàng đã được tạo)
+    } catch (error) {
+        console.error("Lỗi khi thêm đơn hàng:", error.response ? error.response.data : error.message);
+        throw error;  // Ném lỗi để có thể xử lý trong component
+    }
+};
+
 
 // Hàm lấy thông tin đơn hàng theo ID
 export const getOrderById = async (orderId, token) => {
@@ -67,7 +107,7 @@ export const getOrderById = async (orderId, token) => {
 export const getAllOrders = async (token) => {
     try {
         const response = await axios.get(
-            `${API_URL}/api/orders`,
+            `${API_URL}/orders`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -81,3 +121,4 @@ export const getAllOrders = async (token) => {
         throw error;
     }
 };
+

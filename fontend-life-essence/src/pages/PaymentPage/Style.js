@@ -85,11 +85,12 @@ export const ProductImage = styled.img`
   height: 60px;
   border-radius: 5px;
   color:red;
+  margin-right: 20px;
 `;
 
 export const ProductName = styled.span`
   flex: 1;
-  font-size: 16px;
+  font-size: 15px;
 `;
 
 export const QuantityContainer = styled.div`

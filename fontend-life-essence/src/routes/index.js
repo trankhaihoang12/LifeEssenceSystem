@@ -13,6 +13,7 @@ import SignUpPage from "../pages/SignUpPage/SignUpPage";
 import ProfileUpdate from '../pages/ProfileUpdate/ProfileUpdate';
 import DetailsOderPage from "../pages/DetailsOrderPage/DetailsOrderPage";
 import MyOrderPage from '../pages/MyOrderPage/MyOrderPage';
+import OrderSuccess from '../pages/OrderSuccess/OrderSuccess';
 
 
 
@@ -110,6 +111,12 @@ export const routes = [
     {
         path: '/my-order',
         page: MyOrderPage,
+        isShowHeader: true,
+        isShowFooter: true
+    },
+    {
+        path: '/order-success',
+        page: OrderSuccess,
         isShowHeader: true,
         isShowFooter: true
     }
