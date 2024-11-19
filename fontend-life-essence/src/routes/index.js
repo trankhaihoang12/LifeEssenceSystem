@@ -11,9 +11,7 @@ import ResetPassword from "../pages/ResetPassword/ResetPassword";
 import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
 import ProfileUpdate from '../pages/ProfileUpdate/ProfileUpdate';
-import DetailsOderPage from "../pages/DetailsOrderPage/DetailsOrderPage";
 import MyOrderPage from '../pages/MyOrderPage/MyOrderPage';
-
 
 
 export const routes = [
@@ -26,42 +24,35 @@ export const routes = [
     {
         path: '/signIn',
         page: SignInPage,
-        // isShowHeader: true,
-        // isShowFooter: true
+        // Không hiển thị Header và Footer
     },
     {
         path: '/signUp',
         page: SignUpPage,
-        // isShowHeader: true,
-        // isShowFooter: true
+        // Không hiển thị Header và Footer
     },
     {
         path: '/resetPassword',
         page: ResetPassword,
-        // isShowHeader: true,
-        // isShowFooter: true
+        // Không hiển thị Header và Footer
     },
     {
         path: '/order',
         page: OrderPage,
         isShowHeader: true,
         isShowFooter: true
-
     },
-
     {
         path: '/products',
         page: ProductsPage,
         isShowHeader: true,
         isShowFooter: true
-
     },
     {
         path: '/details-product/:id',
         page: DetailsProductPage,
         isShowHeader: true,
         isShowFooter: true
-
     },
     {
         path: '/payment',
@@ -69,13 +60,11 @@ export const routes = [
         isShowHeader: true,
         isShowFooter: true
     },
-    
     {
         path: '/profile-user',
         page: Profile,
         isShowHeader: true,
         isShowFooter: true
-
     },
     {
         path: '/profile-upadate',
@@ -87,23 +76,11 @@ export const routes = [
     {
         path: '/admin',
         page: AdminPage,
-
-
+        // Không hiển thị Header và Footer cho trang Admin
     },
     {
-
         path: '/wishlist',
         page: Wishlist,
-        isShowHeader: true,
-        isShowFooter: true
-    },
-    {
-        path: '*',
-        page: NotFoundPage
-    },
-    {
-        path: '/details-order',
-        page: DetailsOderPage,
         isShowHeader: true,
         isShowFooter: true
     },
@@ -112,5 +89,10 @@ export const routes = [
         page: MyOrderPage,
         isShowHeader: true,
         isShowFooter: true
+
+    },
+    {
+        path: '*',
+        page: NotFoundPage
     }
 ];
