@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import { Star } from "lucide-react";
+
+import {  Star } from "lucide-react";
+
 import {
   PageContainer,
   ProductDetailContainer,

@@ -18,7 +18,7 @@ import {
   ProductName,
   CurrentPrice} from "./Style";
 
-const HealthStore = () => {
+const ProductPage = () => {
   const navigate = useNavigate();
   const [, setOpenCategory] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
@@ -118,5 +118,5 @@ const HealthStore = () => {
   );
 };
 
-export default HealthStore;
+export default ProductPage;
 
