@@ -4,10 +4,7 @@ export const Container = styled.div`
     width: 75%; /* Giảm chiều rộng của container xuống 75% */
     max-width: 900px; /* Giới hạn chiều rộng tối đa */
     margin: 0 auto;
-    padding: 20px; /* Giảm padding để tiết kiệm không gian */
-    background-color: #f9f9f9;
     border-radius: 10px; /* Giảm độ bo tròn */
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
 `;
 
 export const Header = styled.h2`
@@ -89,24 +86,39 @@ export const OrderTotal = styled.p`
 `;
 
 export const DetailsButton = styled.button`
-    padding: 8px 18px; /* Giảm kích thước nút */
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1.2rem; /* Giảm cỡ chữ nút */
-    font-weight: 600;
-    text-transform: uppercase;
+    background-color: #24AEB1; /* Màu nền đỏ */
+    color: white; /* Màu chữ trắng */
+    border: none; /* Không có viền */
+    border-radius: 5px; /* Bo góc */
+    padding: 10px 15px; /* Khoảng cách bên trong */
+    cursor: pointer; /* Con trỏ chuột dạng tay */
+    transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
 
     &:hover {
-        background-color: #0056b3;
-        transform: translateY(-2px);
+        background-color: #007bff; /* Màu nền khi hover */
     }
 
-    &:active {
-        transform: translateY(0);
+    &:disabled {
+        background-color: #ccc; /* Màu nền khi bị vô hiệu hóa */
+        cursor: not-allowed; /* Con trỏ chuột dạng không cho phép */
+    }
+`;
+export const CancelButton = styled.button`
+    background-color: #ff4d4d; /* Màu nền đỏ */
+    color: white; /* Màu chữ trắng */
+    border: none; /* Không có viền */
+    border-radius: 5px; /* Bo góc */
+    padding: 10px 15px; /* Khoảng cách bên trong */
+    cursor: pointer; /* Con trỏ chuột dạng tay */
+    transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
+
+    &:hover {
+        background-color: #ff1a1a; /* Màu nền khi hover */
+    }
+
+    &:disabled {
+        background-color: #ccc; /* Màu nền khi bị vô hiệu hóa */
+        cursor: not-allowed; /* Con trỏ chuột dạng không cho phép */
     }
 `;
 

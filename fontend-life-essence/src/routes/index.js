@@ -13,6 +13,7 @@ import SignUpPage from "../pages/SignUpPage/SignUpPage";
 import ProfileUpdate from '../pages/ProfileUpdate/ProfileUpdate';
 import MyOrderPage from '../pages/MyOrderPage/MyOrderPage';
 import OrderSuccess from '../pages/OrderSuccess/OrderSuccess';
+import DetailsOrderPage from '../pages/DetailsOrderPage/DetailsOrderPage';
 
 
 export const routes = [
@@ -98,7 +99,14 @@ export const routes = [
         isShowFooter: true
     },
     {
+        path: '/details-order/:orderId',
+        page: DetailsOrderPage,
+        isShowHeader: true,
+        isShowFooter: true
+    },
+    {
         path: '*',
         page: NotFoundPage
-    }
+    },
+
 ];

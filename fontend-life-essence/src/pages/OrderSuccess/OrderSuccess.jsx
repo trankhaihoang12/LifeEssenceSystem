@@ -18,6 +18,18 @@ const OrderSuccess = () => {
         return <div>Order not found</div>;
     }
     console.log("Order Data:", order);
+
+    const getProductImage = (item) => {
+        if (item && item.images && item.images.length > 0) {
+            // Lấy hình ảnh đầu tiên từ mảng và sửa đường dẫn
+            const imageUrl = item.images[0].replace(/\\+/g, '/');
+            return `http://localhost:4000/${imageUrl}`;
+        }
+        // Hình ảnh mặc định nếu không có ảnh
+        return 'https://via.placeholder.com/150';
+    };
+
+    
     return (
         <div style={{ background: '#f5f5fa', width: '100%', height: '100vh' }}>
                 <div style={{ height: '100%', width: '1270px', margin: '0 auto' }}>
@@ -51,7 +63,7 @@ const OrderSuccess = () => {
 
                                 <WrapperItemOrder key={item.product_id}>
                                             <div style={{ width: '500px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                                        <img src={item.product_image} style={{
+                                        <img src={getProductImage(item)} alt={item.prod_name} style={{
                                                     width: '77px',
                                                     height: '79px',
                                                     objectFit: 'cover',

@@ -9,7 +9,7 @@ import Home_feedback1 from '../../assets/images/Home_feedback1.png';
 import Home_feedback2 from '../../assets/images/Home_feedback2.png';
 import Home_vector from '../../assets/images/Home_vector.png';
 import Home_deal1 from '../../assets/images/Home_deal1.png';
-import { FaHeartbeat, FaLongArrowAltRight } from 'react-icons/fa';
+import { FaBahai, FaCannabis, FaHeartbeat, FaLongArrowAltRight } from 'react-icons/fa';
 import { GiHeartPlus, GiNotebook } from 'react-icons/gi';
 import { RiPsychotherapyLine } from 'react-icons/ri';
 import { Button, Icon, IconWrapper, ProductsContainer, ProductsWrapper, Separator, Subtitle, TextWrapper, Title, WrraperItem } from './Style';
@@ -21,6 +21,8 @@ import IntroductionComponent from '../../components/IntroductionComponent/Introd
 import PopularCategories from '../../components/PopularCategoriesComponent/PopularCategories';
 import useHorizontalScroll from '../../hooks/useHorizontalScroll';
 import * as ProductsService from '../../services/ProductsService'
+import * as AdminService from '../../services/AdminService'
+import { useNavigate } from 'react-router';
 
 
 
@@ -28,21 +30,50 @@ import * as ProductsService from '../../services/ProductsService'
 
 const HomePage = () => {
 
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(() => {
+    const cachedProducts = localStorage.getItem('products');
+    return cachedProducts ? JSON.parse(cachedProducts) : [];
+  });
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const healthyScroll = useHorizontalScroll(300);
+  const [categories, setCategories] = useState([]); // State for categories
+  const healthyScroll = useHorizontalScroll(900);
   const trendingScroll = useHorizontalScroll(300);
   const blogScroll = useHorizontalScroll(300);
 
+  const getToken = () => {
+    const storedUserData = localStorage.getItem('userData');
+    const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+    return parsedUserData ? parsedUserData.token : null;
+  };
+  // Fetch categories on component mount
+  const loadCategories = async () => {
+    try {
+      const token = getToken(); // Assuming token is stored in localStorage
+      const categoryData = await AdminService.getAllCategory(token);
+      setCategories(categoryData); // Set fetched categories
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   const loadProducts = async () => {
     try {
+      console.log('Bắt đầu gọi API...'); // Log đầu tiên để kiểm tra.
+      if (products.length > 0) {
+        console.log('Dùng cache sản phẩm');
+        return;
+      }
+
       setLoading(true);
-      const data = await ProductsService.fetchAllProducts({ page, limit: 4 }); // Không cần token
-      console.log('Dữ liệu sản phẩm nhận được:', data.products); 
+      const data = await ProductsService.fetchAllProducts({
+        page: 1,
+        limit: 10,
+      });
       setProducts(data.products);
+      localStorage.setItem('products', JSON.stringify(data.products));
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error('Lỗi khi tải sản phẩm:', error);
@@ -53,71 +84,35 @@ const HomePage = () => {
 
   useEffect(() => {
     loadProducts();
-  }, [page]);
+    loadCategories()
+  }, []); // Khi `page` thay đổi, load lại sản phẩm
 
+  const handleCategoryClick = (categoryId) => {
+    navigate(`/products/${categoryId}`); // Navigate to the category detail page
+  };
   return (
     <div style={{ height: 'auto', backgroundColor: '#f0f9fb' }}>
       <div style={{ height: '80px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div style={{ height: '40px', width: '75%', alignItems: 'center', display: 'flex', margin: 'auto', justifyContent: 'space-between', }}>
+        <div style={{ height: '40px', width: '90%', alignItems: 'center', display: 'flex', margin: 'auto', justifyContent: 'space-between', }}>
 
-          <WrraperItem>
-            <IconWrapper style={{ backgroundColor: '#24AEB1' }}>
-              <Icon>
-                <FaBriefcaseMedical />
-              </Icon>
-            </IconWrapper>
-            <TextWrapper>
-              <Title>Medicine</Title>
-              <Subtitle>Over 25000 products</Subtitle>
-            </TextWrapper>
-            <Separator src={line} alt="line" />
-          </WrraperItem>
-
-          <WrraperItem>
-            <IconWrapper style={{ backgroundColor: '#F54F9A' }}>
-              <Icon><GiHeartPlus /></Icon>
-            </IconWrapper>
-            <TextWrapper>
-              <Title>Wellness</Title>
-              <Subtitle>Health products </Subtitle>
-            </TextWrapper>
-            <Separator src={line} alt="line" />
-          </WrraperItem>
-
-          <WrraperItem>
-            <IconWrapper style={{ backgroundColor: '#83C847' }}>
-              <Icon><GiNotebook /></Icon>
-            </IconWrapper>
-            <TextWrapper>
-              <Title>Diagnostic</Title>
-              <Subtitle>Book tests & checkups</Subtitle>
-            </TextWrapper>
-            <Separator src={line} alt="line" />
-          </WrraperItem>
-
-          <WrraperItem>
-            <IconWrapper style={{ backgroundColor: '#51ACF6' }}>
-              <Icon><FaHeartbeat /></Icon>
-            </IconWrapper>
-            <TextWrapper>
-              <Title>Health Corner</Title>
-              <Subtitle>Trending from health experts</Subtitle>
-            </TextWrapper>
-            <Separator src={line} alt="line" />
-          </WrraperItem>
-
-          <WrraperItem>
-            <IconWrapper style={{ backgroundColor: '#FFB61B' }}>
-              <Icon><RiPsychotherapyLine /></Icon>
-            </IconWrapper>
-            <TextWrapper>
-              <Title>Others</Title>
-              <Subtitle>More info</Subtitle>
-            </TextWrapper>
-          </WrraperItem>
+          {categories.map((category, index) => (
+            <WrraperItem key={category.category_id} onClick={() => handleCategoryClick(category.category_id)}>
+              <IconWrapper style={{ backgroundColor: getCategoryColor(index) }}>
+                <Icon>
+                  {getCategoryIcon(index)}
+                </Icon>
+              </IconWrapper>
+              <TextWrapper>
+                <Title>{category.name}</Title>
+                <Subtitle>{category.description}</Subtitle>
+              </TextWrapper>
+              <Separator src={line} alt="line" />
+            </WrraperItem>
+          ))}
 
         </div>
       </div>
+
 
       {/* Slide */}
       <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
@@ -252,7 +247,7 @@ const HomePage = () => {
             <BlogCardComponent />
             <BlogCardComponent />
           </ProductsWrapper>
-        </ProductsContainer> 
+        </ProductsContainer>
         <Button position="left" onClick={blogScroll.scrollPrevious}>
           Previous
         </Button>
@@ -266,6 +261,28 @@ const HomePage = () => {
 
 
   )
+
+
+
 }
+// Utility to get colors based on index
+const getCategoryColor = (index) => {
+  const colors = ['#24AEB1', '#ffa366', '#F54F9A', '#83C847', '#51ACF6', '#ff9999', '#FFB61B'];
+  return colors[index % colors.length];
+};
+
+// Utility to get icons based on index
+const getCategoryIcon = (index) => {
+  const icons = [
+    <FaBriefcaseMedical />,
+    <FaCannabis />,
+    <GiHeartPlus />,
+    <GiNotebook />,
+    <FaHeartbeat />,
+    <FaBahai />,
+    <RiPsychotherapyLine />
+  ];
+  return icons[index % icons.length];
+};
 
 export default HomePage

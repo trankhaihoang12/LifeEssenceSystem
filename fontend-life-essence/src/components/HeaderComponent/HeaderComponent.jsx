@@ -12,6 +12,7 @@ import { Badge, Popover } from 'antd';
 import { useMutation } from '@tanstack/react-query';
 import * as UserService from '../../services/UserService';
 import * as message from '../../components/MessageComponent/Message';
+import { useSelector } from 'react-redux';
 
 
 const HeaderComponent = () => {
@@ -20,8 +21,8 @@ const HeaderComponent = () => {
   const [password, setPassword] = useState('');
   const [userData, setUserData] = useState(null);
   const [isOpenPopup, setIsOpenPopup] = useState(false)
-  const [cartCount, setCartCount] = useState(0); // Số lượng trong giỏ hàng
-  const [wishlistCount, setWishlistCount] = useState(0); // Số lượng trong wishlist
+  const cartItems = useSelector((state) => state.cart.cartItems);
+  const totalQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
   const navigate = useNavigate();
 
   const mutation = useMutation({
@@ -78,7 +79,7 @@ const HeaderComponent = () => {
       {userData?.user?.role === 'manager' && (
         <WrapperContentPopup onClick={() => { navigate('/admin'); handleClose() }}>Management product</WrapperContentPopup>
       )}
-      <WrapperContentPopup onClick={() => { navigate('/myOrders'); handleClose() }}>Order of me</WrapperContentPopup>
+      <WrapperContentPopup onClick={() => { navigate('/my-order'); handleClose() }}>Order of me</WrapperContentPopup>
       <WrapperContentPopup onClick={handleSignOut} style={{ color: 'red', textAlign: 'center' }}>LOGOUT</WrapperContentPopup>
     </div>
   );
@@ -111,11 +112,11 @@ const HeaderComponent = () => {
               </WrapperButton>
             </div>
             <WrapperItem>
-              <span>Home +</span>
-              <span>Shop +</span>
-              <span>Blog +</span>
-              <span>On Sale +</span>
-              <span>Contract +</span>
+              <span>Home </span>
+              <span>Shop </span>
+              <span>Blog </span>
+              <span>On Sale </span>
+              <span>Contract </span>
             </WrapperItem>
           </div>
         </div>
@@ -166,7 +167,7 @@ const HeaderComponent = () => {
             <Badge size='small' count={1}>
             <FaRegHeart style={{ fontSize: '2.3rem', cursor: 'pointer' }} onClick={() => navigate('/wishlist')} />
             </Badge>
-            <Badge size='small' count={1}>
+            <Badge size='small' count={totalQuantity}>
             <TiShoppingCart style={{ fontSize: '2.7rem', cursor: 'pointer' }} onClick={() => navigate('/order')} />
             </Badge>
           </IconsContainer>

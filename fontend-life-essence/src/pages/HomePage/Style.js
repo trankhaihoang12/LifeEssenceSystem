@@ -4,6 +4,8 @@ export const WrraperItem = styled.div`
   height: 40px;
   width: 260px;
   display: flex;
+  gap: 10px;
+  cursor: pointer;
 `;
 
 export const IconWrapper = styled.div`
@@ -55,14 +57,16 @@ export const ProductsContainer = styled.div`
   overflow-x: hidden;
   overflow-y: hidden;
   scroll-behavior: smooth;
-  width: 100%;
-  margin-top: 20px;
+  width: 100%; /* Hoặc chiều rộng cố định như 1200px */
+  margin-top: 40px;
   justify-content: center;
+  height: 100%;
 `;
 
 export const ProductsWrapper = styled.div`
   display: flex;
   gap: 20px;
+  width: 1500px;
 `;
 export const Button = styled.button`
   background-color: #2EA5B6;

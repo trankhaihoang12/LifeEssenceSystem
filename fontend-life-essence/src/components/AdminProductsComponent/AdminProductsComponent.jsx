@@ -213,7 +213,6 @@ const AdminProductComponent = () => {
     };
 
     const handleUpdateProduct = async () => {
-        // Kiểm tra các trường cần thiết
         const {
             prod_name,
             price,
@@ -240,50 +239,20 @@ const AdminProductComponent = () => {
         }
 
         try {
-            // Tạo FormData để gửi hình ảnh
-            const formData = new FormData();
-            formData.append("category_id", category_id);
-            formData.append("prod_name", prod_name);
-            formData.append("prod_description", prod_description);
-            formData.append("price", price);
-            formData.append("cost", cost);
-            formData.append("quantity", quantity);
-            formData.append("prod_percent", prod_percent);
-            formData.append("best_seller", editProduct.best_seller);
-            formData.append("ratings", ratings);
-            formData.append("expiration_date", expiration_date);
-            console.log('images', images)
+            const formData = createFormData(editProduct);
 
-            // Kiểm tra và thêm các hình ảnh vào FormData
-            images.forEach(image => {
-                formData.append("images", image);
-            });
-
-
-            // Gọi API để cập nhật sản phẩm
             const updatedProduct = await ProductsService.updateProduct(editProduct.id, formData, token);
             console.log("Sản phẩm đã cập nhật:", updatedProduct);
 
             if (updatedProduct && updatedProduct.product && updatedProduct.product.id) {
+                // Cập nhật sản phẩm mà không cần tải lại trang
                 setProducts(prevProducts => prevProducts.map(product =>
                     product.id === updatedProduct.product.id ? updatedProduct.product : product
                 ));
 
                 // Đóng form chỉnh sửa
                 setIsEditing(false);
-                setEditProduct({
-                    category_id: '',
-                    prod_name: '',
-                    prod_description: '',
-                    price: '',
-                    cost: '',
-                    quantity: '',
-                    prod_percent: '',
-                    best_seller: false,
-                    ratings: '',
-                    expiration_date: '',
-                    images: [],
-                });
+                resetEditProduct();
 
                 // Hiển thị thông báo thành công
                 alert("Cập nhật sản phẩm thành công!");
@@ -293,11 +262,47 @@ const AdminProductComponent = () => {
         } catch (error) {
             console.error("Lỗi khi cập nhật sản phẩm:", error);
             alert(
-                error.response?.data?.message ||
-                "Có lỗi xảy ra khi cập nhật sản phẩm. Vui lòng thử lại."
+                error.response?.data?.message || "Có lỗi xảy ra khi cập nhật sản phẩm. Vui lòng thử lại."
             );
         }
     };
+
+    const createFormData = (product) => {
+        const formData = new FormData();
+        formData.append("category_id", product.category_id);
+        formData.append("prod_name", product.prod_name);
+        formData.append("prod_description", product.prod_description);
+        formData.append("price", product.price);
+        formData.append("cost", product.cost);
+        formData.append("quantity", product.quantity);
+        formData.append("prod_percent", product.prod_percent);
+        formData.append("best_seller", product.best_seller);
+        formData.append("ratings", product.ratings);
+        formData.append("expiration_date", product.expiration_date);
+
+        product.images.forEach(image => {
+            formData.append("images", image);
+        });
+
+        return formData;
+    };
+
+    const resetEditProduct = () => {
+        setEditProduct({
+            category_id: '',
+            prod_name: '',
+            prod_description: '',
+            price: '',
+            cost: '',
+            quantity: '',
+            prod_percent: '',
+            best_seller: false,
+            ratings: '',
+            expiration_date: '',
+            images: [],
+        });
+    };
+
 
 
     const handlePageChange = (pageNumber) => {

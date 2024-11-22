@@ -4,6 +4,8 @@ import { FaHeart } from "react-icons/fa";
 import * as OrderService from '../../services/OrderService'
 import * as ProductsService from '../../services/ProductsService'
 import { useNavigate } from 'react-router';
+import { useDispatch } from 'react-redux';
+import { addItem, removeeItem } from '../../redux/slides/cartSlice';
 
 //sản phẩm có trong cart
 const OrderPage = () => {
@@ -17,6 +19,8 @@ const OrderPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate(); 
+  const dispatch = useDispatch();
+
 
   const getToken = () => {
     const storedUserData = localStorage.getItem('userData');
@@ -30,7 +34,7 @@ const OrderPage = () => {
       try {
         const token = getToken(); // Lấy token từ localStorage
         const cartData = await OrderService.getAllCartItems(token); // Gọi API lấy giỏ hàng
-        const productData = await ProductsService.fetchAllProducts({ page, limit: 4 }); // Gọi API lấy danh sách sản phẩm
+        const productData = await ProductsService.fetchAllProducts({ page, limit: 10 }); // Gọi API lấy danh sách sản phẩm
 
         // Ánh xạ giữa cartItems và productData để lấy ảnh
         const enrichedCartItems = cartData.data.map((cartItem) => {
@@ -57,9 +61,10 @@ const OrderPage = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const data = await ProductsService.fetchAllProducts({ page, limit: 4 }); // Không cần token
+        const data = await ProductsService.fetchAllProducts({ page, limit: 10 }); // Không cần token
         console.log('Dữ liệu sản phẩm nhận được:', data.products);
         setProducts(data.products);
+        localStorage.setItem('products', JSON.stringify(data.products));
         setTotalPages(data.totalPages);
       } catch (error) {
         console.error('Lỗi khi tải sản phẩm:', error);
@@ -91,6 +96,7 @@ const OrderPage = () => {
         // Cập nhật lại giỏ hàng trong state (loại bỏ sản phẩm khỏi giỏ hàng)
         setCartItems((prevItems) => prevItems.filter((item) => item.product_id !== id));
         alert('Product removed successfully');
+        dispatch(removeeItem(id));
       } else {
         alert('Error removing product');
       }
@@ -115,6 +121,7 @@ const OrderPage = () => {
       // Cập nhật giỏ hàng trong state để hiển thị ngay lập tức
       setCartItems((prevItems) => {
         const existingItem = prevItems.find(item => item.product_id === product.id);
+        dispatch(addItem(product));
 
         if (existingItem) {
           // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng lên
@@ -365,7 +372,7 @@ const OrderPage = () => {
                   e.currentTarget.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
                 }}
               >
-                <img
+                <img onClick={() => navigate(`/details-product/${product.id}`)}
                   src={imageSrc}
                   alt={product.prod_name}
                   style={{

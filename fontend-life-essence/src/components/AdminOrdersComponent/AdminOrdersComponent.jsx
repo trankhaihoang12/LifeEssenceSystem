@@ -1,46 +1,114 @@
-import React, { useState } from 'react';
-import { Container,ButtonGroup, WrapperTable, WrapperTableHeader, WrapperTableData, WrapperTableRow, StatusBadge, WrapperPagination, ExportButton, AddButton } from './Style';
+import React, { useEffect, useState } from 'react';
+import { Container, ButtonGroup, WrapperTable, WrapperTableHeader, WrapperTableData, WrapperTableRow, StatusBadge, WrapperPagination, ExportButton, AddButton, WrapperDetailModal, WrapperModalContent, Title, Text, Strong, ProductList, ProductItem, CloseButton, CloseButtonContainer } from './Style';
 import { FaPlus, FaPen, FaTrash } from 'react-icons/fa';
 import { LuSearch } from 'react-icons/lu';
+import * as AdminService from '../../services/AdminService'
 const AdminOrdersComponent = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const orders = [
-    { id: '5146845648465', customerName: 'Quynh Nhu', date: '2/19/24 11:26 PM', paymentStatus: 'Paid', amount: '$120.00', paymentMethod: 'VNPAY', orderStatus: 'Shipped' },
-    { id: '5467819467348', customerName: 'Xuan Quyen', date: '5/7/24 04:26 PM', paymentStatus: 'Paid', amount: '$5103.00', paymentMethod: 'PayPal', orderStatus: 'Processing' },
-    { id: '134570954546', customerName: 'Khai Hoang', date: '9/18/24 11:26 PM', paymentStatus: 'COD', amount: '$114.00', paymentMethod: 'COD', orderStatus: 'Processing' },
-    { id: '5440754979', customerName: 'Phuoc Quanh', date: '2/11/24 11:26 PM', paymentStatus: 'Paid', amount: '$98.00', paymentMethod: 'VNPAY', orderStatus: 'Processing' },
-    { id: '1243457894543', customerName: 'Van Lan', date: '9/18/24 11:26 PM', paymentStatus: 'Paid', amount: '$223.00', paymentMethod: 'COD', orderStatus: 'Shipped' },
-    { id: '845414649707', customerName: 'Tien Manh', date: '1/28/24 11:26 PM', paymentStatus: 'COD', amount: '$231.00', paymentMethod: 'COD', orderStatus: 'Processing' },
-    { id: '210514640451', customerName: 'Nguyen Khanh', date: '5/27/24 11:26 PM', paymentStatus: 'Paid', amount: '$99.00', paymentMethod: 'PayPal', orderStatus: 'Shipped' },
-    { id: '043910464504', customerName: 'Hoang Mai', date: '8/2/24 11:26 PM', paymentStatus: 'COD', amount: '$156.00', paymentMethod: 'PayPal', orderStatus: 'Delivered' },
-  ];
-
-
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 10;
+
+
+  // New States for Order Details
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showOrderDetails, setShowOrderDetails] = useState(false);
+
+
+  const getToken = () => {
+    const storedUserData = localStorage.getItem('userData');
+    const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+    return parsedUserData ? parsedUserData.token : null;
+  };
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      setLoading(true);
+      try {
+        const token = getToken();  // Giả sử token lưu trong localStorage
+        const response = await AdminService.getAllOrders(token);
+        console.log('ressss', response)
+        setOrders(response.data);  // Lưu danh sách đơn hàng vào state
+      } catch (err) {
+        setError(err.message || 'Có lỗi xảy ra khi tải dữ liệu');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
   const totalPages = Math.ceil(orders.length / ordersPerPage);
 
 
   const handleAddOrder = () => {
     alert('Add Order');
   };
-  
+
   const handleExport = () => {
     alert('Xuất file Excel');
   };
   const handleEditOrder = (id) => {
     alert(`Edit order with ID: ${id}`);
   };
-  const handleDeleteOrder = (id) => {
-    alert(`Delete order with ID: ${id}`);
+  const handleDeleteOrder = async (id) => {
+    if (window.confirm('Are you sure you want to delete this order?')) {
+      try {
+        const token = getToken();
+        await AdminService.deleteOrder(id, token); // Call the delete API
+        setOrders((prevOrders) => prevOrders.filter((order) => order.id !== id)); // Update the state
+        alert('Order deleted successfully');
+      } catch (error) {
+        alert(`Failed to delete order: ${error.message}`);
+      }
+    }
   };
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
   const filteredOrders = orders.filter(order =>
-    order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.id.includes(searchTerm)
+    (order.customerName && order.customerName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (order.id && order.id.includes(searchTerm))
   );
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'progress':
+        return '#FFD700'; // Gold
+      case 'pending':
+        return '#FF8C00'; // Dark Orange
+      case 'shipping':
+        return '#1E90FF'; // Dodger Blue
+      case 'completed':
+        return '#32CD32'; // Lime Green
+      case 'confirmed':
+        return '#4CAF50'; // Green
+      case 'resolved':
+        return '#6A5ACD'; // Slate Blue
+      case 'canceled':
+        return '#E53E3E'; // Red
+      default:
+        return '#A9A9A9'; // Default Gray
+    }
+  };
+  const handleViewOrderDetails = async (id) => {
+    try {
+      const token = getToken();
+      const orderDetails = await AdminService.getOrderById(id, token); // Fetch order details by ID
+      setSelectedOrder(orderDetails);
+      setShowOrderDetails(true);
+    } catch (err) {
+      alert('Failed to fetch order details.');
+    }
+  };
+
+  const handleCloseOrderDetails = () => {
+    setShowOrderDetails(false);
+    setSelectedOrder(null);
+  };
 
 
   return (
@@ -102,16 +170,34 @@ const AdminOrdersComponent = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredOrders.map(order => (
+          {filteredOrders.slice((currentPage - 1) * ordersPerPage, currentPage * ordersPerPage).map(order => (
             <WrapperTableRow key={order.id}>
-              <WrapperTableData>{order.id}</WrapperTableData>
-              <WrapperTableData>{order.customerName}</WrapperTableData>
-              <WrapperTableData>{order.date}</WrapperTableData>
-              <WrapperTableData><StatusBadge paymentStatus={order.paymentStatus}>{order.paymentStatus}</StatusBadge></WrapperTableData>
-              <WrapperTableData>{order.amount}</WrapperTableData>
-              <WrapperTableData>{order.paymentMethod}</WrapperTableData>
+              <WrapperTableData onClick={() => handleViewOrderDetails(order.id)} style={{ cursor: 'pointer', color: '#007BFF' }}>
+                {order.id}
+              </WrapperTableData>
+              {/* <WrapperTableData>{order.id}</WrapperTableData> */}
+              <WrapperTableData>{order.name}</WrapperTableData>
+              <WrapperTableData>{order.created_at || 'Nav'}</WrapperTableData>
               <WrapperTableData>
-                <span className={`badge-${order.orderStatus.toLowerCase()}`}>
+                <WrapperTableData>
+                  <StatusBadge paymentStatus={order.is_payment ? 'Paid' : 'Unpaid'}>
+                    {order.is_payment ? 'Paid' : 'Unpaid'}
+                  </StatusBadge>
+                </WrapperTableData>
+              </WrapperTableData>
+              <WrapperTableData>{order.total}</WrapperTableData>
+              <WrapperTableData>{order.paymentMethods}</WrapperTableData>
+              <WrapperTableData>
+                <span
+                  style={{
+                    backgroundColor: getStatusColor(order.orderStatus),
+                    color: 'white',
+                    padding: '3px 6px',
+                    borderRadius: '50px',
+                    textTransform: 'capitalize',
+                    fontSize: '12px'
+                  }}
+                >
                   {order.orderStatus}
                 </span>
               </WrapperTableData>
@@ -138,6 +224,30 @@ const AdminOrdersComponent = () => {
         </div>
         <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
       </WrapperPagination>
+      {/* Modal for Order Details */}
+      {showOrderDetails && selectedOrder && (
+        <WrapperDetailModal>
+          <WrapperModalContent>
+            <Title>Order Details</Title>
+            <Text><Strong>Order ID:</Strong> {selectedOrder.id}</Text>
+            <Text><Strong>Customer:</Strong> {selectedOrder.User.name} ({selectedOrder.User.email})</Text>
+            <Text><Strong>Phone:</Strong> {selectedOrder.User.phone}</Text>
+            <Text><Strong>Address:</Strong> {selectedOrder.address}</Text>
+            <Text><Strong>Payment Status:</Strong> {selectedOrder.is_payment ? 'Paid' : 'Unpaid'}</Text>
+            <Text><Strong>Order Status:</Strong> {selectedOrder.orderStatus}</Text>
+            <Text><Strong>Products:</Strong></Text>
+            <ProductList>
+              {selectedOrder.products.map((product, index) => (
+                <ProductItem key={index}>{product.prod_name} (x{product.quantity})</ProductItem>
+              ))}
+            </ProductList>
+            <CloseButtonContainer>
+            <CloseButton onClick={handleCloseOrderDetails}>Close</CloseButton>
+            </CloseButtonContainer>
+          </WrapperModalContent>
+
+        </WrapperDetailModal>
+      )}
     </Container>
   );
 };

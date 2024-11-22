@@ -29,6 +29,8 @@ import {
   ThumbnailImage
 } from './Style';
 import { useParams } from "react-router";
+import { useDispatch } from "react-redux";
+import { addItem } from "../../redux/slides/cartSlice";
 
 
 
@@ -39,6 +41,9 @@ const HealthStore = () => {
   const [selectedImage, setSelectedImage] = useState("");  // Lưu trữ hình ảnh được chọn
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState(null);
+
+  const dispatch = useDispatch();
+
 
   const handleTabClick = (tab) => {
     setSelectedTab(tab);
@@ -58,10 +63,11 @@ const HealthStore = () => {
       setError("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
       return;
     }
-
+    
     try {
       const response = await OrderService.addToCart(product.id, quantity, token); // Gọi API
       console.log("Sản phẩm đã được thêm vào giỏ:", response);
+      dispatch(addItem(product));
       // Thực hiện xử lý nếu thành công, ví dụ hiển thị thông báo hoặc cập nhật giỏ hàng
     } catch (error) {
       setError("Không thể thêm sản phẩm vào giỏ hàng.");
