@@ -12,6 +12,7 @@ import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
 import ProfileUpdate from '../pages/ProfileUpdate/ProfileUpdate';
 import MyOrderPage from '../pages/MyOrderPage/MyOrderPage';
+import DetailsBlogPage from '../pages/DetailsBlogPage/DetailsBlogs';
 
 
 export const routes = [
@@ -76,7 +77,6 @@ export const routes = [
     {
         path: '/admin',
         page: AdminPage,
-        // Không hiển thị Header và Footer cho trang Admin
     },
     {
         path: '/wishlist',
@@ -89,10 +89,16 @@ export const routes = [
         page: MyOrderPage,
         isShowHeader: true,
         isShowFooter: true
-
+    },
+    {
+        path: '/blogs',
+        page: DetailsBlogPage,
+        isShowHeader: true,
+        isShowFooter: true
     },
     {
         path: '*',
         page: NotFoundPage
-    }
+
+    },
 ];
