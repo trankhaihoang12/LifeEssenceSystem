@@ -1,47 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
     Container, Header, PaymentMethod, DeliveryAddress, CombinedItemsSummary, 
     ItemsTable, OrderSummary, OrderCode, Button, UpdateLink, ProductImage, TotalSection, TotalText, TotalAmount, PriceColumn 
 } from './Style';
+import * as OrderService from '../../services/OrderService'
+import { useParams } from 'react-router';
 
 const DetailsOrderPage = () => {
-    // Giả lập dữ liệu đơn hàng
-    const order = {
-        id: '2411110ABCDEFG',
-        customerName: 'Hoàng Trần',
-        phone: '+84 708 146 105',
-        address: '7B/10 Lê Thanh Nghị, Phường Hòa Cường Bắc, Quận Hải Châu, Đà Nẵng',
-        paymentMethod: 'Cash on Delivery',
-        orderTime: '11-11-2024 15:08',
-        products: [
-            {
-                id: '1',
-                name: 'Garlic Oil 1000 MG+',
-                quantity: 1,
-                price: 45.00,
-                image: 'https://storage.googleapis.com/a1aa/image/GA7JzaE18l7nC1IMzadB3wwqm6he1GdVe8bJpXU4FjE514vTA.jpg',
-            },
-            {
-                id: '2',
-                name: 'Vitamin D 1000U',
-                quantity: 1,
-                price: 25.00,
-                image: 'https://storage.googleapis.com/a1aa/image/FSLb3VSe6MXNICdMThYAIR4pDu6UGauflsnASXrd2Zj414vTA.jpg',
-            },
-            {
-                id: '3',
-                name: 'Glucosamine',
-                quantity: 1,
-                price: 20.00,
-                image: 'https://storage.googleapis.com/a1aa/image/qcwZdzzBSka4MFPc9M3X87VWLyrxBMUkTnxhuuhYlBlea83JA.jpg',
-            },
-        ],
-        subtotal: 90.00,
-        deliveryFee: 20.00,
-        discount: 0.00,
-        coupon: 0.00,
-        total: 110.00,
-    };
+    const { orderId } = useParams(); // Lấy orderId từ URL params
+    console.log("orderId from URL:", orderId); 
+    const [order, setOrder] = useState(null); // Dữ liệu đơn hàng
+    const [loading, setLoading] = useState(true); // Trạng thái loading
+    const [error, setError] = useState(null); // Lỗi khi gọi API
 
     // Hàm sao chép mã đơn hàng
     const copyToClipboard = () => {
@@ -50,6 +20,71 @@ const DetailsOrderPage = () => {
             .catch((err) => alert('Failed to copy: ', err));
     };
 
+    // Lấy token từ localStorage
+    const getToken = () => {
+        const storedUserData = localStorage.getItem('userData');
+        const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+        return parsedUserData ? parsedUserData.token : null;
+    };
+
+    const token = getToken(); // Lấy token ngay trong useEffect
+
+    // Lấy chi tiết đơn hàng khi component được mount
+    useEffect(() => {
+        const fetchOrderDetails = async () => {
+            if (!token) {
+                setError('User not authenticated. Please log in.');
+                setLoading(false);
+                return;
+            }
+
+            try {
+                // Gọi API để lấy chi tiết đơn hàng theo orderId
+                const data = await OrderService.getOrderDetails(orderId, token);
+                console.log('dât',data)
+                setOrder(data.data); // Cập nhật dữ liệu vào state
+                setLoading(false); // Đổi trạng thái loading
+            } catch (err) {
+                setError(err.message || 'Failed to fetch order details');
+                setLoading(false);
+            }
+        };
+
+        if (orderId && token) {
+            fetchOrderDetails(); // Gọi hàm khi component mount và orderId thay đổi
+        } else {
+            setError('Invalid order ID or missing token.');
+            setLoading(false);
+        }
+    }, [orderId, token]); // Chạy lại khi `orderId` hoặc `token` thay đổi
+
+    // Nếu đang load hoặc có lỗi, hiển thị thông báo
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
+    // Check if order exists
+    if (!order) {
+        return <div>No order data available</div>;
+    }
+
+    const getProductImage = (product) => {
+        if (product.images && product.images.length > 0) {
+            // Replace backslashes with forward slashes for correct URL formatting
+            const imageUrl = product.images[0].url.replace(/\\+/g, '/');
+            console.log('Product Image URL:', imageUrl); // Debug to check the image URL
+            return `http://localhost:4000/${imageUrl}`;
+        }
+        return 'https://via.placeholder.com/150'; // Fallback image if no image exists
+    };
+
+    const { customerName, phone, address, products, subtotal, deliveryFee, discount, coupon, total, paymentMethod, orderTime, id } = order;
+
+    
     return (
         <Container>
             <Header>Order Information</Header>
@@ -61,9 +96,9 @@ const DetailsOrderPage = () => {
 
             <DeliveryAddress>
                 <div><i className="fas fa-map-marker-alt"></i> Delivery address</div>
-                <div>{order.customerName} ({order.phone})</div>
+                <div>{customerName} ({phone})</div>
                 <div>
-                    {order.address}
+                    {address || 'No address provided'}
                     <UpdateLink>Update</UpdateLink>
                 </div>
             </DeliveryAddress>
@@ -79,16 +114,23 @@ const DetailsOrderPage = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {order.products.map((product) => (
-                                <tr key={product.id}>
-                                    <td>
-                                        <ProductImage src={product.image} alt={product.name} />
-                                        {product.name}
-                                    </td>
-                                    <td>x{product.quantity}</td>
-                                    <PriceColumn>${product.price.toFixed(2)}</PriceColumn> {/* Giá tiền căn phải */}
+                            {/* Kiểm tra nếu order.products là một mảng hợp lệ trước khi dùng map */}
+                            {Array.isArray(products) && products.length > 0 ? (
+                                products.map((product) => (
+                                    <tr key={product.id}>
+                                        <td>
+                                            <ProductImage src={getProductImage(product)} alt={product.prod_name} />
+                                            {product.prod_name}
+                                        </td>
+                                        <td>x{product.quantity}</td>
+                                        <PriceColumn>${product.price}</PriceColumn>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="3">No products available</td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </ItemsTable>
@@ -96,10 +138,10 @@ const DetailsOrderPage = () => {
                 <OrderSummary>
                     <table>
                         <tbody>
-                            <tr><th>Subtotal</th><PriceColumn>${order.subtotal.toFixed(2)}</PriceColumn></tr>
-                            <tr><th>Delivery</th><PriceColumn>${order.deliveryFee.toFixed(2)}</PriceColumn></tr>
-                            <tr><th>Discount</th><PriceColumn>${order.discount.toFixed(2)}</PriceColumn></tr>
-                            <tr><th>Coupon</th><PriceColumn>${order.coupon.toFixed(2)}</PriceColumn></tr>
+                            <tr><th>Subtotal</th><PriceColumn>${subtotal}</PriceColumn></tr>
+                            <tr><th>Delivery</th><PriceColumn>${deliveryFee}</PriceColumn></tr>
+                            <tr><th>Discount</th><PriceColumn>${discount}</PriceColumn></tr>
+                            <tr><th>Coupon</th><PriceColumn>${coupon}</PriceColumn></tr>
                         </tbody>
                     </table>
                 </OrderSummary>
@@ -108,24 +150,23 @@ const DetailsOrderPage = () => {
 
                 <TotalSection>
                     <TotalText>Total</TotalText>
-                    <TotalAmount>${order.total.toFixed(2)}</TotalAmount>
+                    <TotalAmount>${total}</TotalAmount>
                 </TotalSection>
             </CombinedItemsSummary>
 
             <OrderCode>
                 <table>
                     <tbody>
-                        {/* Tăng cỡ chữ cho Order Code bằng cách sử dụng h2 */}
-                        <tr><th><h1>Order Code</h1></th><td>{order.id} <Button onClick={copyToClipboard}>COPY</Button></td></tr>
-                        {/* Sử dụng h2 cho Payment Method và Order Time */}
-                        <tr><th><h2>Payment Method</h2></th><td>{order.paymentMethod}</td></tr>
-                        <tr><th><h2>Order Time</h2></th><td>{order.orderTime}</td></tr>
+                        <tr>
+                            <th><h1>Order Code</h1></th>
+                            <td>{id} <Button onClick={copyToClipboard}>COPY</Button></td>
+                        </tr>
+                        <tr><th><h2>Payment Method</h2></th><td>{paymentMethod || 'Not specified'}</td></tr>
+                        <tr><th><h2>Order Time</h2></th><td>{orderTime || 'Not available'}</td></tr>
                     </tbody>
                 </table>
             </OrderCode>
         </Container>
     );
 };
-
 export default DetailsOrderPage;
-

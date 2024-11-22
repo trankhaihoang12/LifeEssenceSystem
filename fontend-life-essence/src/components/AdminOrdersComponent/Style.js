@@ -147,3 +147,68 @@ export const WrapperPagination = styled.div`
     }
   }
 `;
+
+export const WrapperDetailModal = styled.div`
+ position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
+export const WrapperModalContent = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 70%;
+`
+
+export const Title = styled.h2`
+  margin-bottom: 15px;
+  font-size: 24px;
+  text-align: center;
+`;
+
+export const Text = styled.p`
+  margin: 10px 0;
+  font-size: 16px;
+
+`;
+
+export const Strong = styled.strong`
+  font-weight: bold;
+`;
+
+export const ProductList = styled.ul`
+  list-style-type: none;
+  padding: 0;
+`;
+
+export const ProductItem = styled.li`
+  margin: 5px 0;
+`;
+
+export const CloseButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto; /* Đẩy nút xuống dưới cùng */
+`;
+export const CloseButton = styled.button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;

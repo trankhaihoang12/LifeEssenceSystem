@@ -22,7 +22,6 @@ export const SectionContainer = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  margin-bottom: 20px;
 `;
 
 export const ShippingInfoContainer = styled.div`
@@ -85,11 +84,12 @@ export const ProductImage = styled.img`
   height: 60px;
   border-radius: 5px;
   color:red;
+  margin-right: 20px;
 `;
 
 export const ProductName = styled.span`
   flex: 1;
-  font-size: 16px;
+  font-size: 15px;
 `;
 
 export const QuantityContainer = styled.div`
@@ -117,8 +117,9 @@ export const QuantityText = styled.span`
 `;
 
 export const SummaryContainer = styled.div`
-  padding-top: 20px;
+  padding: 20px 0;
   border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 `;
 
 export const TotalRow = styled.div`
@@ -133,8 +134,6 @@ export const PaymentMethodContainer = styled.div`
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-top: 10px;
-  width:700px;
 `;
 
 export const PaymentMethod = styled.div`
@@ -143,6 +142,7 @@ export const PaymentMethod = styled.div`
   margin: 10px 0;
   font-size: 16px;
   cursor: pointer;
+  gap : 10px
 `;
 
 export const RadioButton = styled.input`
@@ -150,16 +150,16 @@ export const RadioButton = styled.input`
 `;
 
 export const PlaceOrderButton = styled.button`
-  padding: 15px 30px;
-  font-size: 18px;
+  padding: 15px 10px;
+  font-size: 14px;
+  width: 310px;
   font-weight: bold;
   background-color: #24AEB1;
   color: #fff;
   border-radius: 5px;
   border: none;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 30px;
   align-self: center;
-  max-width: 200px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 `;
