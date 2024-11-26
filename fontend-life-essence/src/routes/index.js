@@ -12,7 +12,7 @@ import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
 import DetailsOrderPage from "../pages/DetailsOrderPage/DetailsOrderPage";
 import MyOrderPage from "../pages/MyOrderPage/MyOrderPage";
-
+import Feedback from "../pages/Feedback/Feedback";
 export const routes = [
     {
         path: '/',
@@ -95,5 +95,11 @@ export const routes = [
     {
         path: '*',
         page: NotFoundPage
+    },
+    {
+        path: '/feedback',
+        page: Feedback,
+        isShowHeader: true,
+        isShowFooter: true
     }
 ];
