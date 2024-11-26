@@ -15,9 +15,7 @@ import MyOrderPage from '../pages/MyOrderPage/MyOrderPage';
 import DetailsBlogPage from '../pages/DetailsBlogPage/DetailsBlogs';
 import OrderSuccess from '../pages/OrderSuccess/OrderSuccess';
 import DetailsOrderPage from '../pages/DetailsOrderPage/DetailsOrderPage';
-
-
-
+import Feedback from "../pages/Feedback/Feedback";
 export const routes = [
     {
         path: '/',
@@ -117,4 +115,11 @@ export const routes = [
         page: NotFoundPage
     
     },
+
+    {
+        path: '/feedback',
+        page: Feedback,
+        isShowHeader: true,
+        isShowFooter: true
+    }
 ];
