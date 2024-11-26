@@ -20,12 +20,12 @@ export const Footer = styled.footer`
 
 export const FooterContent = styled.div`
     width: 95%;
-    border-top: 1.5px  solid #00ccff; 
+    height: 270px;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
-    margin-bottom: 20px; /* Tăng khoảng cách giữa nội dung và bản quyền */
-     margin: 0 auto;
+    margin-top: 40px; 
+
 `;
 
 export const FooterSection = styled.div`
@@ -37,21 +37,24 @@ export const FooterSection = styled.div`
 export const FooterTitle = styled.h4`
     margin-bottom: 15px; /* Khoảng cách dưới tiêu đề */
     font-size: 1.2em; /* Kích thước chữ lớn hơn */
-    border-bottom: 2px solid #61dafb; /* Đường gạch dưới tiêu đề */
+    border-bottom: 1px solid #61dafb; /* Đường gạch dưới tiêu đề */
     padding-bottom: 5px; /* Khoảng cách giữa tiêu đề và nội dung */
 `;
 
 export const FooterLinks = styled.ul`
     list-style-type: none; /* Bỏ dấu chấm đầu dòng */
     padding: 0; /* Bỏ padding mặc định */
+    margin-top: 50px;
 `;
 
 export const FooterLink = styled.li`
     margin: 10px 0;
+    font-size: 16px;
+    font-weight: 400;
 
     a {
         text-decoration: none;
-        color: #61dafb; /* Màu chữ cho liên kết */
+        color: #7d879c; /* Màu chữ cho liên kết */
         transition: color 0.3s ease; /* Hiệu ứng chuyển màu */
     }
 
@@ -61,15 +64,17 @@ export const FooterLink = styled.li`
 `;
 
 export const FooterBottom = styled.div`
-    border-top: 1px solid #00ccff; 
+    border-top: 1px solid #E6E6E6E6; 
     color: black;
     padding-top: 10px; 
      width: 95%;
      margin: 0 auto;
+     display: flex;
+     justify-content: space-around;
 `;
 export const WrapperLogoFooter = styled.img`
-    width: 160px;
-    height: 120px;
+    width: 190px;
+    height: 170px;
    
 `
 export const WrapperLogoMini = styled.img`
@@ -82,4 +87,5 @@ export const WrapperHeaderFooter = styled.div`
     height: 60px;
     display: flex;
     justify-content: space-around;
+    border-bottom: 1px  solid #E6E6E6E6; 
 `

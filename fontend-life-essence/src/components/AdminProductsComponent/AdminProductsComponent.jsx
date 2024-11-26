@@ -217,6 +217,7 @@ const AdminProductComponent = () => {
             prod_name,
             price,
             quantity,
+            discount,
             category_id,
             prod_description,
             cost,
@@ -226,7 +227,7 @@ const AdminProductComponent = () => {
             images,
         } = editProduct;
 
-        if (!prod_name || !price || !quantity || !category_id || !prod_description || !cost || !prod_percent || !ratings || !expiration_date) {
+        if (!prod_name || !price || !quantity || !discount || !category_id || !prod_description || !cost || !prod_percent || !ratings || !expiration_date) {
             alert("Vui lòng điền đầy đủ thông tin.");
             return;
         }
@@ -275,6 +276,7 @@ const AdminProductComponent = () => {
         formData.append("price", product.price);
         formData.append("cost", product.cost);
         formData.append("quantity", product.quantity);
+        formData.append("discount", product.discount);
         formData.append("prod_percent", product.prod_percent);
         formData.append("best_seller", product.best_seller);
         formData.append("ratings", product.ratings);
@@ -295,6 +297,7 @@ const AdminProductComponent = () => {
             price: '',
             cost: '',
             quantity: '',
+            discount: '',
             prod_percent: '',
             best_seller: false,
             ratings: '',
@@ -337,7 +340,7 @@ const AdminProductComponent = () => {
             images: [...prev.images, ...files],
         }));
     };
-    
+
     const handleImageUploadEdit = (event) => {
         const files = Array.from(event.target.files);  // Lấy mảng các file đã chọn
         if (files.length > 0) {
@@ -411,6 +414,12 @@ const AdminProductComponent = () => {
                         type="number"
                         value={newProduct.quantity}
                         onChange={(e) => setNewProduct({ ...newProduct, quantity: e.target.value })}
+                    />
+                    <label>Giảm giá:</label>
+                    <WarraperInput
+                        type="number"
+                        value={newProduct.discount}
+                        onChange={(e) => setNewProduct({ ...newProduct, discount: e.target.value })}
                     />
                     <label>Tỷ lệ giảm giá:</label>
                     <WarraperInput
@@ -492,8 +501,15 @@ const AdminProductComponent = () => {
                                     onChange={(e) => setEditProduct({ ...editProduct, quantity: e.target.value })}
                                 />
                             </div>
-                        </RowWrapper>
-                        <RowWrapper columns="1fr 1fr">
+                            <div>
+                                <label>Discount:</label>
+                                <WarraperInput
+                                    type="number"
+                                    value={editProduct.discount}
+                                    onChange={(e) => setEditProduct({ ...editProduct, discount: e.target.value })}
+                                />
+                            </div>
+
                             <div>
                                 <label>Rating:</label>
                                 <WarraperInput
@@ -510,34 +526,31 @@ const AdminProductComponent = () => {
                                     onChange={(e) => setEditProduct({ ...editProduct, category_id: e.target.value })}
                                 />
                             </div>
+                            <div>
+                                <label>Discount Percent:</label>
+                                <WarraperInput
+                                    type="text"
+                                    value={editProduct.prod_percent}
+                                    onChange={(e) => setEditProduct({ ...editProduct, prod_percent: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label>Cost:</label>
+                                <WarraperInput
+                                    type="text"
+                                    value={editProduct.cost}
+                                    onChange={(e) => setEditProduct({ ...editProduct, cost: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label>Expiration Date:</label>
+                                <WarraperInput
+                                    type="date"
+                                    value={editProduct.expiration_date}
+                                    onChange={(e) => setEditProduct({ ...editProduct, expiration_date: e.target.value })}
+                                />
+                            </div>
                         </RowWrapper>
-
-                        <RowWrapper columns="1fr 1fr">
-                        <div>
-                            <label>Discount Percent:</label>
-                            <WarraperInput
-                                type="text"
-                                value={editProduct.prod_percent}
-                                onChange={(e) => setEditProduct({ ...editProduct, prod_percent: e.target.value })}
-                            />
-                        </div>
-                        <div>
-                            <label>Cost:</label>
-                            <WarraperInput
-                                type="text"
-                                value={editProduct.cost}
-                                onChange={(e) => setEditProduct({ ...editProduct, cost: e.target.value })}
-                            />
-                        </div>
-                        </RowWrapper>
-                        <div>
-                            <label>Expiration Date:</label>
-                            <WarraperInput
-                                type="date"
-                                value={editProduct.expiration_date}
-                                onChange={(e) => setEditProduct({ ...editProduct, expiration_date: e.target.value })}
-                            />
-                        </div>
                         <div>
                             <label>Description:</label>
                             <WarraperInput

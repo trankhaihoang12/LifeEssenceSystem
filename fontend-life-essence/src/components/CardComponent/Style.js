@@ -7,6 +7,12 @@ export const Card = styled.div`
   background-color: #fcfcfc;
   border-radius: 8px;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
 `;
 
  export const ImageWrapper = styled.div`
@@ -61,7 +67,7 @@ export const AddToCartWrapper = styled.div`
 `;
 
 export const CartButton = styled.div`
-  width: 40px;
+width: 40px;
   height: 40px;
   background-color: #2EA5B6;
   border-radius: 100%;
@@ -77,7 +83,7 @@ export const CartIcon = styled(BsCart4)`
 `;
 
 export const AddToCartText = styled.span`
-  font-size: 14px;
+   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
 `;

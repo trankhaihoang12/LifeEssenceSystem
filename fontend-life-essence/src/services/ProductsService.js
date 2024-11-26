@@ -102,3 +102,41 @@ export const getProductById = async (productId) => {
         throw error;
     }
 };
+// get all category
+export const getAllCategories = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/category/all`);
+        return response.data; // Trả về dữ liệu danh mục
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        throw error; // Ném lỗi để xử lý ở nơi gọi
+    }
+};
+
+// Hàm lấy sản phẩm theo danh mục
+export const getProductsByCategory = async (categoryId) => {
+    try {
+        const response = await axios.get(`${API_URL}/category/${categoryId}`);
+        return response.data; // Trả về dữ liệu sản phẩm theo danh mục
+    } catch (error) {
+        console.error('Lỗi khi lấy sản phẩm theo danh mục:', error);
+        throw error; // Ném lỗi để xử lý ở nơi gọi
+    }
+};
+
+
+// Thêm hàm lấy tất cả các phản hồi sản phẩm
+export async function getAllFeedback(productId,token) {
+    try {
+        const response = await axios.get(`${API_URL}/products/feedback/${productId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`  // Thêm token vào header
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách phản hồi:', error);
+        throw error;
+    }
+}

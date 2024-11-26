@@ -21,7 +21,6 @@ import IntroductionComponent from '../../components/IntroductionComponent/Introd
 import PopularCategories from '../../components/PopularCategoriesComponent/PopularCategories';
 import useHorizontalScroll from '../../hooks/useHorizontalScroll';
 import * as ProductsService from '../../services/ProductsService'
-import * as AdminService from '../../services/AdminService'
 import { useNavigate } from 'react-router';
 
 
@@ -43,16 +42,12 @@ const HomePage = () => {
   const trendingScroll = useHorizontalScroll(300);
   const blogScroll = useHorizontalScroll(300);
 
-  const getToken = () => {
-    const storedUserData = localStorage.getItem('userData');
-    const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
-    return parsedUserData ? parsedUserData.token : null;
-  };
-  // Fetch categories on component mount
+ 
   const loadCategories = async () => {
     try {
-      const token = getToken(); // Assuming token is stored in localStorage
-      const categoryData = await AdminService.getAllCategory(token);
+      const data = await ProductsService.getAllCategories();
+      const categoryData = data; // Truy cập vào mảng danh mục
+      console.log('categoryData', categoryData);
       setCategories(categoryData); // Set fetched categories
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -61,7 +56,8 @@ const HomePage = () => {
 
   const loadProducts = async () => {
     try {
-      console.log('Bắt đầu gọi API...'); // Log đầu tiên để kiểm tra.
+      console.log('Bắt đầu gọi API...');
+
       if (products.length > 0) {
         console.log('Dùng cache sản phẩm');
         return;
@@ -72,15 +68,23 @@ const HomePage = () => {
         page: 1,
         limit: 10,
       });
-      setProducts(data.products);
-      localStorage.setItem('products', JSON.stringify(data.products));
-      setTotalPages(data.totalPages);
+
+      console.log('Dữ liệu trả về từ API sản phẩm:', data);
+
+      if (data.products.length > 0) {
+        setProducts(data.products);
+        localStorage.setItem('products', JSON.stringify(data.products));
+        setTotalPages(data.totalPages);
+      } else {
+        console.log('Không tìm thấy sản phẩm nào.');
+      }
     } catch (error) {
       console.error('Lỗi khi tải sản phẩm:', error);
     } finally {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     loadProducts();
@@ -200,7 +204,7 @@ const HomePage = () => {
         </div>
         <div style={{ display: 'flex', width: '100%', height: '400px', position: 'absolute', top: 0, left: 0 }}>
 
-          <div style={{ display: 'flex', width: '100%', justifyContent: 'center', height: '400%' }}>
+          <div style={{ display: 'flex', width: '100%', justifyContent: 'center', height: '100%' }}>
             <div style={{ width: '40%', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '400px' }}>
               <img src={Home_feedback1} alt="Home_feedback1" style={{ width: '420px', height: '304px' }} />
             </div>
@@ -228,7 +232,7 @@ const HomePage = () => {
 
       {/* Bài viết và blog */}
 
-      <div style={{ height: '460px', position: 'relative' }}>
+      <div style={{ height: '500px', position: 'relative' }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <span style={{ fontSize: '30px', fontWeight: 'bold', marginTop: '10px' }}>Latest Articles & Blogs</span>
         </div>
@@ -255,7 +259,6 @@ const HomePage = () => {
           Next
         </Button>
       </div>
-
 
     </div>
 

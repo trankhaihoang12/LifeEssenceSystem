@@ -14,7 +14,8 @@ import {
     DetailsButton,
     PaginationContainer,
     PaginationButton,
-    CancelButton
+    CancelButton,
+    ButtonWrapper
 } from './Style';
 import { FaCheckCircle, FaTruck, FaTimesCircle, FaHourglassHalf, FaCheck } from 'react-icons/fa';
 import * as OrderService from '../../services/OrderService'
@@ -73,6 +74,27 @@ const MyOrderPage = () => {
         }
     };
 
+    const handleConfirmOrder = async (orderId) => {
+        const token = getToken();  // Lấy token từ localStorage
+        try {
+            const result = await OrderService.confirmOrder(orderId, token);  // Gọi hàm confirmOrder
+            if (result.success) {
+                alert('Đơn hàng đã được xác nhận thành công!');
+                // Cập nhật lại trạng thái đơn hàng trong giao diện nếu cần
+                setOrders(orders.map(order =>
+                    order.orderId === orderId ? { ...order, status: 'confirmed' } : order
+                ));
+            } else {
+                alert(result.message || 'Không thể xác nhận đơn hàng.');
+            }
+        } catch (error) {
+            alert('Có lỗi xảy ra khi xác nhận đơn hàng!');
+        }
+    };
+
+    
+
+
     const getStatusIcon = (status) => {
         switch (status) {
             case 'completed': return <FaCheckCircle color="green" />;
@@ -95,6 +117,7 @@ const MyOrderPage = () => {
 
     if (loading) return <div>Đang tải...</div>;
     if (error) return <div>{error}</div>;
+
 
     return (
         <div style={{ backgroundColor: '#f0f9f9', width: '100%', height: '100vh', display: 'flex', alignItems: 'center'}}>
@@ -123,6 +146,13 @@ const MyOrderPage = () => {
                                         <CancelButton onClick={() => handleCancelOrder(order.orderId)}>
                                             Hủy đơn hàng
                                         </CancelButton>
+                                    )}
+
+                                    {(order.status === 'completed') && (
+                                        <ButtonWrapper onClick={() => handleConfirmOrder(order.orderId)}>Xác nhận đơn hàng</ButtonWrapper>
+                                    )}
+                                    {(order.status === 'confirmed') && (
+                                        <ButtonWrapper>Đánh giá</ButtonWrapper>
                                     )}
                                 </div>
                             </OrderCard>

@@ -15,17 +15,22 @@ export const ProductDetailContainer = styled.div`
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   gap: 2rem;
   margin-bottom: 2rem;
+  width: 1290px;
+  height: 692;
+`;
+export const reviewDetail = styled.div`
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  width: 1290px;
+  height: auto;
 `;
 
 export const ProductImageContainer = styled.div`
   flex: 1;
 `;
-
-// export const ProductImage = styled.img`
-//   width: 100%;
-//   height: auto;
-//   border-radius: 0.75rem;
-// `;
 
 export const ProductInfo = styled.div`
   flex: 2;
@@ -34,9 +39,11 @@ export const ProductInfo = styled.div`
 `;
 
 export const ProductTitle = styled.h2`
-  font-size: 1.75rem;
+  margin-top: 20px;
+  font-size: 2.5rem;
   font-weight: 600;
   color: #333;
+  margin-bottom: 12px;
 `;
 
 export const ProductRating = styled.div`
@@ -51,31 +58,59 @@ export const StarRating = styled.div`
 `;
 
 export const ProductPrice = styled.div`
-  font-size: 1.5rem;
-  color: #24aeb1;
+  font-size: 2rem;
+  color: #eb3a7b;
   font-weight: bold;
   margin: 1rem 0;
 `;
 
 export const ProductDescription = styled.div`
-  font-size: 1rem;
+  font-size: 1.5rem;
   color: #666;
   margin-bottom: 2rem;
 `;
 
-export const QuantitySelector = styled.div`
+
+export const WrapperQuantity = styled.div`
   display: flex;
+  margin-left: 10px;
   align-items: center;
-  gap: 1rem;
-  margin: 1rem 0;
+  justify-content: space-between;
+  width: 120px;
+  height: 45px;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+`;
+export const QuantitySelector = styled.div`
+ display: flex;
+  align-items: center;
+  margin: 10px 0;
 `;
 
 export const QuantityInput = styled.input`
-  width: 50px;
+  width: 30px;
   text-align: center;
-  padding: 0.5rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
+  font-size: 18px;
+  font-weight: 600;
+  border: none;
+  outline: none;
+`;
+
+export const Button = styled.button`
+margin: auto;
+   font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    color: #555;
+  }
 `;
 
 export const ActionButtons = styled.div`
@@ -84,11 +119,15 @@ export const ActionButtons = styled.div`
 `;
 
 export const ActionButton = styled.button`
+margin-top: 30px;
   background-color: #fff;
   color: #24aeb1;
   border: 1px solid #24aeb1;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
+  font-size: 17px;
+  width: 170px;
+  height: 55px;
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.3s;
@@ -111,6 +150,7 @@ export const TabContainer = styled.div`
   margin-top: 2rem;
   display: flex;
   border-bottom: 1px solid #e0e0e0;
+  width: 1290px;
 `;
 
 export const TabItem = styled.div`
@@ -118,6 +158,7 @@ export const TabItem = styled.div`
   padding: 1rem;
   color: #333;
   transition: color 0.3s;
+  font-size: 16px;
 
   &.active {
     color: #24aeb1;
@@ -140,16 +181,24 @@ export const TabContent = styled.div`
 
 export const RelatedProductsContainer = styled.div`
   margin-top: 2rem;
+  width: 1290px;
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 `;
 
 export const RelatedProducts = styled.div`
   display: flex;
-  overflow-x: auto;
-  gap: 1rem;
+  width: 1290px;
+  /* overflow-x: hidden; */
+  justify-content: center;
+  gap: 20px;
 `;
 
 export const RelatedProductCard = styled.div`
   min-width: 150px;
+    width: 1290px;
   background: white;
   border-radius: 0.75rem;
   padding: 1rem;
@@ -187,8 +236,8 @@ export const ThumbnailImage = styled.img`
 
 // Style cho ảnh lớn
 export const ProductImage = styled.img`
-  width: 400px;  
-  height: 500px;
+  width: 600px;  
+  height: 600px;
   object-fit: cover;
   margin: 10px;
   border-radius: 0.75rem;
