@@ -29,10 +29,7 @@ import { useNavigate } from 'react-router';
 
 const HomePage = () => {
 
-  const [products, setProducts] = useState(() => {
-    const cachedProducts = localStorage.getItem('products');
-    return cachedProducts ? JSON.parse(cachedProducts) : [];
-  });
+  const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -47,7 +44,6 @@ const HomePage = () => {
     try {
       const data = await ProductsService.getAllCategories();
       const categoryData = data; // Truy cập vào mảng danh mục
-      console.log('categoryData', categoryData);
       setCategories(categoryData); // Set fetched categories
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -68,8 +64,7 @@ const HomePage = () => {
         page: 1,
         limit: 10,
       });
-
-      console.log('Dữ liệu trả về từ API sản phẩm:', data);
+      
 
       if (data.products.length > 0) {
         setProducts(data.products);
@@ -179,16 +174,14 @@ const HomePage = () => {
         <ProductsContainer ref={trendingScroll.scrollRef}>
           <ProductsWrapper>
             {/* Các sản phẩm  */}
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
-            <CardComponent />
+            {products.map((product) => {
+              // Kiểm tra rating
+              if (product?.ratings === 5) {
+                return <CardComponent key={product.id} product={product} />;
+              }
+
+              return null; // Bỏ qua nếu không đúng điều kiện
+            })}
           </ProductsWrapper>
         </ProductsContainer>
 

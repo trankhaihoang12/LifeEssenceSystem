@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import {
   FeedbackContainer,
@@ -16,110 +16,210 @@ import {
   UploadedImagePreview,
   AlertMessage,
 } from "./Style";
+import * as OrderService from '../../services/OrderService';
+import * as ProductsService from '../../services/ProductsService';
+import { useParams } from "react-router";
 
 const Feedback = () => {
-  const [rating, setRating] = useState(0);
-  const [review, setReview] = useState("");
-  const [images, setImages] = useState([]);
-  const [alert, setAlert] = useState("");
+  const { orderId } = useParams(); // Lấy orderId từ URL
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [feedbacks, setFeedbacks] = useState([]);
 
-  const products = [
-    {
-      id: "1",
-      name: "Garlic Oil 1000 MG+",
-      image: "https://storage.googleapis.com/a1aa/image/GA7JzaE18l7nC1IMzadB3wwqm6he1GdVe8bJpXU4FjE514vTA.jpg",
-    },
-    {
-      id: "2",
-      name: "Vitamin D 1000U",
-      image: "https://storage.googleapis.com/a1aa/image/FSLb3VSe6MXNICdMThYAIR4pDu6UGauflsnASXrd2Zj414vTA.jpg",
-    },
-  ];
-
-  const handleImageUpload = (event) => {
-    const uploadedFiles = Array.from(event.target.files);
-    setImages((prevImages) => [...prevImages, ...uploadedFiles]);
+  const getToken = () => {
+    const storedUserData = localStorage.getItem('userData');
+    const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+    return parsedUserData ? parsedUserData.token : null;
   };
 
-  const handleImageRemove = (index) => {
-    setImages(images.filter((_, i) => i !== index));
+  const getUserId = () => {
+    const storedUserData = localStorage.getItem('userData');
+    const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+    return parsedUserData && parsedUserData.user ? parsedUserData.user.id : null; // Lấy user_id từ userData
   };
 
-  const handleSubmit = () => {
-    if (!rating || !review.trim()) {
-      setAlert("Please provide both a rating and a review.");
+  useEffect(() => {
+    const fetchOrderDetails = async () => {
+      const token = getToken(); // Lấy token từ localStorage
+      try {
+        const orderResponse = await OrderService.getOrderDetails(orderId, token); // Gọi API để lấy thông tin đơn hàng
+        const order = orderResponse.data; // Truy cập vào data từ phản hồi
+
+        if (order && order.products && Array.isArray(order.products)) {
+          setOrderDetails(order);
+          const initialFeedbacks = order.products.map(product => ({
+            id: product.id,
+            rating: 0,
+            review: "",
+            images: [],
+            alert: "",
+          }));
+          setFeedbacks(initialFeedbacks); // Khởi tạo feedbacks từ sản phẩm trong đơn hàng
+        } else {
+          console.error("Dữ liệu không hợp lệ:", order);
+        }
+      } catch (error) {
+        console.error("Có lỗi xảy ra khi lấy thông tin đơn hàng:", error);
+      }
+    };
+
+    fetchOrderDetails();
+  }, [orderId]);
+
+  const handleImageUpload = (productId, event) => {
+    const uploadedFiles = Array.from(event.target.files); // Lấy danh sách các file đã tải lên
+    setFeedbacks((prevFeedbacks) =>
+      prevFeedbacks.map((feedback) =>
+        feedback.id === productId
+          ? { ...feedback, images: [...feedback.images, ...uploadedFiles] } // Cập nhật lại mảng 'images'
+          : feedback
+      )
+    );
+  };
+
+  const handleImageRemove = (productId, index) => {
+    setFeedbacks((prevFeedbacks) =>
+      prevFeedbacks.map((feedback) =>
+        feedback.id === productId
+          ? { ...feedback, images: feedback.images.filter((_, i) => i !== index) }
+          : feedback
+      )
+    );
+  };
+
+  const handleSubmit = async (productId) => {
+    const feedback = feedbacks.find((f) => f.id === productId);
+    if (!feedback.rating || !feedback.review.trim()) {
+      setFeedbacks((prevFeedbacks) =>
+        prevFeedbacks.map((f) =>
+          f.id === productId ? { ...f, alert: "Please provide both a rating and a review." } : f
+        )
+      );
       return;
     }
 
-    setAlert("Thank you for your feedback! Your review has been submitted.");
-    setTimeout(() => setAlert(""), 3000); // Tự động xóa thông báo sau 3 giây
-    setRating(0);
-    setReview("");
-    setImages([]);
+    try {
+      const token = getToken(); // Lấy token từ localStorage
+      await ProductsService.writeFeedback({
+        product_id: productId,
+        rating: feedback.rating,
+        content: feedback.review,
+        user_id: getUserId(), // Lấy user_id từ localStorage
+        order_id: orderId,
+        token,
+        files: feedback.images, // Gửi mảng ảnh đã tải lên
+      });
+
+      setFeedbacks((prevFeedbacks) =>
+        prevFeedbacks.map((f) =>
+          f.id === productId
+            ? { ...f, alert: "Thank you for your feedback! Your review has been submitted.", rating: 0, review: "", images: [] }
+            : f
+        )
+      );
+
+      setTimeout(() => {
+        setFeedbacks((prevFeedbacks) =>
+          prevFeedbacks.map((f) => (f.id === productId ? { ...f, alert: "" } : f))
+        );
+      }, 3000);
+    } catch (error) {
+      setFeedbacks((prevFeedbacks) =>
+        prevFeedbacks.map((f) =>
+          f.id === productId ? { ...f, alert: "Error submitting feedback. Please try again." } : f
+        )
+      );
+      console.error("Lỗi khi gửi phản hồi:", error);
+    }
   };
 
   return (
-    <FeedbackContainer>
-      <h1>Customer Feedback</h1>
+    <div style={{ backgroundColor: '#f0f9fb' }}>
+      <div style={{ height: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <h1 style={{ fontSize: '30px', fontWeight: 'bold' }}>Customer Feedback</h1>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <FeedbackContainer>
+          {orderDetails && orderDetails.products && Array.isArray(orderDetails.products) ? (
+            orderDetails.products.map((product) => {
+              const feedback = feedbacks.find((f) => f.id === product.id);
+              const imageUrl = product.images && product.images.length > 0
+                ? product.images[0].url.replace(/\\/g, '/') // Thay thế '\\' bằng '/'
+                : '';
+              return (
+                <ProductCard key={product.id}>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    {imageUrl && (
+                      <ProductImage src={`http://localhost:4000/${imageUrl}`} alt={product.prod_name} />
+                    )}
+                    <ProductName>{product.prod_name}</ProductName>
+                  </div>
+                  <FeedbackForm>
+                    <h2>Write Your Review</h2>
 
-      {products.map((product) => (
-        <ProductCard key={product.id}>
-          <ProductImage src={product.image} alt={product.name} />
-          <ProductName>{product.name}</ProductName>
-        </ProductCard>
-      ))}
+                    <RatingContainer>
+                      <span>Rating:</span>
+                      {[...Array(5)].map((_, index) => (
+                        <Star
+                          key={index}
+                          onClick={() => setFeedbacks((prevFeedbacks) =>
+                            prevFeedbacks.map((f) =>
+                              f.id === product.id ? { ...f, rating: index + 1 } : f
+                            )
+                          )}
+                          filled={index < feedback.rating}
+                        >
+                          <FaStar />
+                        </Star>
+                      ))}
+                    </RatingContainer>
 
-      <FeedbackForm>
-        <h2>Write Your Review</h2>
+                    <Textarea
+                      value={feedback.review}
+                      onChange={(e) => setFeedbacks((prevFeedbacks) =>
+                        prevFeedbacks.map((f) =>
+                          f.id === product.id ? { ...f, review: e.target.value } : f
+                        )
+                      )}
+                      placeholder="Write your feedback here..."
+                    />
 
-        <RatingContainer>
-          <span>Rating:</span>
-          {[...Array(5)].map((_, index) => (
-            <Star
-              key={index}
-              onClick={() => setRating(index + 1)}
-              filled={index < rating}
-            >
-              <FaStar />
-            </Star>
-          ))}
-        </RatingContainer>
+                    <UploadSection>
+                      <UploadLabel>
+                        Upload Images:
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(product.id, e)}
+                        />
+                      </UploadLabel>
 
-        <Textarea
-          value={review}
-          onChange={(e) => setReview(e.target.value)}
-          placeholder="Write your feedback here..."
-        />
+                      <UploadedImages>
+                        {feedback.images.map((image, index) => (
+                          <UploadedImagePreview key={index}>
+                            <img
+                              src={URL.createObjectURL(image)}
+                              alt={`Uploaded ${index}`}
+                            />
+                            <button onClick={() => handleImageRemove(product.id, index)}>X</button>
+                          </UploadedImagePreview>
+                        ))}
+                      </UploadedImages>
+                    </UploadSection>
 
-        <UploadSection>
-          <UploadLabel>
-            Upload Images:
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
-          </UploadLabel>
+                    {feedback.alert && <AlertMessage>{feedback.alert}</AlertMessage>}
 
-          <UploadedImages>
-            {images.map((image, index) => (
-              <UploadedImagePreview key={index}>
-                <img
-                  src={URL.createObjectURL(image)}
-                  alt={`Uploaded ${index}`}
-                />
-                <button onClick={() => handleImageRemove(index)}>X</button>
-              </UploadedImagePreview>
-            ))}
-          </UploadedImages>
-        </UploadSection>
-
-        {alert && <AlertMessage>{alert}</AlertMessage>}
-
-        <SubmitButton onClick={handleSubmit}>Submit Feedback</SubmitButton>
-      </FeedbackForm>
-    </FeedbackContainer>
+                    <SubmitButton onClick={() => handleSubmit(product.id)}>Submit Feedback</SubmitButton>
+                  </FeedbackForm>
+                </ProductCard>
+              );
+            })
+          ) : (
+            <p>Đang tải thông tin đơn hàng...</p>
+          )}
+        </FeedbackContainer>
+      </div>
+    </div>
   );
 };
 

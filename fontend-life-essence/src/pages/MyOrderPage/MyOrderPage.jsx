@@ -56,6 +56,10 @@ const MyOrderPage = () => {
         navigate(`/details-order/${orderId}`);
         console.log('orderId', orderId)
     };
+    const handleWriteFeedback = (orderId) => {
+        navigate(`/feedback/${orderId}`);
+        console.log('feedback', orderId)
+    };
     const handleCancelOrder = async (orderId) => {
         const token = getToken();
         try {
@@ -120,7 +124,7 @@ const MyOrderPage = () => {
 
 
     return (
-        <div style={{ backgroundColor: '#f0f9f9', width: '100%', height: '100vh', display: 'flex', alignItems: 'center'}}>
+        <div style={{ backgroundColor: '#F4f4f4', width: '100%', height: '100vh', display: 'flex', alignItems: 'center'}}>
             <Container>
                 <Header>Lịch Sử Mua Hàng</Header>
                 <OrderList>
@@ -152,7 +156,7 @@ const MyOrderPage = () => {
                                         <ButtonWrapper onClick={() => handleConfirmOrder(order.orderId)}>Xác nhận đơn hàng</ButtonWrapper>
                                     )}
                                     {(order.status === 'confirmed') && (
-                                        <ButtonWrapper>Đánh giá</ButtonWrapper>
+                                        <ButtonWrapper onClick={() => handleWriteFeedback(order.orderId)} >Đánh giá</ButtonWrapper>
                                     )}
                                 </div>
                             </OrderCard>

@@ -27,6 +27,7 @@ export const WrapperInput = styled.input`
   flex: 1; 
   padding: 10px; 
   border-radius: 20px;
+  font-size: 16px;
 `;
 export const WrapperButton = styled.button`
   background-color: #24AEB1; 
@@ -53,7 +54,7 @@ export const HeaderContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 220px;
+  max-width: 250px;
   padding: 10px;
   box-sizing: border-box;
   position: relative;
@@ -63,6 +64,7 @@ export const SignInText = styled.div`
   font-size: 1.5rem;
   font-weight: bold;
   cursor: pointer;
+  margin-right: 10px;
 `;
 
 export const IconsContainer = styled.div`

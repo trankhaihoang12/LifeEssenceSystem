@@ -48,8 +48,7 @@ const AdminPage = () => {
       <Sidebar>
         <Profile>
           <div className="avatar">A</div>
-          <h2>VĂN LÂN</h2>
-          <p>ADMIN</p>
+          <h2>ADMIN</h2>
         </Profile>
 
         <Navigation>

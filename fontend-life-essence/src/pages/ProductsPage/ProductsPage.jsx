@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Heart, ChevronDown, ChevronUp } from "lucide-react";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import * as ProductsService from '../../services/ProductsService'
 import { GrFormNext } from "react-icons/gr";
 import {
@@ -23,6 +23,7 @@ import { Rate } from "antd";
 
 const ProductPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { categoryId } = useParams();
   console.log('categoryId', categoryId)
   const [, setOpenCategory] = useState(null);
@@ -30,6 +31,9 @@ const ProductPage = () => {
   const [favorites, setFavorites] = useState(new Set());
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
   const [products, setProducts] = useState([]); // State để lưu sản phẩm theo danh mục
+  const [searchQuery, setSearchQuery] = useState(""); 
+
+  
 
   const toggleCategory = (category) => {
     setOpenCategory((prev) => (prev === category ? null : category));
@@ -81,9 +85,9 @@ const ProductPage = () => {
               category: product.Category.name, // Truy cập tên danh mục
               price: parseFloat(product.price), // Chuyển đổi giá thành số
               rating: product.ratings,
-              imageUrl: product.images?.[0]?.url 
-                ? `http://localhost:3000/${product.images[0].url.replace(/\\/g, '/')}` 
-                : `https://picsum.photos/200`, 
+              imageUrl: product.images?.[0]?.url
+                ? `http://localhost:3000/${product.images[0].url.replace(/\\/g, '/')}`
+                : `https://picsum.photos/200`,
             })));
             setCategoryName(data[0]?.Category?.name || "");
           } else {
@@ -98,6 +102,48 @@ const ProductPage = () => {
 
     fetchProducts();
   }, [categoryId]); // Gọi lại hàm khi danh mục thay đổi
+  
+
+  // useEffect 2: Tìm kiếm sản phẩm khi có từ khóa
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const searchQueryParam = queryParams.get('search'); // Lấy từ khóa tìm kiếm từ URL
+    setSearchQuery(searchQueryParam || "");
+
+    if (searchQueryParam) {
+      const fetchProductsBySearch = async () => {
+        try {
+          const response = await ProductsService.fetchAllProducts({
+            search: searchQueryParam,
+            page: 1, // Trang đầu tiên
+            limit: 10, // Số lượng sản phẩm mỗi trang
+            sort: 'asc', // Sắp xếp theo giá tăng dần
+          });
+          console.log('response', response)
+
+          const data = response.products; // Lấy dữ liệu sản phẩm từ API
+          console.log('data',data)
+
+          if (Array.isArray(data)) {
+            setProducts(data.map((product) => ({
+              id: product.id,
+              name: product.prod_name,
+              category: product.Category?.name || "Chưa có danh mục",
+              price: parseFloat(product.price),
+              rating: product.ratings,
+              imageUrl: product.images?.[0]?.url
+                ? `http://localhost:3000/${product.images[0].url.replace(/\\/g, '/')}`
+                : `https://picsum.photos/200`,
+            })));
+          }
+        } catch (error) {
+          console.error('Lỗi khi tìm kiếm sản phẩm:', error);
+        }
+      };
+      fetchProductsBySearch();
+    }
+  }, [location.search]); // Chạy khi `searchQuery` thay đổi
+
   return (
     <PageContainer>
       <Sidebar>
@@ -122,7 +168,11 @@ const ProductPage = () => {
       </Sidebar>
       <MainContent>
         <div style={{ height: '20px', width: '500px', display: 'flex', alignItems: 'center' }}>
-          <h2 style={{ margin: 0, cursor: 'pointer' }}> <span onClick={goToHome}>Home</span> <GrFormNext /> Products {categoryName}</h2>
+          <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+            <span onClick={goToHome}>Home</span>
+            <GrFormNext style={{ margin: '0 5px', verticalAlign: 'middle' }} />
+            Products {categoryName}
+          </h2>
         </div>
         <ProductsContainer>
           {products.length > 0 ? (

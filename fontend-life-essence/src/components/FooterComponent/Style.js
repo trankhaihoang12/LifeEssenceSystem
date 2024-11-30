@@ -89,3 +89,21 @@ export const WrapperHeaderFooter = styled.div`
     justify-content: space-around;
     border-bottom: 1px  solid #E6E6E6E6; 
 `
+
+export const WrapperInput = styled.input`
+  border: none; 
+  outline: none; 
+  flex: 1; 
+  padding: 10px; 
+  border-radius: 30px;
+  font-size: 11px;
+`;
+export const WrapperButton = styled.button`
+  background-color: #24AEB1; 
+  width: 130px; 
+  height: 33px; 
+  border: none; 
+  border-radius: 30px; 
+  padding: 10px; 
+  cursor: pointer;
+`;

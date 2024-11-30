@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { AddToCartText, AddToCartWrapper, Card, CardContent, CartButton, CartIcon, Category, ImageWrapper, Price, ProductImage, ProductTitle, RatingWrapper } from './Style'
 import { Rate } from 'antd'
-import product_test from '../../assets/images/product-test.jpg';
 import { useNavigate } from 'react-router';
 import * as ProductsService from '../../services/ProductsService'
 import * as OrderService from '../../services/OrderService'
@@ -64,6 +63,7 @@ const CardComponent = ({ product }) => {
     }, [product?.id]); // Chỉ chạy lại khi product.id thay đổi
 
     if (!productData) return null; // Không render gì khi chưa có dữ liệu
+    const rating = product?.ratings ? Number(product?.ratings) : 0;
   return (
       <Card>
           <ImageWrapper onClick={handleDetailsProduct}>
@@ -78,7 +78,7 @@ const CardComponent = ({ product }) => {
               <Category>{product.category_id || 'Uncategorized'}</Category>
               <ProductTitle>{product.prod_name}</ProductTitle>
               <RatingWrapper>
-                  <Rate allowHalf defaultValue={product.ratings || 0} style={{ fontSize: '10px' }} />
+                  <Rate allowHalf value={rating} style={{ fontSize: '10px' }} />
               </RatingWrapper>
               <Price>${product.price || 'N/A'}</Price>
               <AddToCartWrapper>

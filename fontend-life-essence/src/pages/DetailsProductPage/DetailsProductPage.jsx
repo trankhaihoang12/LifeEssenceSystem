@@ -28,11 +28,11 @@ import {
   WrapperQuantity,
   Button
 } from './Style';
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import { addItem } from "../../redux/slides/cartSlice";
 import { GrFormNext } from "react-icons/gr";
-import { FaMinus, FaPlus } from "react-icons/fa";
+import { FaEnvelope, FaFacebook, FaGoogle, FaInstagram, FaMinus, FaPlus, FaTwitter } from "react-icons/fa";
 import { Rate } from "antd";
 import BlogCardComponent from "../../components/BlogCardComponent/BlogCardComponent";
 import ReviewForm from "../../components/ReviewForm/ReviewForm";
@@ -46,12 +46,20 @@ const HealthStore = () => {
   const [selectedImage, setSelectedImage] = useState("");  // Lưu trữ hình ảnh được chọn
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState(null);
+  const navigate = useNavigate()
 
   const dispatch = useDispatch();
 
 
   const handleTabClick = (tab) => {
     setSelectedTab(tab);
+  };
+
+  const goToHome = () => {
+    navigate("/");
+  };
+  const goBackToCategory = () => {
+    navigate(-1); // Quay lại trang trước
   };
 
   const getToken = () => {
@@ -121,7 +129,15 @@ const HealthStore = () => {
     <PageContainer>
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <div style={{ width: '1290px', height: '50px' }}>
-          <span style={{ fontSize: '1.7rem' }}>Life Essence <GrFormNext /> Products <GrFormNext /> Product Details<GrFormNext />{product.prod_name}</span>
+          <span style={{ fontSize: '1.7rem' }}>
+            <span onClick={goToHome} style={{ cursor: 'pointer' }}>Home</span>
+            <GrFormNext style={{ margin: '0 5px', verticalAlign: 'middle' }} />
+            <span onClick={goBackToCategory} style={{ cursor: 'pointer', color: 'inherit' }}>
+              Products {product.category_id}
+            </span>
+            <GrFormNext style={{ margin: '0 5px', verticalAlign: 'middle' }} />
+            {product.prod_name}
+          </span>
         </div>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -177,6 +193,79 @@ const HealthStore = () => {
               <ActionButton primary onClick={handleAddToCart}>Add to Cart</ActionButton>
               <ActionButton>Add to Wishlist</ActionButton>
             </ActionButtons>
+            <div style={{ height: '200px', width: '100%', marginTop: '50px', display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontWeight: 'bold', fontSize: '12px', marginTop: '10px' }}>SKU : <span style={{ fontWeight: 'normal', color: '#666' }}>12345XYZ</span></span>
+              <span style={{ fontWeight: 'bold', fontSize: '12px', marginTop: '10px' }}>Categories : <span style={{ fontWeight: 'normal', color: '#666' }}>Electronics, Gadgets</span></span>
+              <span style={{ fontWeight: 'bold', fontSize: '12px', marginTop: '10px' }}>Tags : <span style={{ fontWeight: 'normal', color: '#666' }}>Trending, New Arrival</span></span>
+              <span style={{ fontWeight: 'bold', fontSize: '12px', marginTop: '10px' }}>
+                Share :
+                <a
+                  href="https://www.facebook.com"
+                  style={{
+                    marginLeft: '5px',
+                    color: '#666',
+                    textDecoration: 'none',
+                    transition: 'color 0.3s',
+                  }}
+                  onMouseEnter={(e) => e.target.style.color = '#24aeb1'}
+                  onMouseLeave={(e) => e.target.style.color = '#666'}
+                >
+                  <FaFacebook />
+                </a>
+                <a
+                  href="https://www.instagram.com"
+                  style={{
+                    marginLeft: '5px',
+                    color: '#666',
+                    textDecoration: 'none',
+                    transition: 'color 0.3s',
+                  }}
+                  onMouseEnter={(e) => e.target.style.color = '#24aeb1'}
+                  onMouseLeave={(e) => e.target.style.color = '#666'}
+                >
+                  <FaInstagram />
+                </a>
+                <a
+                  href="https://www.google.com"
+                  style={{
+                    marginLeft: '5px',
+                    color: '#666',
+                    textDecoration: 'none',
+                    transition: 'color 0.3s',
+                  }}
+                  onMouseEnter={(e) => e.target.style.color = '#24aeb1'}
+                  onMouseLeave={(e) => e.target.style.color = '#666'}
+                >
+                  <FaGoogle />
+                </a>
+                <a
+                  href="https://www.twitter.com"
+                  style={{
+                    marginLeft: '5px',
+                    color: '#666',
+                    textDecoration: 'none',
+                    transition: 'color 0.3s',
+                  }}
+                  onMouseEnter={(e) => e.target.style.color = '#24aeb1'}
+                  onMouseLeave={(e) => e.target.style.color = '#666'}
+                >
+                  <FaTwitter />
+                </a>
+                <a
+                  href="mailto:example@example.com"
+                  style={{
+                    marginLeft: '5px',
+                    color: '#666',
+                    textDecoration: 'none',
+                    transition: 'color 0.3s',
+                  }}
+                  onMouseEnter={(e) => e.target.style.color = '#24aeb1'}
+                  onMouseLeave={(e) => e.target.style.color = '#666'}
+                >
+                  <FaEnvelope />
+                </a>
+              </span>
+            </div>
           </ProductInfo>
 
         </ProductDetailContainer>
@@ -203,14 +292,14 @@ const HealthStore = () => {
         </reviewDetail>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <RelatedProductsContainer>
-        <h1 style={{fontWeight: 'bold', marginBottom: '50px'}}>Related Products</h1>
-        <RelatedProducts>
-          <BlogCardComponent></BlogCardComponent>
-          <BlogCardComponent></BlogCardComponent>
-          <BlogCardComponent></BlogCardComponent>
-        </RelatedProducts>
-      </RelatedProductsContainer>
+        <RelatedProductsContainer>
+          <h1 style={{ fontWeight: 'bold', marginBottom: '50px' }}>Related Products</h1>
+          <RelatedProducts>
+            <BlogCardComponent></BlogCardComponent>
+            <BlogCardComponent></BlogCardComponent>
+            <BlogCardComponent></BlogCardComponent>
+          </RelatedProducts>
+        </RelatedProductsContainer>
       </div>
     </PageContainer>
   );

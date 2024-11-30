@@ -1,8 +1,9 @@
 import styled from "styled-components";
 
 export const FeedbackContainer = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
+  width: 1000px;
+  margin-top: 20px;
+  margin-bottom: 100px;
   padding: 30px;
   background-color: #f9f9f9;
   border-radius: 12px;
@@ -31,7 +32,9 @@ export const ProductImage = styled.img`
 export const ProductName = styled.div`
   font-size: 18px;
   font-weight: 600;
+  margin: auto;
   color: #333;
+  width: 300px;
 `;
 
 export const FeedbackForm = styled.div`
@@ -39,7 +42,7 @@ export const FeedbackForm = styled.div`
 `;
 
 export const Textarea = styled.textarea`
-  width: 100%;
+  width: 500px;
   height: 120px;
   padding: 15px;
   border-radius: 8px;
@@ -126,6 +129,7 @@ export const SubmitButton = styled.button`
   margin: 20px auto; /* Căn giữa nút */
   font-weight: bold;
   text-align: center;
+  margin-right: 10px;
 
   &:hover {
     background-color: #1d9195;
