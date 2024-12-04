@@ -100,6 +100,7 @@ const HeaderComponent = () => {
     setUserData(null);
     setIsOpenPopup(false);
     navigate('/')
+    message.success('Logout successfully')
   };
   const handleClose = () => {
     setIsOpenPopup(false); // Ẩn popover

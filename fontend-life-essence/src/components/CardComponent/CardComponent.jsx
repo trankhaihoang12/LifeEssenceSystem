@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { AddToCartText, AddToCartWrapper, Card, CardContent, CartButton, CartIcon, Category, ImageWrapper, Price, ProductImage, ProductTitle, RatingWrapper } from './Style'
-import { Rate } from 'antd'
+import { Modal, Rate } from 'antd'
 import { useNavigate } from 'react-router';
 import * as ProductsService from '../../services/ProductsService'
 import * as OrderService from '../../services/OrderService'
 import { useDispatch } from 'react-redux';
 import { addItem } from '../../redux/slides/cartSlice';
+import * as message from '../../components/MessageComponent/Message'
 
 const CardComponent = ({ product }) => {
     const [productData, setProductData] = useState(null); // Đổi tên state
@@ -29,17 +30,24 @@ const CardComponent = ({ product }) => {
 
     const handleAddToCart = async () => {
         const token = getToken();
+
         if (!token) {
-            setError('Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.');
+            Modal.confirm({
+                title: 'Bạn chưa đăng nhập',
+                content: 'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng. Bạn có muốn chuyển đến trang đăng nhập không?',
+                okText: 'Đồng ý',
+                cancelText: 'Hủy',
+                onOk: () => navigate('/signIn'), // Đường dẫn đến trang đăng nhập của bạn
+            });
             return;
         }
         try {
             // Gọi API thêm sản phẩm vào giỏ
             const response = await OrderService.addToCart(product.id, 1, token); // quantity mặc định 1
-            console.log('Sản phẩm đã được thêm vào giỏ:', response);
             dispatch(addItem(product));
+            message.success('Sản phẩm đã được thêm vào giỏ hàng!');
         } catch (err) {
-            setError('Không thể thêm sản phẩm vào giỏ hàng.');
+            message.error('Không thể thêm sản phẩm vào giỏ hàng.');
         }
     };
 

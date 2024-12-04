@@ -27,167 +27,178 @@ import {
   TotalRow
 } from './Style';
 import { useLocation, useNavigate } from 'react-router';
-import { Spinner } from 'react-bootstrap';
 import { PayPalButton } from 'react-paypal-button-v2';
-// import { PayPalButton } from 'react-paypal-button-v2';
+import Loading from '../../components/LoadingComponent/Loading';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
 
-const Payment = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const { cartItems = [] } = location.state || {};// Lấy dữ liệu sản phẩm từ state nếu có
-  const [paymentMethod, setPaymentMethod] = useState("COD");
-  const [updatedProducts, setUpdatedProducts] = useState([]);
-  const [sdkReady, setsdkReady] = useState(false);
-  const [clientId, setClientId] = useState('');
-  useEffect(() => {
-    if (cartItems.length > 0) {
-      setLoading(true);
-      const updated = cartItems.map(item => ({
-        ...item,
-        quantity: item.quantity || 1,
-      }));
-      setUpdatedProducts(updated);
-      setLoading(false); // Kết thúc tải dữ liệu
-    } else {
-      setLoading(false); // Nếu không có sản phẩm, cũng đặt loading thành false
-    }
-  }, [cartItems]);
-
-  const handleQuantityChange = (productId, change) => {
-    setUpdatedProducts(updatedProducts.map(product =>
-      product.product_id === productId // Sử dụng `product_id` thay vì `id`
-        ? { ...product, quantity: Math.max(1, product.quantity + change) }
-        : product
-    ));
-  };
-
-  // Tính tổng tiền (Subtotal + Shipping - Discount)
-  const calculateSubtotal = () => updatedProducts.reduce((sum, product) => sum + parseFloat(product.price) * product.quantity, 0);
-  const shipping = 5.00;
-  const discount = 10.00;
-  const total = calculateSubtotal() + shipping - discount;
-
-  // Thay đổi phương thức thanh toán
-  const handlePaymentChange = (method) => setPaymentMethod(method);
-  const getToken = () => {
-    const storedUserData = localStorage.getItem('userData');
-    const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
-    return parsedUserData ? parsedUserData.token : null;
-  };
-  // Xử lý đặt hàng
-  const handlePlaceOrder = async () => {
-    const fullName = document.querySelector('input[placeholder="Enter Full Name"]').value;
-    const phone = document.querySelector('input[placeholder="Enter Phone Number"]').value;
-    const address = document.querySelector('input[placeholder="Enter Address"]').value;
-    const notes = document.querySelector('textarea[placeholder="Notes"]').value;
-
-    if (!fullName || !phone || !address) {
-      alert("Please fill in all required fields!");
-      return;
-    }
-
-    const token = getToken(); // Replace with actual user token
+  const Payment = () => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [loading, setLoading] = useState(true);
+    const cartItems = useSelector((state) => state.cart.cartItems);
+        console.log('cartItems',cartItems)
+    const [paymentMethod, setPaymentMethod] = useState("COD");
+    const [updatedProducts, setUpdatedProducts] = useState([]);
     console.log('updatedProducts', updatedProducts)
-    const orderDetails = updatedProducts.map(product => ({
-      product_id: product.product_id,
-      prod_name: product.prod_name,
-      description: product.description,  // Thêm mô tả sản phẩm nếu cần
-      price: product.price,
-      quantity: product.quantity,
-      image: product.image
-    }));
-
-    const orderData = {
-      paymentMethods: paymentMethod,
-      name: fullName,
-      phone,
-      address,
-      note: notes,
-      orderDetails
-    };
-    console.log('orderData', orderData)
-
-    try {
-      setLoading(true);
-      const response = await OrderService.addOrder(orderData, token);
-      console.log('response', response)
-      console.log('response.data)', response.data)
-      if (response && response.data) {
-        // Điều hướng đến trang thành công, truyền dữ liệu qua state
-        navigate("/order-success", { state: { order: response.data } });
+    const [sdkReady, setsdkReady] = useState(false);
+    const [clientId, setClientId] = useState('');
+    useEffect(() => {
+      if (cartItems.length > 0) {
+        setLoading(true);
+        const updated = cartItems.map(item => ({
+          ...item,
+          quantity: item.quantity || 1,
+        }));
+        setUpdatedProducts(updated);
+        setLoading(false); // Kết thúc tải dữ liệu
       } else {
-        // Xử lý lỗi nếu không thành công
-        alert("Đặt hàng thất bại. Vui lòng thử lại.");
+        setLoading(false); // Nếu không có sản phẩm, cũng đặt loading thành false
+      }
+    }, [cartItems]);
+
+    const handleQuantityChange = (productId, change) => {
+      setUpdatedProducts(prevProducts =>
+        prevProducts.map(product =>
+          product.product_id === productId
+            ? { ...product, quantity: Math.max(1, product.quantity + change) }
+            : product
+        )
+      );
+
+      // Dispatch action để cập nhật Redux store
+      const newQuantity = updatedProducts.find(product => product.product_id === productId)?.quantity + change || 1;
+      dispatch(updateQuantity({ productId, quantity: Math.max(1, newQuantity) }));
+    };
+
+    // Tính tổng tiền (Subtotal + Shipping - Discount)
+    const calculateSubtotal = () =>
+      cartItems.reduce((sum, product) => sum + parseFloat(product.price) * product.quantity, 0);
+    const shipping = 5.0;
+    const discount = 10.0;
+    const total = calculateSubtotal() + shipping - discount;
+
+    // Thay đổi phương thức thanh toán
+    const handlePaymentChange = (method) => setPaymentMethod(method);
+    const getToken = () => {
+      const storedUserData = localStorage.getItem('userData');
+      const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+      return parsedUserData ? parsedUserData.token : null;
+    };
+    // Xử lý đặt hàng
+    const handlePlaceOrder = async () => {
+      const fullName = document.querySelector('input[placeholder="Enter Full Name"]').value;
+      const phone = document.querySelector('input[placeholder="Enter Phone Number"]').value;
+      const address = document.querySelector('input[placeholder="Enter Address"]').value;
+      const notes = document.querySelector('textarea[placeholder="Notes"]').value;
+
+      if (!fullName || !phone || !address) {
+        alert("Please fill in all required fields!");
+        return;
       }
 
-    } catch (error) {
-      console.error("Error placing order:", error);
-      alert("Failed to place order. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
-  const handleMomoPayment = () => {
-    // Logic để xử lý thanh toán qua Momo
-    alert("Momo payment processing...");
-  };
+      const token = getToken(); // Replace with actual user token
+      const orderDetails = cartItems.map((product) => ({
+        product_id: product.product_id,
+        prod_name: product.prod_name,
+        description: product.prod_description,
+        price: product.price,
+        quantity: product.quantity,
+        image: product.image
+      }));
 
-const onSuccessPaypal = async (details, data) => {
-  console.log('details, data', details, data)
-  try {
-    // Kiểm tra giao dịch có thành công không
-    if (!details || !details.id) {
-      console.error("Transaction details missing");
-      alert("Transaction failed. Please try again.");
-      return;
-    }
+      const orderData = {
+        paymentMethods: paymentMethod,
+        name: fullName,
+        phone,
+        address,
+        note: notes,
+        orderDetails
+      };
+      console.log('orderData', orderData)
 
-    const fullName = document.querySelector('input[placeholder="Enter Full Name"]').value;
-    const phone = document.querySelector('input[placeholder="Enter Phone Number"]').value;
-    const address = document.querySelector('input[placeholder="Enter Address"]').value;
-    const notes = document.querySelector('textarea[placeholder="Notes"]').value;
+      try {
+        setLoading(true);
+        const response = await OrderService.addOrder(orderData, token);
+        if (response && response.data) {
+          await OrderService.clearCart(token);
+          dispatch(clearCart());
+          localStorage.removeItem('cart');
+          console.log('localStorage', localStorage)
+          // Điều hướng đến trang thành công, truyền dữ liệu qua state
+          navigate("/order-success", { state: { order: response.data } });
+        } else {
+          // Xử lý lỗi nếu không thành công
+          alert("Đặt hàng thất bại. Vui lòng thử lại.");
+        }
 
-    // Kiểm tra dữ liệu bắt buộc
-    if (!fullName || !phone || !address) {
-      alert("Please fill in all required fields!");
-      return;
-    }
-
-    const token = getToken(); // Replace with actual user token
-    const orderDetails = updatedProducts.map(product => ({
-      product_id: product.product_id,
-      prod_name: product.prod_name,
-      description: product.description,
-      price: product.price,
-      quantity: product.quantity,
-      image: product.image
-    }));
-
-    const orderData = {
-      paymentMethods: paymentMethod,
-      name: fullName,
-      phone,
-      address,
-      note: notes,
-      orderDetails,
-      is_payment: true,
+      } catch (error) {
+        console.error("Error placing order:", error);
+        alert("Failed to place order. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    const handleMomoPayment = () => {
+      // Logic để xử lý thanh toán qua Momo
+      alert("Momo payment processing...");
     };
 
-    setLoading(true);
-    const response = await OrderService.addOrder(orderData, token);
-    if (response && response.data) {
-      navigate("/order-success", { state: { order: response.data } });
-    } else {
-      alert("Order placement failed. Please try again.");
-    }
-  } catch (error) {
-    console.error("Error placing order:", error);
-    alert("Failed to place order. Please try again later.");
-  } finally {
-    setLoading(false);
-  }
-};
+    const onSuccessPaypal = async (details, data) => {
+      console.log('details, data', details, data)
+      try {
+        // Kiểm tra giao dịch có thành công không
+        if (!details || !details.id) {
+          console.error("Transaction details missing");
+          alert("Transaction failed. Please try again.");
+          return;
+        }
+
+        const fullName = document.querySelector('input[placeholder="Enter Full Name"]').value;
+        const phone = document.querySelector('input[placeholder="Enter Phone Number"]').value;
+        const address = document.querySelector('input[placeholder="Enter Address"]').value;
+        const notes = document.querySelector('textarea[placeholder="Notes"]').value;
+
+        // Kiểm tra dữ liệu bắt buộc
+        if (!fullName || !phone || !address) {
+          alert("Please fill in all required fields!");
+          return;
+        }
+
+        const token = getToken(); // Replace with actual user token
+        const orderDetails = cartItems.map((product) => ({
+          product_id: product.product_id,
+          prod_name: product.prod_name,
+          description: product.prod_description,
+          price: product.price,
+          quantity: product.quantity,
+          image: product.image
+        }));
+
+        const orderData = {
+          paymentMethods: paymentMethod,
+          name: fullName,
+          phone,
+          address,
+          note: notes,
+          orderDetails,
+          is_payment: true,
+        };
+
+        setLoading(true);
+        const response = await OrderService.addOrder(orderData, token);
+        if (response && response.data) {
+          navigate("/order-success", { state: { order: response.data } });
+        } else {
+          alert("Order placement failed. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error placing order:", error);
+        alert("Failed to place order. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
 
   const addPaypalScript = async () => {
@@ -227,9 +238,7 @@ const onSuccessPaypal = async (details, data) => {
   return (
     <PageContainer>
       <Title>ORDER INFORMATION</Title>
-      {loading ? (
-        <Spinner /> // Hiển thị spinner khi đang tải
-      ) : (
+      <Loading isPending={loading}>
         <SectionContainer>
           <div style={{ width: "70%", boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px', borderRadius: '8px', padding: '16px', backgroundColor: '#fff', margin: '20px auto' }}>
             <h2>SHIPPING INFORMATION</h2>
@@ -251,7 +260,7 @@ const onSuccessPaypal = async (details, data) => {
                 </PaymentMethod>
                 <PaymentMethod onClick={() => handlePaymentChange("Momo")}>
                   <input type="radio" checked={paymentMethod === "Momo"} readOnly />
-                    <RiBankCardLine style={{ color: '#CC0000', fontSize: '20px' }} /><span>Momo</span>
+                  <RiBankCardLine style={{ color: '#CC0000', fontSize: '20px' }} /><span>Momo</span>
                 </PaymentMethod>
                 <PaymentMethod onClick={() => handlePaymentChange("Paypal")}>
                   <input type="radio" checked={paymentMethod === "Paypal"} readOnly />
@@ -269,7 +278,7 @@ const onSuccessPaypal = async (details, data) => {
                 <ProductList>
                   {updatedProducts.map(product => (
                     <ProductItem key={product.product_id}>
-                      <ProductImage src={product.image} alt={product.prod_name} />
+                      <ProductImage src={`http://localhost:3000/${product.image}`} alt={product.prod_name} />
                       <ProductName>{product.prod_name}</ProductName>
                       <QuantityContainer>
                         <QuantityButton onClick={() => handleQuantityChange(product.product_id, -1)}><FaMinus /></QuantityButton>
@@ -287,25 +296,25 @@ const onSuccessPaypal = async (details, data) => {
                   <TotalRow><strong>Total:</strong><strong>${total.toFixed(2)}</strong></TotalRow>
                 </SummaryContainer>
 
-                <div style={{marginTop: '30px'}}>
+                <div style={{ marginTop: '30px' }}>
                   {paymentMethod === "Paypal" && sdkReady ? (
-                      <PayPalButton
-                        amount={total}
-                        // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
-                        onSuccess={onSuccessPaypal}
-                        onError={(err) => {
+                    <PayPalButton
+                      amount={total}
+                      // shippingPreference="NO_SHIPPING" // default is "GET_FROM_FILE"
+                      onSuccess={onSuccessPaypal}
+                      onError={(err) => {
 
-                          console.error("PayPal transaction error:", err);
-                          alert("An error occurred during the transaction.");
-                        }}
-                      />
+                        console.error("PayPal transaction error:", err);
+                        alert("An error occurred during the transaction.");
+                      }}
+                    />
 
-                      
-                    ) : paymentMethod === "Momo" ? (
-                        <PlaceOrderButton onClick={handleMomoPayment}>PAYMENT WITH MOMO</PlaceOrderButton>
-                    ) : (
-                      <PlaceOrderButton onClick={handlePlaceOrder}>PAYMENT OF ORDER</PlaceOrderButton>
-                    )}
+
+                  ) : paymentMethod === "Momo" ? (
+                    <PlaceOrderButton onClick={handleMomoPayment}>PAYMENT WITH MOMO</PlaceOrderButton>
+                  ) : (
+                    <PlaceOrderButton onClick={handlePlaceOrder}>PAYMENT OF ORDER</PlaceOrderButton>
+                  )}
                 </div>
               </>
             ) : (
@@ -313,7 +322,7 @@ const onSuccessPaypal = async (details, data) => {
             )}
           </div>
         </SectionContainer>
-      )}
+      </Loading>
     </PageContainer>
   );
 };

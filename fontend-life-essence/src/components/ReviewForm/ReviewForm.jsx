@@ -78,7 +78,22 @@ const ReviewForm = () => {
                         <h2 style={{ margin: '10px 20px 0 0' }}>{feedback.content}</h2>
                         <div style={{ display: 'flex', gap: '5px', margin: '20px 0' }}>
                             {feedback.images && feedback.images.map((image, index) => (
-                                <img key={index} style={{ height: '100px', width: '100px', borderRadius: '5px' }} src={image.url} alt={`Feedback Image ${index}`} />
+                                <img
+                                    key={index}
+                                    style={{
+                                        height: '100px',
+                                        width: '100px',
+                                        borderRadius: '10px', // Tăng độ bo góc
+                                        border: '2px solid #e0e0e0', // Thêm viền sáng
+                                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)', // Thêm hiệu ứng bóng
+                                        margin: '5px', // Thêm khoảng cách giữa các hình ảnh
+                                        transition: 'transform 0.2s', // Hiệu ứng chuyển động
+                                    }}
+                                    src={`http://localhost:4000/${image}`}
+                                    alt={`Feedback Image ${index}`}
+                                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'} // Phóng to khi hover
+                                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'} // Quay lại kích thước ban đầu
+                                />
                             ))}
                         </div>
                     </div>

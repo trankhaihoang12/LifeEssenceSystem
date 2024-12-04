@@ -5,9 +5,13 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FaPen, FaTrash } from 'react-icons/fa';
 import ModalComponent from '../ModalComponent/ModalComponent';
 import * as ProductsService from '../../services/ProductsService'
+import * as AdminService from '../../services/AdminService'
 
 const AdminProductComponent = () => {
     const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [isEditing, setIsEditing] = useState(false); // Trạng thái cho form chỉnh sửa
@@ -83,10 +87,11 @@ const AdminProductComponent = () => {
             prod_percent,
             ratings,
             expiration_date,
+            usage_instructions, benefits, origin, additional_info,
             images,
         } = newProduct;
 
-        if (!prod_name || !price || !quantity || !category_id || !prod_description || !cost || !prod_percent || !ratings || !expiration_date || images.length === 0) {
+        if (!prod_name || !price || !quantity || !category_id || !prod_description || !cost || !prod_percent || !ratings || !expiration_date || !usage_instructions || !benefits || !origin || !additional_info || !images.length === 0) {
             alert("Vui lòng điền đầy đủ thông tin.");
             return;
         }
@@ -111,6 +116,10 @@ const AdminProductComponent = () => {
             formData.append("best_seller", false);
             formData.append("ratings", ratings);
             formData.append("expiration_date", expiration_date);
+            formData.append("usage_instructions", usage_instructions);
+            formData.append("benefits", benefits);
+            formData.append("origin", origin);
+            formData.append("additional_info", additional_info);
 
             // Thêm các hình ảnh vào FormData
             images.forEach((image) => {
@@ -136,6 +145,10 @@ const AdminProductComponent = () => {
                     best_seller: false,
                     ratings: '',
                     expiration_date: '',
+                    usage_instructions: '', 
+                    benefits: '', 
+                    origin: '', 
+                    additional_info: '',
                     images: [],
                 });
                 // Đóng modal
@@ -158,6 +171,26 @@ const AdminProductComponent = () => {
             );
         }
     };
+
+    useEffect(() => {
+        if (isModalOpen) {
+            const fetchCategories = async () => {
+                const token = getToken()
+                try {
+                    setLoading(true); // Hiển thị loading
+                    const data = await AdminService.getAllCategory(token);
+                    console.log('data', data)
+                    setCategories(data);
+                } catch (err) {
+                    setError(err.message || "Có lỗi xảy ra");
+                } finally {
+                    setLoading(false); // Dừng loading
+                }
+            };
+
+            fetchCategories();
+        }
+    }, [isModalOpen]);
 
     const handleExport = () => {
         alert('Xuất file Excel');
@@ -359,6 +392,7 @@ const AdminProductComponent = () => {
             images: updatedImages,
         });
     };
+
     return (
         <Container>
             <h1>Product Management</h1>
@@ -379,12 +413,24 @@ const AdminProductComponent = () => {
                 setNewProduct={setNewProduct}
             >
                 <EditForm>
+                    <select style={{width: '200px', padding: '7px', borderRadius: '5px'}}
+                        value={newProduct.category_id}
+                        onChange={(e) => setNewProduct({ ...newProduct, category_id: e.target.value })}
+                    >
+                        <option value="">-- Choose Category --</option>
+                        {categories.map((category) => (
+                            <option key={category.category_id} value={category.category_id}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
                     <label>Category_id:</label>
                     <WarraperInput
                         type="text"
                         value={newProduct.category_id}
                         onChange={(e) => setNewProduct({ ...newProduct, category_id: e.target.value })}
                     />
+                    
                     <label>Tên sản phẩm:</label>
                     <WarraperInput
                         type="text"
@@ -439,6 +485,30 @@ const AdminProductComponent = () => {
                         value={newProduct.ratings}
                         onChange={(e) => setNewProduct({ ...newProduct, ratings: e.target.value })}
                     />
+                    <label>Hướng dẫn sử dụng:</label>
+                    <WarraperInput
+                        type="text"
+                        value={newProduct.usage_instructions}
+                        onChange={(e) => setNewProduct({ ...newProduct, usage_instructions: e.target.value })}
+                    />
+                    <label>Lợi ích:</label>
+                    <WarraperInput
+                        type="text"
+                        value={newProduct.benefits}
+                        onChange={(e) => setNewProduct({ ...newProduct, benefits: e.target.value })}
+                    />
+                    <label>Nguồn gốc:</label>
+                    <WarraperInput
+                        type="text"
+                        value={newProduct.origin}
+                        onChange={(e) => setNewProduct({ ...newProduct, origin: e.target.value })}
+                    />
+                    <label>Thông tin bổ sung:</label>
+                    <WarraperInput
+                        type="text"
+                        value={newProduct.additional_info}
+                        onChange={(e) => setNewProduct({ ...newProduct, additional_info: e.target.value })}
+                    />
                     <label>Ngày hết hạn:</label>
                     <WarraperInput
                         type="date"
@@ -456,10 +526,10 @@ const AdminProductComponent = () => {
                     <div>
                         {newProduct.images.length > 0 && (
                             <div>
-                                {Array.from(newProduct.images).map((image, index) => (
+                                {newProduct.images.map((image, index) => (
                                     <img
                                         key={index}
-                                        src={URL.createObjectURL(image)}  // Hiển thị ảnh đã chọn
+                                        src={URL.createObjectURL(image)}  // Tạo URL tạm cho ảnh đã chọn
                                         alt={`product-preview-${index}`}
                                         style={{ width: "100px", margin: "10px" }}
                                     />
@@ -467,7 +537,6 @@ const AdminProductComponent = () => {
                             </div>
                         )}
                     </div>
-
                 </EditForm>
             </ModalComponent>
 

@@ -14,6 +14,7 @@ import {
 import { useNavigate } from 'react-router';
 import * as OrderService from '../../services/OrderService'
 import * as UserService from '../../services/UserService'
+import * as message from '../../components/MessageComponent/Message'
 
 const ProfilePage = () => {
     const [selectedSection, setSelectedSection] = useState('accountInfo');
@@ -24,13 +25,14 @@ const ProfilePage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(true);  // Trạng thái loading
     const [error, setError] = useState(null);  // Trạng thái lỗi
-    const ordersPerPage = 4;
+    const ordersPerPage = 5;
     const navigate = useNavigate();
     const [userData, setUserData] = useState(null);
     const [editMode, setEditMode] = useState(false);  // Trạng thái chỉnh sửa
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
+
 
 
     const getToken = () => {
@@ -40,15 +42,16 @@ const ProfilePage = () => {
     };
     useEffect(() => {
         const storedUserData = localStorage.getItem('userData');
-        console.log('storedUserData', storedUserData)
         if (storedUserData) {
             const parsedData = JSON.parse(storedUserData);
             setUserData(parsedData);
+            setName(parsedData.user.name);
+            setPhone(parsedData.user.phone);
+            setAddress(parsedData.user.default_address);
         } else {
             navigate('/signIn');
         }
     }, [navigate]);
-
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -60,8 +63,7 @@ const ProfilePage = () => {
             }
             try {
                 const result = await OrderService.getAllOrders(token);
-                console.log('réu', result)
-                setOrders(result);
+                setOrders(result); 
             } catch {
                 setError('Error fetching orders');
             } finally {
@@ -76,42 +78,39 @@ const ProfilePage = () => {
         return <div>Loading...</div>;
     }
 
-
     const handleSave = async () => {
         const token = getToken();
         try {
-            // Gửi thông tin mới đến API
             const updatedUser = await UserService.updateUserInfo(
                 { name, phone, default_address: address },
                 token
             );
 
-            // Cập nhật `userData` với thông tin mới từ API
-            setUserData((prevData) => ({
-                ...prevData,
+            // Cập nhật userData và local storage
+            const newUserData = {
+                ...userData,
                 user: {
-                    ...prevData.user,
-                    name: updatedUser.name,
-                    phone: updatedUser.phone,
-                    default_address: updatedUser.default_address,
+                    ...userData.user,
+                    ...updatedUser.data, 
                 },
-            }));
-
-            alert('Profile updated successfully!');
-            setEditMode(false); // Tắt chế độ chỉnh sửa
+            };
+            setUserData(newUserData);
+            localStorage.setItem('userData', JSON.stringify(newUserData));
+            message.success('Profile updated successfully!');
+            setEditMode(false);
         } catch (error) {
             console.error(error);
-            alert('Failed to update profile');
+            message.error('Failed to update profile');
         }
     };
 
     const handleChangePassword = async () => {
         if (newPassword !== confirmPassword) {
-            alert('New passwords do not match!');
+            message.error('New passwords do not match!');
             return;
         }
         if (newPassword.length < 8) {
-            alert('Password must be at least 8 characters long.');
+            message.error('Password must be at least 8 characters long.');
             return;
         }
 
@@ -123,23 +122,55 @@ const ProfilePage = () => {
                 confirmPassword,
             };
             const response = await UserService.changePassword(payload, token);
-            console.log('first, ', response)
-            alert(response.message || 'Password updated successfully!');
+            message.success('Password updated successfully!');
             setCurrentPassword('');
             setNewPassword('');
             setConfirmPassword('');
         } catch (error) {
             console.error(error);
-            alert(error.response?.data?.message || 'Failed to change password');
+            message.error('Failed to change password');
         }
     };
     const handleSignOut = () => {
-        // Xóa dữ liệu user khỏi state và localStorage
         localStorage.removeItem('userData');
-        setUserData(null); // Reset state người dùng
-        setSelectedSection(null); // Về trạng thái ban đầu
-        navigate('/'); // Điều hướng đến trang đăng nhập
+        setUserData(null);
+        setSelectedSection(null);
+        navigate('/');
     };
+
+    // Pagination logic
+    const totalPages = Math.ceil(orders.length / ordersPerPage);
+    const currentOrders = orders.slice(
+        (currentPage - 1) * ordersPerPage,
+        currentPage * ordersPerPage
+    );
+
+    // Render pagination buttons
+    const renderPagination = () => (
+        <div className="pagination-container" style={{marginTop: '40px', display: 'flex', justifyContent: 'space-around'}}>
+            <button
+                style={{ backgroundColor: '#24AEB1', cursor: 'pointer'}}
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(prev => prev - 1)}
+                className="pagination-button"
+            >
+                Previous
+            </button>
+            <span className="pagination-text">{currentPage} / {totalPages}</span>
+            <button
+                style={{ backgroundColor: '#24AEB1', cursor: 'pointer' }}
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(prev => prev + 1)}
+                className="pagination-button"
+            >
+                Next
+            </button>
+        </div>
+    );
+
+    if (!userData) {
+        return <div>Loading...</div>;
+    }
 
     const renderContent = () => {
         switch (selectedSection) {
@@ -166,7 +197,7 @@ const ProfilePage = () => {
                                     <p><strong>Name:</strong> {editMode ? <input type="text" value={name} onChange={(e) => setName(e.target.value)} /> : userData.user.name}</p>
                                     <p><strong>Email:</strong> {userData.user.email}</p>
                                     <p><strong>Phone:</strong> {editMode ? <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} /> : userData.user.phone}</p>
-                                    <p ><strong>Since Member:</strong> {userData.user.createdAt}</p>
+                                    <p><strong>Since Member:</strong> {userData.user.createdAt ? new Date(userData.user.createdAt).toLocaleDateString() : 'N/A'}</p>
                                     <p><strong>Address:</strong> {editMode ? <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} /> : userData.user.default_address}</p>
                                 </div>
                             </div>
@@ -247,16 +278,19 @@ const ProfilePage = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {orders.map(order => (
+                                {currentOrders.map(order => (
                                     <tr key={order.orderId}>
                                         <td>{order.orderId}</td>
-                                        <td>{order.createdAt}</td>
+                                        <td>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</td>
                                         <td>{order.status}</td>
                                         <td>{order.paymentMethods}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </OrderTable>
+                        <div style={{width: '100%'}}>
+                            {renderPagination()}
+                        </div>
                     </ContentBody>
                 );
             case 'changePassword':

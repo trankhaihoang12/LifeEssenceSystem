@@ -1,3 +1,4 @@
+import { BsCart4 } from "react-icons/bs";
 import styled from "styled-components";
 
 export const PageContainer = styled.div`
@@ -39,7 +40,8 @@ export const CategoryList = styled.div`
 
 export const CategoryItem = styled.div`
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.3rem;
+  font-weight: 500;
   padding: 0.5rem 0;
   color: #333;
   display: flex;
@@ -142,4 +144,34 @@ export const CurrentPrice = styled.span`
   font-size: 1.25rem;
   font-weight: bold;
   color: #24aeb1;
+`;
+export const AddToCartWrapper = styled.div`
+  display: flex;
+  height: 40px;
+  margin-top: 10px;
+  align-items: center;
+`;
+
+export const CartButton = styled.div`
+width: 40px;
+  height: 40px;
+  background-color: #2EA5B6;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+`;
+
+export const CartIcon = styled(BsCart4)`
+  font-size: 20px;
+  color: #fff;
+`;
+
+export const AddToCartText = styled.span`
+   font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  width: 200px;
 `;

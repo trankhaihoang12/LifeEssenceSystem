@@ -168,3 +168,47 @@ export const confirmOrder = async (orderId, token) => {
     }
 };
 
+
+// Hàm cập nhật số lượng sản phẩm trong giỏ hàng
+export const updateCartItem = async (productId, quantity, token) => {
+    try {
+        // Gửi yêu cầu PUT tới backend với thông tin sản phẩm cần cập nhật
+        const response = await axios.put(
+            `${API_URL}/cart/update/${productId}`, // Endpoint API với ID sản phẩm trong URL
+            { quantity }, // Body yêu cầu: số lượng mới của sản phẩm
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Thêm token để xác thực người dùng
+                    'Content-Type': 'application/json', // Định dạng dữ liệu JSON
+                },
+            }
+        );
+
+        // Trả về phản hồi từ server nếu thành công
+        return response.data;
+    } catch (error) {
+        // Xử lý lỗi và ghi log
+        console.error(
+            "Lỗi khi cập nhật sản phẩm trong giỏ hàng:",
+            error.response ? error.response.data : error.message
+        );
+
+        // Ném lỗi để component xử lý
+        throw error;
+    }
+};
+
+// Hàm xóa giỏ hàng
+export const clearCart = async (token) => {
+    try {
+        const response = await axios.delete(`${API_URL}/cart/clear`, {
+            headers: {
+                'Authorization': `Bearer ${token}`, // Gửi token để xác thực
+            }
+        });
+        return response.data; // Trả về phản hồi từ API (giỏ hàng đã được xóa)
+    } catch (error) {
+        console.error("Lỗi khi xóa giỏ hàng:", error.response ? error.response.data : error.message);
+        throw error; // Ném lỗi để có thể xử lý trong component
+    }
+};

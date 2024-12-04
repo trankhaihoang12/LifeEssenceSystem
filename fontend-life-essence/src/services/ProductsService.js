@@ -81,9 +81,10 @@ export async function fetchAllProducts({
     minPrice,
     maxPrice,
     sort = 'asc',
+    ratings,
 }) {
     try {
-        const params = { page, limit, search, minPrice, maxPrice, sort }; // Các tham số query
+        const params = { page, limit, search, minPrice, maxPrice, sort, ratings}; // Các tham số query
         const response = await axios.get(`${API_URL}/products/all`, { params }); // Không cần header Authorization
         return response.data.data; // Trả về dữ liệu từ API
     } catch (error) {
@@ -159,8 +160,8 @@ export async function writeFeedback({ product_id, rating, content, user_id, orde
 
         // Nếu có hình ảnh, thêm vào formData
         if (files && files.length > 0) {
-            for (let i = 0; i < files.length; i++) {
-                formData.append('images', files[i]);
+            for (const file of files) {
+                formData.append('images', file);
             }
         }
 
@@ -182,7 +183,12 @@ export async function writeFeedback({ product_id, rating, content, user_id, orde
 
         return response.data; // Trả về dữ liệu phản hồi từ API
     } catch (error) {
-        console.error('Lỗi khi gửi phản hồi:', error.response ? error.response.data : error.message);
-        throw error; // Ném lỗi để xử lý ở nơi gọi hàm
+        // Xử lý lỗi và thông báo cụ thể hơn
+        const errorMessage = error.response
+            ? error.response.data.message || error.message
+            : error.message;
+
+        console.error('Lỗi khi gửi phản hồi:', errorMessage);
+        throw new Error(errorMessage); // Ném lỗi mới để xử lý ở nơi gọi hàm
     }
 }

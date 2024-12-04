@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import * as ProductsService from '../../services/ProductsService'
 import * as OrderService from '../../services/OrderService'
+import * as message from '../../components/MessageComponent/Message'
 
 import {
   PageContainer,
@@ -33,7 +34,7 @@ import { useDispatch } from "react-redux";
 import { addItem } from "../../redux/slides/cartSlice";
 import { GrFormNext } from "react-icons/gr";
 import { FaEnvelope, FaFacebook, FaGoogle, FaInstagram, FaMinus, FaPlus, FaTwitter } from "react-icons/fa";
-import { Rate } from "antd";
+import { Modal, Rate } from "antd";
 import BlogCardComponent from "../../components/BlogCardComponent/BlogCardComponent";
 import ReviewForm from "../../components/ReviewForm/ReviewForm";
 
@@ -73,17 +74,23 @@ const HealthStore = () => {
   const handleAddToCart = async () => {
     const token = getToken();
     if (!token) {
-      setError("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      Modal.confirm({
+        title: 'Bạn chưa đăng nhập',
+        content: 'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng. Bạn có muốn chuyển đến trang đăng nhập không?',
+        okText: 'Đồng ý',
+        cancelText: 'Hủy',
+        onOk: () => navigate('/signIn'), // Đường dẫn đến trang đăng nhập của bạn
+      });
       return;
     }
 
     try {
       const response = await OrderService.addToCart(product.id, quantity, token); // Gọi API
-      console.log("Sản phẩm đã được thêm vào giỏ:", response);
+      message.success('Sản phẩm đã được thêm vào giỏ hàng!');
       dispatch(addItem(product));
       // Thực hiện xử lý nếu thành công, ví dụ hiển thị thông báo hoặc cập nhật giỏ hàng
     } catch (error) {
-      setError("Không thể thêm sản phẩm vào giỏ hàng.");
+      message.error("Không thể thêm sản phẩm vào giỏ hàng.");
     }
   };
 
@@ -102,7 +109,6 @@ const HealthStore = () => {
     const fetchProduct = async () => {
       try {
         const data = await ProductsService.getProductById(id);
-        console.log('first data', data)
         setProduct(data.data);  // Lưu dữ liệu sản phẩm vào state
         // Đặt hình ảnh mặc định là hình đầu tiên trong danh sách hình ảnh
         if (data.data.images && data.data.images.length > 0) {

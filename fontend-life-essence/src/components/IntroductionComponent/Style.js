@@ -75,6 +75,7 @@ export const VideoContainer = styled.div`
   border-radius: 8px;
   max-width: 800px;
   max-height: 450px;
+  margin-top: 150px;
 `;
 
 export const CloseButton = styled.button`

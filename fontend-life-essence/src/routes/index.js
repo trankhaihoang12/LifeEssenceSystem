@@ -128,5 +128,5 @@ export const routes = [
         page: Feedback,
         isShowHeader: true,
         isShowFooter: true
-    }
+    },
 ];
