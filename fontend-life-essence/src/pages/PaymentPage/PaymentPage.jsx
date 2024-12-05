@@ -188,11 +188,14 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
         setLoading(true);
         const response = await OrderService.addOrder(orderData, token);
         if (response && response.data) {
+          await OrderService.clearCart(token);
+          dispatch(clearCart());
+          localStorage.removeItem('cart');
           navigate("/order-success", { state: { order: response.data } });
         } else {
           alert("Order placement failed. Please try again.");
         }
-      } catch (error) {
+      } catch (error) { 
         console.error("Error placing order:", error);
         alert("Failed to place order. Please try again later.");
       } finally {

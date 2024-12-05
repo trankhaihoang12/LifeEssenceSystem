@@ -131,11 +131,13 @@ const ProfilePage = () => {
             message.error('Failed to change password');
         }
     };
+    console.log('localStorage', localStorage)
     const handleSignOut = () => {
         localStorage.removeItem('userData');
         setUserData(null);
         setSelectedSection(null);
         navigate('/');
+        message.success('Logout successfully')
     };
 
     // Pagination logic
