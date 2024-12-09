@@ -35,6 +35,13 @@ export const CategoryCard = styled.div`
   background-color: #fff;
   display: flex;
   justify-content: space-between;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
 `;
 
 // Category content (title and product count)

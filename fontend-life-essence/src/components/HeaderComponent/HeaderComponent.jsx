@@ -11,6 +11,7 @@ import { ForgotPasswordLink, FormContainer, FormTitle, HeaderContainer, IconsCon
 import { Badge, Popover } from 'antd';
 import { useMutation } from '@tanstack/react-query';
 import * as UserService from '../../services/UserService';
+import * as ProductService from '../../services/ProductsService';
 import * as message from '../../components/MessageComponent/Message';
 import { useSelector } from 'react-redux';
 
@@ -23,8 +24,43 @@ const HeaderComponent = () => {
   const [isOpenPopup, setIsOpenPopup] = useState(false)
   const cartItems = useSelector((state) => state.cart.cartItems);
   const totalQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+
+  const handleSearch = async (e) => {
+    if (e.key === 'Enter') {
+      await performSearch(searchTerm);
+    }
+  };
+
+  const handleSearchClick = async () => {
+    if (searchTerm) {
+      await performSearch(searchTerm);
+    }
+  };
+
+  const performSearch = async (searchTerm) => {
+    setLoading(true);
+    try {
+      const results = await ProductService.fetchAllProducts({ search: searchTerm });
+      console.log("Kết quả tìm kiếm:", results);  // Kiểm tra kết quả trả về từ API
+      setSearchResults(results);
+      setLoading(false);
+      if (results.length === 0) {
+        message.error('Không tìm thấy sản phẩm nào.');
+      } else {
+        navigate(`/products?search=${searchTerm}`);  // Điều hướng đến trang sản phẩm nếu có kết quả
+      }
+    } catch (error) {
+      setLoading(false);
+      setError(error);
+      message.error('Có lỗi xảy ra khi tìm kiếm.');
+    }
+  };
   const mutation = useMutation({
     mutationFn: (data) => UserService.loginUser(data), // Hàm thực hiện gọi API
     onSuccess: (response) => {
@@ -106,16 +142,36 @@ const HeaderComponent = () => {
           <WrapperLogo src={Logo} alt="Logo" onClick={() => navigate('/')} />
           <div style={{ height: '75px' }}>
             <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', borderRadius: '20px', width: '750px', height: '44px' }}>
-              <WrapperInput type="text" placeholder="Tìm kiếm..." />
-              <WrapperButton>
+              <WrapperInput
+                type="text"
+                placeholder="Tìm kiếm..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyPress={handleSearch} // Xử lý khi nhấn Enter
+              />
+              <WrapperButton onClick={handleSearchClick}>
                 <span style={{ fontSize: '20px', color: '#fff' }}><LuSearch /></span>
               </WrapperButton>
             </div>
+            {loading && <div>Đang tải kết quả...</div>}  {/* Hiển thị khi đang tải */}
+            {searchResults.length > 0 && (
+              <div>
+                <h4>Kết quả tìm kiếm:</h4>
+                <ul>
+                  {searchResults.map((product) => (
+                    <li key={product.id} onClick={() => navigate(`/product/${product.id}`)}>
+                      {product.prod_name} - {product.price}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {error && <div>{error.message}</div>} 
             <WrapperItem>
-              <span>Home </span>
-              <span>Shop </span>
-              <span>Blog </span>
-              <span>On Sale </span>
+              <span style={{cursor: 'pointer'}} onClick={()=>navigate('/')}>Home </span>
+              <span style={{cursor: 'pointer'}}>Shop </span>
+              <span style={{cursor: 'pointer'}} onClick={()=>navigate('/blogs')}>Blog </span>
+              <span style={{cursor: 'pointer'}}>On Sale </span>
               <span>Contract </span>
             </WrapperItem>
           </div>

@@ -103,6 +103,24 @@ export const DetailsButton = styled.button`
         cursor: not-allowed; /* Con trỏ chuột dạng không cho phép */
     }
 `;
+export const ButtonWrapper = styled.button`
+    background-color: #ccc; /* Màu nền đỏ */
+    color: white; /* Màu chữ trắng */
+    border: none; /* Không có viền */
+    border-radius: 5px; /* Bo góc */
+    padding: 10px 15px; /* Khoảng cách bên trong */
+    cursor: pointer; /* Con trỏ chuột dạng tay */
+    transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
+
+    &:hover {
+        background-color: #007bff; /* Màu nền khi hover */
+    }
+
+    &:disabled {
+        background-color: #ccc; /* Màu nền khi bị vô hiệu hóa */
+        cursor: not-allowed; /* Con trỏ chuột dạng không cho phép */
+    }
+`;
 export const CancelButton = styled.button`
     background-color: #ff4d4d; /* Màu nền đỏ */
     color: white; /* Màu chữ trắng */

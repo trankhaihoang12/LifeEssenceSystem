@@ -25,12 +25,12 @@ export const MainContent = styled.div`
 `;
 
 export const ProductsContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
+ display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
   padding: 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 1300px;
+  margin: 30px auto;
 `;
 
 export const CategoryList = styled.div`
@@ -75,6 +75,8 @@ export const SubMenuItem = styled.div`
 
 export const ProductCard = styled.div`
   background: white;
+  height: 400px;
+  width: 300px;
   border-radius: 0.75rem;
   padding: 1.5rem;
   position: relative;
@@ -114,7 +116,7 @@ export const FavoriteButton = styled.button`
 
 export const ProductImage = styled.img`
   width: 100%;
-  height: 12rem;
+  height: 250px;
   object-fit: cover;
   border-radius: 0.5rem;
   margin-bottom: 1rem;

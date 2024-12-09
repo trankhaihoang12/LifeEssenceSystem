@@ -71,4 +71,37 @@ export const deleteUser = async (id, token) => {
     }
 };
 
+// Hàm thay đổi mật khẩu
+export const changePassword = async (data, token) => {
+    try {
+        const response = await axios.post(`${API_URL}/users/change_pass`, data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error changing password:", error);
+        throw error;
+    }
+};
 
+
+// Hàm cập nhật thông tin người dùng
+export const updateUserInfo = async (userData, token) => {
+    try {
+        const response = await axios.put(
+            `${API_URL}/users/update`,
+            userData,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Đính kèm token trong header để xác thực
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error during update:", error);
+        throw error;
+    }
+};

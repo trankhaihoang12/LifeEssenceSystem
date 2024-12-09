@@ -75,3 +75,27 @@ export const getAllCategory = async (token) => {
         throw error;  // Ném lỗi để component có thể xử lý
     }
 };
+
+
+// Hàm cập nhật trạng thái đơn hàng dành cho admin
+export const updateOrderStatus = async (orderId, orderStatus, token) => {
+    try {
+        // Gửi request PUT để cập nhật trạng thái đơn hàng
+        const response = await axios.put(
+            `${API_URL}/admin/orders/${orderId}/status`,  // API endpoint để cập nhật trạng thái
+            { orderStatus },  // Dữ liệu truyền vào là trạng thái đơn hàng mới
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            }
+        );
+
+        // Trả về dữ liệu phản hồi từ API
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi cập nhật trạng thái đơn hàng:", error.response ? error.response.data : error.message);
+        throw error;  // Ném lỗi để component có thể xử lý
+    }
+};

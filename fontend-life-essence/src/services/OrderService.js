@@ -147,3 +147,24 @@ export const cancelOrder = async (orderId, token) => {
 };
 
 
+// Hàm xác nhận đơn hàng thành công
+export const confirmOrder = async (orderId, token) => {
+    try {
+        // Gửi request đến backend để xác nhận đơn hàng
+        const response = await axios.post(
+            `${API_URL}/orders/${orderId}/confirm`,  // Đường dẫn API để xác nhận đơn hàng
+            {},  // Không cần gửi body (empty body)
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            }
+        );
+        return response.data;  // Trả về kết quả từ server (thông báo xác nhận thành công)
+    } catch (error) {
+        console.error("Lỗi khi xác nhận đơn hàng:", error.response ? error.response.data : error.message);
+        throw error;  // Ném lỗi để có thể xử lý trong component
+    }
+};
+

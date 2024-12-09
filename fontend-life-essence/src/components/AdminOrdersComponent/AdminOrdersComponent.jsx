@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, ButtonGroup, WrapperTable, WrapperTableHeader, WrapperTableData, WrapperTableRow, StatusBadge, WrapperPagination, ExportButton, AddButton, WrapperDetailModal, WrapperModalContent, Title, Text, Strong, ProductList, ProductItem, CloseButton, CloseButtonContainer } from './Style';
+import { Container, ButtonGroup, WrapperTable, WrapperTableHeader, WrapperTableData, WrapperTableRow, StatusBadge, WrapperPagination, ExportButton, AddButton, WrapperDetailModal, WrapperModalContent, Title, Text, Strong, ProductList, ProductItem, CloseButton, CloseButtonContainer, WrapperButton } from './Style';
 import { FaPlus, FaPen, FaTrash } from 'react-icons/fa';
 import { LuSearch } from 'react-icons/lu';
 import * as AdminService from '../../services/AdminService'
@@ -11,6 +11,11 @@ const AdminOrdersComponent = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 10;
 
+
+  // States for editing order status
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [newOrderStatus, setNewOrderStatus] = useState('');
+  const [showStatusModal, setShowStatusModal] = useState(false);
 
   // New States for Order Details
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -54,6 +59,32 @@ const AdminOrdersComponent = () => {
   const handleEditOrder = (id) => {
     alert(`Edit order with ID: ${id}`);
   };
+
+  const handleEditOrderStatus = (id, currentStatus) => {
+    setSelectedOrderId(id);
+    setNewOrderStatus(currentStatus);  // Set the current status for the order
+    setShowStatusModal(true);  // Open the modal to change the status
+  };
+
+  const handleUpdateOrderStatus = async () => {
+    try {
+      const token = getToken();
+      await AdminService.updateOrderStatus(selectedOrderId, newOrderStatus, token);
+      // Update the status in the orders list without reloading the page
+      setOrders(orders.map(order =>
+        order.id === selectedOrderId ? { ...order, orderStatus: newOrderStatus } : order
+      ));
+      setShowStatusModal(false); // Close the modal after update
+      alert('Cập nhật trạng thái thành công!');
+    } catch (err) {
+      alert('Cập nhật trạng thái thất bại!');
+    }
+  };
+
+  const handleCloseStatusModal = () => {
+    setShowStatusModal(false);
+  };
+
   const handleDeleteOrder = async (id) => {
     if (window.confirm('Are you sure you want to delete this order?')) {
       try {
@@ -177,7 +208,7 @@ const AdminOrdersComponent = () => {
               </WrapperTableData>
               {/* <WrapperTableData>{order.id}</WrapperTableData> */}
               <WrapperTableData>{order.name}</WrapperTableData>
-              <WrapperTableData>{order.created_at || 'Nav'}</WrapperTableData>
+              <WrapperTableData>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</WrapperTableData>
               <WrapperTableData>
                 <WrapperTableData>
                   <StatusBadge paymentStatus={order.is_payment ? 'Paid' : 'Unpaid'}>
@@ -202,7 +233,7 @@ const AdminOrdersComponent = () => {
                 </span>
               </WrapperTableData>
               <WrapperTableData>
-                <FaPen onClick={() => handleEditOrder(order.id)} style={{ cursor: 'pointer', color: '#6366F1', marginRight: '15px', fontSize: '2rem' }} />
+                <FaPen onClick={() => handleEditOrderStatus(order.id, order.orderStatus)} style={{ cursor: 'pointer', color: '#6366F1', marginRight: '15px', fontSize: '2rem' }} />
                 <FaTrash onClick={() => handleDeleteOrder(order.id)} style={{ cursor: 'pointer', color: '#E53E3E', fontSize: '2rem' }} />
               </WrapperTableData>
             </WrapperTableRow>
@@ -224,6 +255,42 @@ const AdminOrdersComponent = () => {
         </div>
         <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
       </WrapperPagination>
+      {/* Modal for Order Status Update */}
+      {showStatusModal && (
+        // <ModalOverlay>
+        <WrapperDetailModal>
+          <WrapperModalContent>
+            <Title>Update Order Status</Title>
+            <Text>
+              <Strong>Order ID:</Strong> {selectedOrderId}
+            </Text>
+            <Text>
+              <Strong>Current Status:</Strong> {newOrderStatus}
+            </Text>
+            <div>
+                <Strong>Select New Status: </Strong>
+              <select
+                value={newOrderStatus}
+                onChange={(e) => setNewOrderStatus(e.target.value)}
+              >
+                <option value="progress">In Progress</option>
+                <option value="pending">Pending</option>
+                <option value="shipping">Shipping</option>
+                <option value="completed">Completed</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="resolved">Resolved</option>
+                <option value="canceled">Canceled</option>
+              </select>
+            </div>
+            <CloseButtonContainer>
+              <WrapperButton onClick={handleUpdateOrderStatus}>Update</WrapperButton>
+              <CloseButton onClick={handleCloseStatusModal}>Close</CloseButton>
+            </CloseButtonContainer>
+          </WrapperModalContent>
+        </WrapperDetailModal>
+        // </ModalOverlay>
+      )}
+
       {/* Modal for Order Details */}
       {showOrderDetails && selectedOrder && (
         <WrapperDetailModal>
@@ -242,7 +309,7 @@ const AdminOrdersComponent = () => {
               ))}
             </ProductList>
             <CloseButtonContainer>
-            <CloseButton onClick={handleCloseOrderDetails}>Close</CloseButton>
+              <CloseButton onClick={handleCloseOrderDetails}>Close</CloseButton>
             </CloseButtonContainer>
           </WrapperModalContent>
 

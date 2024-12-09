@@ -17,7 +17,7 @@ import {
 } from './Style';
 
 const DetailsBlogs = () => {
-  const categories = {
+  const Categories = {
     vitamins: ['Vitamin A - Chìa Khóa Cho Đôi Mắt Sáng Khỏe', 'Vitamin B - Năng Lượng Cho Cơ Thể', 'Vitamin B3 (Niacin) - Đột Phá Trong Chăm Sóc Sức Khỏe'],
     health: ['Thực Phẩm Chức Năng Không Phải Là Thuốc Thay Thế', 'Lựa Chọn Thực Phẩm Chức Năng Phù Hợp - Không Phải Điều Dễ Dàng', 'Cảnh Báo Về Việc Sử Dụng Thực Phẩm Chức Năng Không Đúng Cách']
   };
@@ -27,7 +27,7 @@ const DetailsBlogs = () => {
       id: 1,
       title: 'Vitamin A - Chìa Khóa Cho Đôi Mắt Sáng Khỏe',
       author: 'Tiến Sĩ Nguyễn Văn Hùng',
-      date: '10/11/2024',
+      date: '12 Dec, 2024',
       category: 'vitamins',
       imageUrl: '/images/blog/vitamin-a.jpg', // Recommend using local images
       content: 'Vitamin A được mệnh danh là "vitamin của đôi mắt", đóng vai trò quan trọng trong việc duy trì thị lực và sức khỏe của mắt. Ngoài ra, loại vitamin này còn có nhiệm vụ tăng cường hệ miễn dịch, hỗ trợ quá trình sinh trưởng và phát triển của cơ thể. Nguồn vitamin A dồi dào có trong các loại thực phẩm như cà rốt, khoai lang, trứng, và gan động vật',
@@ -75,12 +75,12 @@ const DetailsBlogs = () => {
     },
     {
       id: 6,
-      title: 'Cảnh Báo Về Việc Sử Dụng Thực Phẩm Chức Năng Không Đúng Cách',
+      title: 'Tầm Quan Trọng Của Việc Uống Đủ Nước Để Ngăn Ngừa Sỏi Thận',
       author: 'Bác sĩ Gia Đình',
       date: '16/11/2024',
       category: 'health',
       imageUrl: '/images/blog/supplement-warning.jpg',
-      content: 'Việc sử dụng thực phẩm chức năng quá liều hoặc không đúng cách có thể gây ra các tác dụng phụ không mong muốn. Một số trường hợp có thể dẫn đến rối loạn chức năng gan, thận hoặc các vấn đề sức khỏe khác. Do đó, luôn tuân thủ hướng dẫn sử dụng và tham khảo ý kiến chuyên gia y tế là điều vô cùng quan trọng.',
+      content: ' Để duy trì sức khỏe thận tốt, điều quan trọng là uống đủ nước hàng ngày. Mức nước cần thiết có thể khác nhau tùy thuộc vào độ tuổi, giới tính, mức độ hoạt động và môi trường sống của mỗi người. Tuy nhiên, một nguyên tắc chung là uống ít nhất 8 ly nước mỗi ngày (khoảng 2 lít) hoặc hơn nếu cơ thể yêu cầu.',
       estimatedReadTime: '6 phút đọc'
     }
   ];
@@ -90,25 +90,17 @@ const DetailsBlogs = () => {
     e.target.src = 'https://picsum.photos/200/200'; // Your fallback image
   };
   return (
-    <>
+    <div style={{backgroundColor: 'rgb(244, 244, 244)', width: '100%', height: '1000px'}}>
     {/* Banner Section */}
     <BannerContainer>
     <BannerTitle>Healthy living</BannerTitle>
     <SearchSection>
       <SearchField>
-        <label htmlFor="topic-select">Search by topic</label>
-        <select id="topic-select">
-          <option value="all">All topics</option>
+        <select id="topic-select" style={{width: '400px', borderRadius: '8px'}}>
+          <option value="all" style={{fontSize: '12px'}}>All topics</option>
           <option value="vitamins">Vitamins</option>
           <option value="health">Health</option>
         </select>
-      </SearchField>
-      <SearchField>
-        <label htmlFor="keyword-search">Search by keyword</label>
-        <div>
-          <input id="keyword-search" type="text" placeholder="Search ..." />
-          <button type="button">Submit</button>
-        </div>
       </SearchField>
     </SearchSection>
   </BannerContainer>
@@ -153,7 +145,7 @@ const DetailsBlogs = () => {
         ))}
       </BlogPostsContainer>
     </BlogSection>
-    </>
+    </div>
   );
 };
 

@@ -82,7 +82,7 @@ const DetailsOrderPage = () => {
         return 'https://via.placeholder.com/150'; // Fallback image if no image exists
     };
 
-    const { customerName, phone, address, products, subtotal, deliveryFee, discount, coupon, total, paymentMethod, orderTime, id } = order;
+    const { customerName, phone, address, products, subtotal, deliveryFee, discount, coupon, total, paymentMethods, createdAt, id } = order;
 
     
     return (
@@ -122,7 +122,7 @@ const DetailsOrderPage = () => {
                                             <ProductImage src={getProductImage(product)} alt={product.prod_name} />
                                             {product.prod_name}
                                         </td>
-                                        <td>x{product.quantity}</td>
+                                        <td>x{product.OrderDetail.quantity}</td>
                                         <PriceColumn>${product.price}</PriceColumn>
                                     </tr>
                                 ))
@@ -138,10 +138,30 @@ const DetailsOrderPage = () => {
                 <OrderSummary>
                     <table>
                         <tbody>
-                            <tr><th>Subtotal</th><PriceColumn>${subtotal}</PriceColumn></tr>
-                            <tr><th>Delivery</th><PriceColumn>${deliveryFee}</PriceColumn></tr>
-                            <tr><th>Discount</th><PriceColumn>${discount}</PriceColumn></tr>
-                            <tr><th>Coupon</th><PriceColumn>${coupon}</PriceColumn></tr>
+                            {Array.isArray(products) && products.length > 0 ? (
+                                <>
+                                    <tr>
+                                        <th>Subtotal</th>
+                                        <PriceColumn>${subtotal}</PriceColumn>
+                                    </tr>
+                                    <tr>
+                                        <th>Delivery</th>
+                                        <PriceColumn>${deliveryFee}</PriceColumn>
+                                    </tr>
+                                    <tr>
+                                        <th>Discount</th>
+                                        <PriceColumn>${products.reduce((acc, product) => acc + (product.discount || 0), 0)}</PriceColumn>
+                                    </tr>
+                                    <tr>
+                                        <th>Coupon</th>
+                                        <PriceColumn>${coupon}</PriceColumn>
+                                    </tr>
+                                </>
+                            ) : (
+                                <tr>
+                                    <td colSpan="3">No products available</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </OrderSummary>
@@ -161,8 +181,14 @@ const DetailsOrderPage = () => {
                             <th><h1>Order Code</h1></th>
                             <td>{id} <Button onClick={copyToClipboard}>COPY</Button></td>
                         </tr>
-                        <tr><th><h2>Payment Method</h2></th><td>{paymentMethod || 'Not specified'}</td></tr>
-                        <tr><th><h2>Order Time</h2></th><td>{orderTime || 'Not available'}</td></tr>
+                        <tr>
+                            <th><h2>Payment Method</h2></th>
+                            <td>{paymentMethods || 'Not specified'}</td>
+                        </tr>
+                        <tr>
+                            <th><h2>Order Time</h2></th>
+                            <td>{createdAt || 'Not available'}</td>
+                        </tr>
                     </tbody>
                 </table>
             </OrderCode>

@@ -60,13 +60,14 @@ export const ProductsContainer = styled.div`
   width: 100%; /* Hoặc chiều rộng cố định như 1200px */
   margin-top: 40px;
   justify-content: center;
-  height: 100%;
+  height: 370px;
 `;
 
 export const ProductsWrapper = styled.div`
   display: flex;
   gap: 20px;
   width: 1500px;
+  align-items: center;
 `;
 export const Button = styled.button`
   background-color: #2EA5B6;

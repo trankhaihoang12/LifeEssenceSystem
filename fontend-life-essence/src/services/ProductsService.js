@@ -102,3 +102,87 @@ export const getProductById = async (productId) => {
         throw error;
     }
 };
+// get all category
+export const getAllCategories = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/category/all`);
+        return response.data; // Trả về dữ liệu danh mục
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        throw error; // Ném lỗi để xử lý ở nơi gọi
+    }
+};
+
+// Hàm lấy sản phẩm theo danh mục
+export const getProductsByCategory = async (categoryId) => {
+    try {
+        const response = await axios.get(`${API_URL}/category/${categoryId}`);
+        return response.data; // Trả về dữ liệu sản phẩm theo danh mục
+    } catch (error) {
+        console.error('Lỗi khi lấy sản phẩm theo danh mục:', error);
+        throw error; // Ném lỗi để xử lý ở nơi gọi
+    }
+};
+
+export const searchProducts = async (searchQuery) => {
+    return axios.get(`/api/products/search`, { params: { search: searchQuery } });
+};
+
+// Thêm hàm lấy tất cả các phản hồi sản phẩm
+export async function getAllFeedback(productId,token) {
+    try {
+        const response = await axios.get(`${API_URL}/products/feedback/${productId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`  // Thêm token vào header
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách phản hồi:', error);
+        throw error;
+    }
+}
+
+
+// Hàm gửi phản hồi sản phẩm
+export async function writeFeedback({ product_id, rating, content, user_id, order_id, token, files }) {
+    try {
+        const formData = new FormData();
+
+        // Thêm các tham số vào formData
+        formData.append('product_id', product_id);
+        formData.append('rating', rating);
+        formData.append('content', content);
+        formData.append('user_id', user_id);
+        formData.append('order_id', order_id);
+
+        // Nếu có hình ảnh, thêm vào formData
+        if (files && files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                formData.append('images', files[i]);
+            }
+        }
+
+        console.log('Gửi dữ liệu:', {
+            product_id,
+            rating,
+            content,
+            user_id,
+            order_id,
+            files
+        });
+
+        const response = await axios.post(`${API_URL}/products/feedback/write`, formData, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+
+        return response.data; // Trả về dữ liệu phản hồi từ API
+    } catch (error) {
+        console.error('Lỗi khi gửi phản hồi:', error.response ? error.response.data : error.message);
+        throw error; // Ném lỗi để xử lý ở nơi gọi hàm
+    }
+}

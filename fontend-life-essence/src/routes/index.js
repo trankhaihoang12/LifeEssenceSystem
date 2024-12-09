@@ -6,7 +6,6 @@ import OrderPage from "../pages/OrderPage/OrderPage";
 import PaymentPage from "../pages/PaymentPage/PaymentPage";
 import ProductsPage from "../pages/ProductsPage/ProductsPage";
 import Wishlist from "../pages/WishlistPage/Wishlist";
-import Profile from '../pages/Profile/Profile';
 import ResetPassword from "../pages/ResetPassword/ResetPassword";
 import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
@@ -16,6 +15,9 @@ import DetailsBlogPage from '../pages/DetailsBlogPage/DetailsBlogs';
 import OrderSuccess from '../pages/OrderSuccess/OrderSuccess';
 import DetailsOrderPage from '../pages/DetailsOrderPage/DetailsOrderPage';
 import Feedback from "../pages/Feedback/Feedback";
+import ProfilePage from '../pages/ProfilePage/ProfilePage';
+import BlogsPost from '../pages/BlogsPost/BlogsPost';
+
 export const routes = [
     {
         path: '/',
@@ -45,11 +47,18 @@ export const routes = [
         isShowFooter: true
     },
     {
-        path: '/products',
+        path: '/products/:categoryId?', // `categoryId` có thể có hoặc không
         page: ProductsPage,
         isShowHeader: true,
         isShowFooter: true
     },
+    {
+        path: '/products', // Đường dẫn cho tìm kiếm
+        page: ProductsPage,
+        isShowHeader: true,
+        isShowFooter: true
+    },
+        
     {
         path: '/details-product/:id',
         page: DetailsProductPage,
@@ -64,7 +73,7 @@ export const routes = [
     },
     {
         path: '/profile-user',
-        page: Profile,
+        page: ProfilePage,
         isShowHeader: true,
         isShowFooter: true
     },
@@ -117,8 +126,14 @@ export const routes = [
     },
 
     {
-        path: '/feedback',
+        path: '/feedback/:orderId',
         page: Feedback,
+        isShowHeader: true,
+        isShowFooter: true
+    },
+    {
+        path: '/blogs-post',
+        page: BlogsPost,
         isShowHeader: true,
         isShowFooter: true
     }

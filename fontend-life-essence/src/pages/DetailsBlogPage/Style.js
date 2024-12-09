@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 export const BannerContainer = styled.div`
-  background-color: #d9d9d9; /* gray background */
-  color: #fff;
+  background-color: #ffbf00; /* gray background */
+  color:  #004080;
   text-align: center;
   padding: 2rem 1rem;
 `;
@@ -25,10 +25,6 @@ export const SearchField = styled.div`
   flex-direction: column;
   align-items: flex-start;
   
-  label {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
   
   input, select {
     padding: 1rem;
@@ -36,27 +32,13 @@ export const SearchField = styled.div`
     border: 1px solid #ccc;
     border-radius: 4px;
   }
-
-  button {
-    margin-top: 0.5rem;
-    padding: 0.5rem 1rem;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-  }
-
-  button:hover {
-    background-color: #0056b3;
-  }
 `;
 
 export const BlogSection = styled.div`
   margin: 3rem auto;
   padding: 0 2rem;
   max-width: 1200px;
+  background-color: rgb(244, 244, 244)
 `;
 
 export const BlogSectionTitle = styled.h2`
@@ -133,7 +115,7 @@ export const BlogPostExcerpt = styled.p`
 
 export const BlogPostLink = styled.a`
   display: inline-block;
-  background-color: #007bff;
+  background-color: #24AEB1;
   color: #fff;
   text-decoration: none;
   padding: 0.5rem 1rem;

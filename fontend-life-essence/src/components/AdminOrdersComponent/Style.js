@@ -21,13 +21,10 @@ export const WrapperInput = styled.input`
 `;
 export const WrapperButton = styled.button`
   background-color: #28a745; /* Màu nền cho nút tìm kiếm */
+  color: white;
   border: none;
-  border-radius: 20px;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 10px 15px;
+  border-radius: 5px;
   cursor: pointer;
   &:hover {
     background-color: #218838; /* Màu nền khi hover */
@@ -171,7 +168,7 @@ export const WrapperModalContent = styled.div`
 
 export const Title = styled.h2`
   margin-bottom: 15px;
-  font-size: 24px;
+  font-size: 20px;
   text-align: center;
 `;
 
@@ -183,6 +180,7 @@ export const Text = styled.p`
 
 export const Strong = styled.strong`
   font-weight: bold;
+  font-size: 14px;
 `;
 
 export const ProductList = styled.ul`
@@ -196,6 +194,7 @@ export const ProductItem = styled.li`
 
 export const CloseButtonContainer = styled.div`
   display: flex;
+  gap: 10px;
   justify-content: flex-end;
   margin-top: auto; /* Đẩy nút xuống dưới cùng */
 `;

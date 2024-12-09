@@ -254,7 +254,7 @@ useEffect(() => {
                             <WrapperTableData>{user.phone}</WrapperTableData>
                             <WrapperTableData>{user.email}</WrapperTableData>
                             <WrapperTableData>{user.role}</WrapperTableData>
-                            <WrapperTableData>{user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}</WrapperTableData>
+                            <WrapperTableData>{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</WrapperTableData>
                             <WrapperTableData>{user.default_address}</WrapperTableData>
                             <WrapperTableData>
                                 <FaPen onClick={() => handleEdit(user)} style={{ cursor: 'pointer', color: '#6366F1' }} />
