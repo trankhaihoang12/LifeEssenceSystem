@@ -196,3 +196,67 @@ export const OrderTable = styled.table`
     }
   }
 `;
+export const EditButton = styled.div`
+  width: 70px;
+  height: 35px;
+  background-color: #24AEB1;
+  color: #fff;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  /* Hover effects */
+  &:hover {
+    background-color: #1B8D8F;
+    transform: scale(1.05);
+  }
+`;
+
+export const StyledPasswordInput = styled.input`
+  width: 100%;
+  padding: 6px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+
+  /* Optional: Customize focus styles for better UX */
+  &:focus {
+    outline: none; /* Remove default outline */
+    border-color: #24AEB1; /* Example: Change border color on focus */
+  }
+`;
+
+export const StyledButtonUpdatePass = styled.button`
+  padding: 10px 2px;
+  background-color: #24AEB1;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+`;
+
+export const EditAddressButton = styled.button`
+  padding: 5px;
+  background-color: #FFA500; /* Orange color */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+`;
+export const DeleteAddressButton = styled.button`
+  padding: 5px;
+  background-color: #FF0000; /* Orange color */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+`;

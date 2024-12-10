@@ -318,3 +318,20 @@ export const ModalButton = styled.button`
         background-color: #0097a7;
     }
 `;
+export const TableHeader = styled.th`
+    border: 1px solid #ddd;
+    padding: 8px;
+    background-color: #f2f2f2;
+    font-weight: bold;
+`;
+
+export const TableCell = styled.td`
+    border: 1px solid #ddd;
+    padding: 8px;
+`;
+
+export const TableRow = styled.tr`
+    &:hover {
+        background-color: #f1f1f1;
+    }
+`;

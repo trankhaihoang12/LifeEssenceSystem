@@ -125,7 +125,7 @@ const MyOrderPage = () => {
 
     return (
         <Loading isPending={loading}>
-            <div style={{ backgroundColor: '#F4f4f4', width: '100%', height: '100vh', display: 'flex', alignItems: 'center' }}>
+            <div style={{ backgroundColor: '#F4f4f4', width: '100%', height: '800px', display: 'flex', alignItems: 'center' }}>
                 <Container>
                     <Header>Lịch Sử Mua Hàng</Header>
                     <OrderList>

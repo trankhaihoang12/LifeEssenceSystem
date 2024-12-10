@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Minus, Plus, X } from 'lucide-react';
 import { FaHeart } from "react-icons/fa";
 import * as OrderService from '../../services/OrderService'
@@ -17,7 +17,8 @@ const OrderPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   //chọn hiện ra couponcode
   const [selectedCoupon, setSelectedCoupon] = useState("");
-  const [discount, setDiscount] = useState(0);
+  const [coupons, setCoupons] = useState([]);
+  const [couponDiscount, setCouponDiscount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ const OrderPage = () => {
           return {
             ...cartItem,
             image: imageUrl, // Ảnh mặc định nếu không có
+            discount: matchingProduct?.discount || 0 
           };
         });
 
@@ -74,9 +76,22 @@ const OrderPage = () => {
         setLoading(false);
       }
     };
+    const fetchCoupons = async () => {
+      try {
+        const token = getToken();
+        const activeCoupons = await ProductsService.getActiveCoupons(token); // Gọi hàm để lấy coupons
+        console.log('activeCoupons', activeCoupons)
+        setCoupons(activeCoupons); // Lưu coupons vào state
+      } catch (error) {
+        console.error("Lỗi khi tải coupon:", error);
+        message.error("Không thể tải coupon");
+      }
+    };
 
     fetchCartItems();
     fetchProducts();
+    fetchCoupons(); // Gọi hàm lấy coupon
+
   }, []);
 
   console.log('cartItems', cartItems)
@@ -173,26 +188,28 @@ const OrderPage = () => {
   };
 
 
+  // Tính toán subtotal và total với useMemo
+  const subtotal = useMemo(() => {
+    return cartItems.reduce((total, item) => {
+      return total + (item.price * item.quantity * (1 - item.discount));
+    }, 0);
+  }, [cartItems]);
 
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = 5.0;
-  const total = subtotal + shipping - discount;
 
-  const couponCodes = [
-    { code: "FREESHIP", discount: shipping }, // Free shipping
-    { code: "SAVE10", discount: 10 }, // $10 off
-    { code: "HALFPRICE", discount: subtotal / 2 }, // 50% off subtotal
-  ];
+  const total = useMemo(() => {
+    return subtotal + shipping - couponDiscount;
+  }, [subtotal, shipping, couponDiscount]);
+
 
   const applyCoupon = () => {
-    const coupon = couponCodes.find(c => c.code === selectedCoupon);
+    const coupon = coupons.find(c => c.code === selectedCoupon);
     if (coupon) {
-      setDiscount(coupon.discount);
-      message.success(`Coupon applied: ${coupon.code} - Discount: $${coupon.discount}`);
+      setCouponDiscount((subtotal * coupon.coupons_percent) / 100);
+      message.success(`Coupon applied: ${coupon.code} - Discount: $${(subtotal * coupon.coupons_percent) / 100}`);
     } else {
       message.error("Mã coupon không hợp lệ");
-      setDiscount(0);
+      setCouponDiscount(0);
     }
   };
 
@@ -213,8 +230,10 @@ const OrderPage = () => {
 
   // Function chuyển hướng sang trang thanh toán
   const handleProceedToPayment = () => {
-    navigate("/payment", { state: { cartItems } });  // Truyền dữ liệu cartItems qua state
+    navigate("/payment", { state: { cartItems, couponDiscount } });  // Truyền dữ liệu cartItems qua state
+    console.log(cartItems);
   };
+
 
   return (
     <Loading isPending={loading} >
@@ -291,8 +310,13 @@ const OrderPage = () => {
                           <Plus size={16} />
                         </button>
                       </div>
-                      <div style={{ width: "100px", textAlign: "right" }}>
-                        ${(item.price * item.quantity).toFixed(2)}
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                        <div style={{ width: "100px", textAlign: "right", textDecoration: "line-through", color: "#888" }}>
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </div>
+                        <div style={{ width: "100px", textAlign: "right", fontWeight: "bold", color: "#333" }}>
+                          ${(item.price * item.quantity * (1 - item.discount)).toFixed(2)}
+                        </div>
                       </div>
                     </div>
                   );
@@ -312,7 +336,7 @@ const OrderPage = () => {
                   }}
                 >
                   <option value="">Select Coupon</option>
-                  {couponCodes.map((coupon) => (
+                  {coupons.map((coupon) => (
                     <option key={coupon.code} value={coupon.code}>
                       {coupon.code}
                     </option>
@@ -345,8 +369,8 @@ const OrderPage = () => {
                 <span>${shipping.toFixed(2)}</span>
               </div>
               <div style={{ marginBottom: "10px", display: "flex", justifyContent: "space-between", color: "#555" }}>
-                <span>Discount:</span>
-                <span>-${discount.toFixed(2)}</span>
+                <span>Coupon Discount:</span>
+                <span>-${couponDiscount.toFixed(2)}</span>
               </div>
               <div style={{ fontWeight: "bold", fontSize: "18px", display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
                 <span>Total:</span>

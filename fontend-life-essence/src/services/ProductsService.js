@@ -192,3 +192,18 @@ export async function writeFeedback({ product_id, rating, content, user_id, orde
         throw new Error(errorMessage); // Ném lỗi mới để xử lý ở nơi gọi hàm
     }
 }
+
+
+export async function getActiveCoupons(token) {
+    try {
+        const response = await axios.get(`${API_URL}/products/coupons/active/all`, {
+            headers: {
+                'Authorization': `Bearer ${token}`  // Pass the token in the header
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching active coupons:', error);
+        throw error;
+    }
+}

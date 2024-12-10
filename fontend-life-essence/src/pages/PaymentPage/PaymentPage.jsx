@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FaTruck, FaPaypal, FaMinus, FaPlus } from "react-icons/fa";
 import { RiBankCardLine } from "react-icons/ri";
 import * as OrderService from '../../services/OrderService'
 import * as PaymentService from '../../services/PaymentService'
-import productImage1 from '../../assets/images/Home_category1.png';
-import productImage2 from '../../assets/images/Home_category2.png';
-import productImage3 from '../../assets/images/Home_category3.png';
+import * as AddressService from '../../services/AddressService'
 import {
   PageContainer,
   Title,
@@ -26,7 +24,7 @@ import {
   PlaceOrderButton,
   TotalRow
 } from './Style';
-import { useLocation, useNavigate } from 'react-router';
+import {useLocation, useNavigate } from 'react-router';
 import { PayPalButton } from 'react-paypal-button-v2';
 import Loading from '../../components/LoadingComponent/Loading';
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,15 +32,23 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
 
   const Payment = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const {couponDiscount} = location.state || {};
+    console.log('location Discount:', location);
+    console.log('Coupon Discount:', couponDiscount);
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
     const cartItems = useSelector((state) => state.cart.cartItems);
-        console.log('cartItems',cartItems)
     const [paymentMethod, setPaymentMethod] = useState("COD");
     const [updatedProducts, setUpdatedProducts] = useState([]);
-    console.log('updatedProducts', updatedProducts)
     const [sdkReady, setsdkReady] = useState(false);
     const [clientId, setClientId] = useState('');
+    const [addresses, setAddresses] = useState([]); // Danh sách địa chỉ
+    const [selectedAddress, setSelectedAddress] = useState('');
+    const [showAddressList, setShowAddressList] = useState(false);
+    const [fullName, setFullName] = useState('');
+    const [phone, setPhone] = useState('');
+    console.log('cartItems', cartItems)
     useEffect(() => {
       if (cartItems.length > 0) {
         setLoading(true);
@@ -71,19 +77,42 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
       dispatch(updateQuantity({ productId, quantity: Math.max(1, newQuantity) }));
     };
 
-    // Tính tổng tiền (Subtotal + Shipping - Discount)
-    const calculateSubtotal = () =>
-      cartItems.reduce((sum, product) => sum + parseFloat(product.price) * product.quantity, 0);
-    const shipping = 5.0;
-    const discount = 10.0;
-    const total = calculateSubtotal() + shipping - discount;
+    // Tính toán subtotal và total với useMemo
+    const subtotal = useMemo(() => {
+      return cartItems.reduce((total, item) => {
+        return total + (item.price * item.quantity * (1 - item.discount));
+      }, 0);
+    }, [cartItems]);
 
+    const shipping = 5.0;
+
+    // Đảm bảo couponDiscount là một số
+    const memoizedCouponDiscount = useMemo(() => {
+      if (couponDiscount && typeof couponDiscount === 'number') {
+        return couponDiscount; // Nếu couponDiscount là số
+      } else if (couponDiscount && typeof couponDiscount.couponDiscount === 'number') {
+        return couponDiscount.couponDiscount; // Nếu couponDiscount là đối tượng
+      }
+      return 0; // Trả về 0 nếu không có giá trị hợp lệ
+    }, [couponDiscount]);
+    console.log('memoizedCouponDiscount', memoizedCouponDiscount)
+
+    const total = useMemo(() => {
+      return subtotal + shipping - memoizedCouponDiscount; // Sử dụng couponDiscount đã được memoize
+    }, [subtotal, shipping, memoizedCouponDiscount]);
+
+    
     // Thay đổi phương thức thanh toán
     const handlePaymentChange = (method) => setPaymentMethod(method);
     const getToken = () => {
       const storedUserData = localStorage.getItem('userData');
       const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
       return parsedUserData ? parsedUserData.token : null;
+    };
+    const getUserId = () => {
+      const storedUserData = localStorage.getItem('userData');
+      const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+      return parsedUserData?.user?.id;
     };
     // Xử lý đặt hàng
     const handlePlaceOrder = async () => {
@@ -113,13 +142,15 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
         phone,
         address,
         note: notes,
-        orderDetails
+        orderDetails,
+        total: total.toFixed(2)
       };
       console.log('orderData', orderData)
 
       try {
         setLoading(true);
         const response = await OrderService.addOrder(orderData, token);
+        console.log('response', response)
         if (response && response.data) {
           await OrderService.clearCart(token);
           dispatch(clearCart());
@@ -139,6 +170,45 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
         setLoading(false);
       }
     };
+
+    useEffect(() => {
+      const fetchAddresses = async () => {
+        const token = getToken()
+        const userId = getUserId()
+        try {
+          const response = await AddressService.getAllDeliveryAddresses(userId, token);
+          console.log('fetchedAddresses', response); // Ghi log phản hồi để kiểm tra
+          // Kiểm tra xem response có dữ liệu và dữ liệu có phải là mảng không
+          if (response && Array.isArray(response.data)) {
+            setAddresses(response.data); // Cập nhật địa chỉ từ dữ liệu
+          } else {
+            console.error('Invalid data format:', response); // Ghi log nếu dữ liệu không hợp lệ
+          }
+        } catch (error) {
+          console.error('Failed to fetch addresses:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchAddresses();
+    }, []);
+
+    const handleAddressSelect = (address) => {
+      setSelectedAddress(`${address.detail_address}, ${address.ward}, ${address.district}, ${address.province}`);
+      setShowAddressList(false);
+    };
+    useEffect(() => {
+      const storedUserData = localStorage.getItem('userData');
+      console.log('storedUserData', storedUserData)
+      if (storedUserData) {
+        const parsedUserData = JSON.parse(storedUserData);
+        setFullName(parsedUserData.user.name || ''); // Giả sử fullName có trong userData
+        setPhone(parsedUserData.user.phone || ''); // Giả sử phone có trong userData
+      }
+    }, []);
+
+
     const handleMomoPayment = () => {
       // Logic để xử lý thanh toán qua Momo
       alert("Momo payment processing...");
@@ -183,6 +253,7 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
           note: notes,
           orderDetails,
           is_payment: true,
+          total: total.toFixed(2)
         };
 
         setLoading(true);
@@ -245,9 +316,79 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
         <SectionContainer>
           <div style={{ width: "70%", boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px', borderRadius: '8px', padding: '16px', backgroundColor: '#fff', margin: '20px auto' }}>
             <h2>SHIPPING INFORMATION</h2>
-            <Input type="text" placeholder="Enter Full Name" />
-            <Input type="text" placeholder="Enter Phone Number" />
-            <Input type="text" placeholder="Enter Address" />
+            <Input
+              type="text"
+              placeholder="Enter Full Name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+            <Input
+              type="text"
+              placeholder="Enter Phone Number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            <div style={{ position: 'relative', marginTop: '10px' }}>
+              <Input
+                type="text"
+                placeholder="Enter Address"
+                value={selectedAddress}
+                readOnly
+                style={{ cursor: 'pointer' }} // Đổi con trỏ khi không thể chỉnh sửa
+              />
+              <button
+                onClick={() => setShowAddressList(!showAddressList)}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  padding: '5px 10px',
+                  backgroundColor: '#007BFF',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  transition: 'background-color 0.3s',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#0056b3'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#007BFF'}
+              >
+                Choose Address ▼
+              </button>
+              {showAddressList && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: '0',
+                  right: '0',
+                  border: '1px solid #ccc',
+                  background: '#fff',
+                  borderRadius: '5px',
+                  maxHeight: '150px',
+                  overflowY: 'auto',
+                  zIndex: 1000,
+                }}>
+                  {addresses.map((address) => (
+                    <div
+                      key={address.id}
+                      onClick={() => handleAddressSelect(address)}
+                      style={{
+                        padding: '10px',
+                        cursor: 'pointer',
+                        borderBottom: '1px solid #eee',
+                        transition: 'background-color 0.2s',
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}
+                    >
+                      {`${address.detail_address}, ${address.ward}, ${address.district}, ${address.province}`}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             <div style={{ display: 'flex', gap: '8px' }}>
               <Select><option>Select City</option></Select>
               <Select><option>Select District</option></Select>
@@ -293,9 +434,9 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
                   ))}
                 </ProductList>
                 <SummaryContainer>
-                  <TotalRow><span>SubTotal:</span><span>${calculateSubtotal().toFixed(2)}</span></TotalRow>
+                  <TotalRow><span>SubTotal:</span><span>${subtotal.toFixed(2)}</span></TotalRow>
                   <TotalRow><span>Shipping:</span><span>${shipping.toFixed(2)}</span></TotalRow>
-                  <TotalRow><span>Discount:</span><span>-${discount.toFixed(2)}</span></TotalRow>
+                  <TotalRow><span>Coupon Discount:</span><span>${memoizedCouponDiscount.toFixed(2)}</span></TotalRow>
                   <TotalRow><strong>Total:</strong><strong>${total.toFixed(2)}</strong></TotalRow>
                 </SummaryContainer>
 

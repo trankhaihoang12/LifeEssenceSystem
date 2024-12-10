@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { 
-    Container, Header, PaymentMethod, DeliveryAddress, CombinedItemsSummary, 
-    ItemsTable, OrderSummary, OrderCode, Button, UpdateLink, ProductImage, TotalSection, TotalText, TotalAmount, PriceColumn 
+import {
+    Container, Header, PaymentMethod, DeliveryAddress, CombinedItemsSummary,
+    ItemsTable, OrderSummary, OrderCode, Button, UpdateLink, ProductImage, TotalSection, TotalText, TotalAmount, PriceColumn,
+    SectionHeader
 } from './Style';
 import * as OrderService from '../../services/OrderService'
 import { useParams } from 'react-router';
 
 const DetailsOrderPage = () => {
     const { orderId } = useParams(); // Lấy orderId từ URL params
-    console.log("orderId from URL:", orderId); 
+    console.log("orderId from URL:", orderId);
     const [order, setOrder] = useState(null); // Dữ liệu đơn hàng
     const [loading, setLoading] = useState(true); // Trạng thái loading
     const [error, setError] = useState(null); // Lỗi khi gọi API
@@ -41,7 +42,7 @@ const DetailsOrderPage = () => {
             try {
                 // Gọi API để lấy chi tiết đơn hàng theo orderId
                 const data = await OrderService.getOrderDetails(orderId, token);
-                console.log('dât',data)
+                console.log('dât', data)
                 setOrder(data.data); // Cập nhật dữ liệu vào state
                 setLoading(false); // Đổi trạng thái loading
             } catch (err) {
@@ -82,117 +83,117 @@ const DetailsOrderPage = () => {
         return 'https://via.placeholder.com/150'; // Fallback image if no image exists
     };
 
-    const { customerName, phone, address, products, subtotal, deliveryFee, discount, coupon, total, paymentMethods, createdAt, id } = order;
+    const { customerName, phone, address, products, deliveryFee, coupon, total, paymentMethods, createdAt, id } = order;
 
-    
+    // Tính toán subtotal và giảm giá
+    const subtotal = products.reduce((acc, product) => acc + (product.price * product.OrderDetail.quantity), 0);
+    const discount = subtotal - total; // Tính giảm giá
+
     return (
-        <Container>
-            <Header>Order Information</Header>
-            <PaymentMethod>
-                <Button>
-                    <i className="fas fa-money-check-alt"></i> Pay by Cash on Delivery
-                </Button>
-            </PaymentMethod>
+        <div style={{ height: '880px', backgroundColor: '#F4f4f4', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+            <SectionHeader>Home / Order details</SectionHeader>
+            <Container>
+                <Header>Order Information</Header>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <PaymentMethod>
+                        <Button>
+                            <i className="fas fa-money-check-alt"></i> Pay by Cash on Delivery
+                        </Button>
+                    </PaymentMethod>
 
-            <DeliveryAddress>
-                <div><i className="fas fa-map-marker-alt"></i> Delivery address</div>
-                <div>{customerName} ({phone})</div>
-                <div>
-                    {address || 'No address provided'}
-                    <UpdateLink>Update</UpdateLink>
+                    <DeliveryAddress>
+                        <div><i className="fas fa-map-marker-alt"></i> Delivery address</div>
+                        <div>{customerName} ({phone})</div>
+                        <div>
+                            {address || 'No address provided'}
+                            {/* <UpdateLink>Update</UpdateLink> */}
+                        </div>
+                    </DeliveryAddress>
                 </div>
-            </DeliveryAddress>
 
-            <CombinedItemsSummary>
-                <ItemsTable>
+                <CombinedItemsSummary>
+                    <ItemsTable>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Items</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {/* Kiểm tra nếu order.products là một mảng hợp lệ trước khi dùng map */}
+                                {Array.isArray(products) && products.length > 0 ? (
+                                    products.map((product) => (
+                                        <tr key={product.id}>
+                                            <td>
+                                                <ProductImage src={getProductImage(product)} alt={product.prod_name} />
+                                                {product.prod_name}
+                                            </td>
+                                            <td>x{product.OrderDetail.quantity}</td>
+                                            <PriceColumn>${product.price}</PriceColumn>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="3">No products available</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </ItemsTable>
+
+                    <OrderSummary>
+                        <table>
+                            <tbody>
+                                {Array.isArray(products) && products.length > 0 ? (
+                                    <>
+                                        <tr>
+                                            <th>Subtotal</th>
+                                            <PriceColumn>${subtotal.toFixed(2)}</PriceColumn>
+                                        </tr>
+                                        <tr>
+                                            <th>Giảm giá</th>
+                                            <PriceColumn>${discount.toFixed(2)}</PriceColumn>
+                                        </tr>
+                                    </>
+                                ) : (
+                                    <tr>
+                                        <td colSpan="3">No products available</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </OrderSummary>
+
+                    <hr />
+
+                    <TotalSection>
+                        <TotalText>Total</TotalText>
+                        <TotalAmount>${total.toFixed(2)}</TotalAmount>
+                    </TotalSection>
+                </CombinedItemsSummary>
+
+                <OrderCode>
                     <table>
-                        <thead>
+                        <tbody>
                             <tr>
-                                <th>Items</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
+                                <th><h1>Order Code</h1></th>
+                                <td>{id} <Button onClick={copyToClipboard}>COPY</Button></td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {/* Kiểm tra nếu order.products là một mảng hợp lệ trước khi dùng map */}
-                            {Array.isArray(products) && products.length > 0 ? (
-                                products.map((product) => (
-                                    <tr key={product.id}>
-                                        <td>
-                                            <ProductImage src={getProductImage(product)} alt={product.prod_name} />
-                                            {product.prod_name}
-                                        </td>
-                                        <td>x{product.OrderDetail.quantity}</td>
-                                        <PriceColumn>${product.price}</PriceColumn>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="3">No products available</td>
-                                </tr>
-                            )}
+                            <tr>
+                                <th><h2>Payment Method</h2></th>
+                                <td>{paymentMethods || 'Not specified'}</td>
+                            </tr>
+                            <tr>
+                                <th><h2>Order Time</h2></th>
+                                <td>{createdAt || 'Not available'}</td>
+                            </tr>
                         </tbody>
                     </table>
-                </ItemsTable>
-
-                <OrderSummary>
-                    <table>
-                        <tbody>
-                            {Array.isArray(products) && products.length > 0 ? (
-                                <>
-                                    <tr>
-                                        <th>Subtotal</th>
-                                        <PriceColumn>${subtotal}</PriceColumn>
-                                    </tr>
-                                    <tr>
-                                        <th>Delivery</th>
-                                        <PriceColumn>${deliveryFee}</PriceColumn>
-                                    </tr>
-                                    <tr>
-                                        <th>Discount</th>
-                                        <PriceColumn>${products.reduce((acc, product) => acc + (product.discount || 0), 0)}</PriceColumn>
-                                    </tr>
-                                    <tr>
-                                        <th>Coupon</th>
-                                        <PriceColumn>${coupon}</PriceColumn>
-                                    </tr>
-                                </>
-                            ) : (
-                                <tr>
-                                    <td colSpan="3">No products available</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </OrderSummary>
-
-                <hr />
-
-                <TotalSection>
-                    <TotalText>Total</TotalText>
-                    <TotalAmount>${total}</TotalAmount>
-                </TotalSection>
-            </CombinedItemsSummary>
-
-            <OrderCode>
-                <table>
-                    <tbody>
-                        <tr>
-                            <th><h1>Order Code</h1></th>
-                            <td>{id} <Button onClick={copyToClipboard}>COPY</Button></td>
-                        </tr>
-                        <tr>
-                            <th><h2>Payment Method</h2></th>
-                            <td>{paymentMethods || 'Not specified'}</td>
-                        </tr>
-                        <tr>
-                            <th><h2>Order Time</h2></th>
-                            <td>{createdAt || 'Not available'}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </OrderCode>
-        </Container>
+                </OrderCode>
+            </Container>
+        </div>
     );
 };
 export default DetailsOrderPage;

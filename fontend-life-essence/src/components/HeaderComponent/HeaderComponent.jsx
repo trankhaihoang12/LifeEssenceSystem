@@ -184,7 +184,21 @@ const HeaderComponent = () => {
           {userData ? (
             <Popover content={content} trigger="click" open={isOpenPopup}>
               <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => setIsOpenPopup((prev) => !prev)}>
-                <AiOutlineUser style={{ fontSize: '3rem', marginRight: '10px' }} />
+                {userData.user.avatar ? (
+                  <img
+                    style={{
+                      fontSize: '3rem',
+                      marginRight: '10px',
+                      width: '35px',
+                      height: '35px',
+                      borderRadius: '50%',
+                    }}
+                    src={userData.user.avatar}
+                    alt="Profile picture"
+                  />
+                ) : (
+                  <AiOutlineUser style={{ fontSize: '3rem', marginRight: '10px' }} />
+                )}
                 <SignInText >{userData.user.name}</SignInText>
               </div>
             </Popover>

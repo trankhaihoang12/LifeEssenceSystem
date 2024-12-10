@@ -24,7 +24,6 @@ export const getAllOrders = async (token) => {
     }
 };
 
-
 // Get Order by ID
 export const getOrderById = async (id, token) => {
     try {
@@ -56,6 +55,25 @@ export const deleteOrder = async (orderId, token) => {
         throw new Error(errorMessage);
     }
 };
+// Hàm thêm danh mục mới
+export const addCategory = async (token, categoryData) => {
+    try {
+        // Gửi request POST đến backend để thêm danh mục mới
+        const response = await axios.post(`${API_URL}/admin/add-category`, categoryData, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        // Trả về dữ liệu từ API
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi thêm danh mục:", error.response ? error.response.data : error.message);
+        throw error;  // Ném lỗi để component có thể xử lý
+    }
+};
+
 
 // Hàm get ALL danh mục kèm số lượng sản phẩm
 export const getAllCategory = async (token) => {
@@ -72,6 +90,23 @@ export const getAllCategory = async (token) => {
         return response.data;
     } catch (error) {
         console.error("Lỗi khi lấy danh sách danh mục:", error.response ? error.response.data : error.message);
+        throw error;  // Ném lỗi để component có thể xử lý
+    }
+};
+
+// Hàm xóa danh mục
+export const deleteCategory = async (token, categoryId) => {
+    try {
+        const response = await axios.delete(`${API_URL}/admin/delete-category/${categoryId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi xóa danh mục:", error.response ? error.response.data : error.message);
         throw error;  // Ném lỗi để component có thể xử lý
     }
 };
@@ -99,3 +134,61 @@ export const updateOrderStatus = async (orderId, orderStatus, token) => {
         throw error;  // Ném lỗi để component có thể xử lý
     }
 };
+
+// Hàm thêm coupon
+export async function addCoupon(token, couponData) {
+    try {
+        const response = await axios.post(`${API_URL}/admin/coupons/create`, couponData, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`  // Thêm token vào header
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Lỗi khi thêm coupon:', error);
+        throw error;
+    }
+}
+
+export async function getActiveCoupons(token) {
+    try {
+        const response = await axios.get(`${API_URL}/admin/coupons/active`, {
+            headers: {
+                'Authorization': `Bearer ${token}`  // Pass the token in the header
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching active coupons:', error);
+        throw error;
+    }
+}
+
+export async function deleteCoupon(token, couponId) {
+    try {
+        const response = await axios.delete(`${API_URL}/admin/coupons/delete/${couponId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`  // Pass the token in the header
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting coupon:', error);
+        throw error;
+    }
+}
+
+export async function getAllCoupons(token) {
+    try {
+        const response = await axios.get(`${API_URL}/admin/coupons/getAll`, {
+            headers: {
+                'Authorization': `Bearer ${token}`  // Pass the token in the header
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching all coupons:', error);
+        throw error;
+    }
+}

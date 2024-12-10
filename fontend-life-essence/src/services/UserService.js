@@ -105,3 +105,17 @@ export const updateUserInfo = async (userData, token) => {
         throw error;
     }
 };
+
+export async function getActiveCoupons(token) {
+    try {
+        const response = await axios.get(`${API_URL}/admin/coupons/active`, {
+            headers: {
+                'Authorization': `Bearer ${token}`  // Pass the token in the header
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching active coupons:', error);
+        throw error;
+    }
+}

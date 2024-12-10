@@ -67,7 +67,7 @@ const ReviewForm = () => {
             {currentReviews.map((feedback, index) => (
                 <div key={index} style={{ borderBottom: '2px solid #E6E6E6E6', marginBottom: '30px' }}>
                     <div style={{ display: 'flex', height: '50px', gap: '20px' }}>
-                        <img style={{ height: '50px', width: '50px', borderRadius: '50px' }} src="https://trixie.com.vn/media/images/article/54801627/jack.jpeg" alt="" />
+                        <img style={{ height: '50px', width: '50px', borderRadius: '50px' }} src={feedback.avatar || "https://via.placeholder.com/100"} />
                         <div style={{ display: 'flex', flexDirection: 'column', margin: 'auto 0' }}>
                             <h2>{feedback.user_name}</h2>
                             <Rate disabled defaultValue={feedback.rating} style={{ fontSize: '13px' }} />

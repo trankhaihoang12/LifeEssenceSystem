@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-    max-width: 800px;
+    width: 1100px;
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
@@ -16,6 +16,10 @@ export const Header = styled.div`
 `;
 
 export const PaymentMethod = styled.div`
+    width: 400px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
     margin-bottom: 20px;
 `;
 
@@ -34,7 +38,7 @@ export const DeliveryAddress = styled.div`
     margin-bottom: 20px;
     font-size: 14px;
     line-height: 1.5;
-    max-width: 400px;
+    width: 400px;
 `;
 
 export const UpdateLink = styled.span`
@@ -153,7 +157,6 @@ export const TotalSection = styled.div`
     padding: 10px;
     font-size: 18px;
     font-weight: bold;
-    margin-top: 20px;
     border-top: 2px solid #ccc;
 `;
 
@@ -171,4 +174,20 @@ export const PriceColumn = styled.td`
     text-align: right;
     padding-right: 15px;
     min-width: 100px;
+`;
+
+export const SectionHeader = styled.div`
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 100px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #6c757d;
+
+  @media (max-width: 768px) {
+    padding: 0 20px;
+    font-size: 14px;
+  }
 `;
