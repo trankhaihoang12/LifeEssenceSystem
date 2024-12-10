@@ -169,10 +169,10 @@ const HeaderComponent = () => {
             )}
             {error && <div>{error.message}</div>} 
             <WrapperItem>
-              <span>Home </span>
-              <span>Shop </span>
-              <span>Blog </span>
-              <span>On Sale </span>
+              <span style={{cursor: 'pointer'}} onClick={()=>navigate('/')}>Home </span>
+              <span style={{cursor: 'pointer'}}>Shop </span>
+              <span style={{cursor: 'pointer'}} onClick={()=>navigate('/blogs')}>Blog </span>
+              <span style={{cursor: 'pointer'}}>On Sale </span>
               <span>Contract </span>
             </WrapperItem>
           </div>

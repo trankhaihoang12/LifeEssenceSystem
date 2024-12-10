@@ -16,6 +16,8 @@ import OrderSuccess from '../pages/OrderSuccess/OrderSuccess';
 import DetailsOrderPage from '../pages/DetailsOrderPage/DetailsOrderPage';
 import Feedback from "../pages/Feedback/Feedback";
 import ProfilePage from '../pages/ProfilePage/ProfilePage';
+import BlogsPost from '../pages/BlogsPost/BlogsPost';
+
 export const routes = [
     {
         path: '/',
@@ -129,4 +131,11 @@ export const routes = [
         isShowHeader: true,
         isShowFooter: true
     },
+
+    {
+        path: '/blogs-post',
+        page: BlogsPost,
+        isShowHeader: true,
+        isShowFooter: true
+    }
 ];
