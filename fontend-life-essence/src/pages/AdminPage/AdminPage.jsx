@@ -7,7 +7,8 @@ import AdminInvoiceComponent from '../../components/AdminInvoiceComponent/AdminI
 import AdminHistoryComponent from '../../components/AdminHistoryComponent/AdminHistoryComponent';
 import AdminSettingComponent from '../../components/AdminSettingComponent/AdminSettingComponent';
 import AdminProductsComponent from '../../components/AdminProductsComponent/AdminProductsComponent';
-import { FaUser, FaProductHunt, FaShoppingCart, FaFileInvoice, FaHistory, FaCog, FaSignOutAlt, FaTachometerAlt } from 'react-icons/fa';
+import { FaUser, FaProductHunt, FaShoppingCart, FaFileInvoice, FaHistory, FaCog, FaSignOutAlt, FaTachometerAlt, FaAtlassian } from 'react-icons/fa';
+import AdminBlogsComponnent from '../../components/AdminBlogsComponent/AdminBlogsComponent';
 
 
 const AdminPage = () => {
@@ -27,6 +28,8 @@ const AdminPage = () => {
         return <AdminProductsComponent />; // Render AdminProductsComponent
       case 'order':
         return <AdminOrdersComponent />;
+      case 'blogs':
+        return <AdminBlogsComponnent />;
       case 'invoice':
         return <AdminInvoiceComponent />;
       case 'history':
@@ -57,6 +60,7 @@ const AdminPage = () => {
             <li onClick={() => handleOnClick('user')}><FaUser /> User</li>
             <li onClick={() => handleOnClick('products')}><FaProductHunt /> Products</li> {/* Giữ lại mục Products */}
             <li onClick={() => handleOnClick('order')}><FaShoppingCart /> Orders</li>
+            <li onClick={() => handleOnClick('blogs')}><FaAtlassian /> Blogs</li>
             <li onClick={() => handleOnClick('invoice')}><FaFileInvoice /> Invoice</li>
             <li onClick={() => handleOnClick('history')}><FaHistory /> History</li>
             <li onClick={() => handleOnClick('setting')}><FaCog /> Settings</li>

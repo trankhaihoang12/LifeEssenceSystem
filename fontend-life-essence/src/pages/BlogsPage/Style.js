@@ -127,3 +127,70 @@ export const BlogPostLink = styled.a`
     background-color: #0056b3;
   }
 `;
+// Blog Button
+export const BlogButton = styled.button`
+  background-color: #2e7d32;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: #1b5e20;
+  }
+`;
+
+// Blog Form Container
+export const BlogForm = styled.form`
+  padding: 20px;
+  background-color: #fff;
+  margin: 20px auto;
+  width: 80%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+`;
+
+// Blog Form Title
+export const BlogFormTitle = styled.h2`
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #333;
+`;
+
+// Blog Input Field
+export const BlogInput = styled.input`
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  
+  &::placeholder {
+    color: #bbb;
+  }
+
+  &:focus {
+    border-color: #2e7d32;
+    outline: none;
+  }
+`;
+
+// Blog Textarea (if needed for content input)
+export const BlogTextArea = styled.textarea`
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  min-height: 150px;
+  
+  &::placeholder {
+    color: #bbb;
+  }
+
+  &:focus {
+    border-color: #2e7d32;
+    outline: none;
+  }
+`;

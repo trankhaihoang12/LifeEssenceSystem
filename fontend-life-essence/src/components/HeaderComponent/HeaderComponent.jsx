@@ -24,6 +24,8 @@ const HeaderComponent = () => {
   const [isOpenPopup, setIsOpenPopup] = useState(false)
   const cartItems = useSelector((state) => state.cart.cartItems);
   const totalQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
+  // const wishlistItems = useSelector((state) => state.wishlist.items);
+  // const wishlistCount = wishlistItems.length;
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -111,10 +113,10 @@ const HeaderComponent = () => {
     <div style={{ width: '180px', padding: '5px', borderRadius: '8px'}}>
       <WrapperContentPopup onClick={() => { navigate('/profile-user'); handleClose() }}>Information user</WrapperContentPopup>
       {userData?.user?.role === 'admin' && (
-        <WrapperContentPopup onClick={() => { navigate('/admin'); handleClose() }}>Management system</WrapperContentPopup>
+        <WrapperContentPopup onClick={() => { navigate('/dashboard/admin'); handleClose() }}>Management system</WrapperContentPopup>
       )}
       {userData?.user?.role === 'manager' && (
-        <WrapperContentPopup onClick={() => { navigate('/admin'); handleClose() }}>Management product</WrapperContentPopup>
+        <WrapperContentPopup onClick={() => { navigate('/dashboard/manager'); handleClose() }}>Management product</WrapperContentPopup>
       )}
       <WrapperContentPopup onClick={() => { navigate('/my-order'); handleClose() }}>Order of me</WrapperContentPopup>
       <WrapperContentPopup onClick={handleSignOut} style={{ color: 'red', textAlign: 'center' }}>LOGOUT</WrapperContentPopup>

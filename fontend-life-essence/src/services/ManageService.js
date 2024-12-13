@@ -5,11 +5,81 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 
 
-// Hàm get ALL giỏ hàng dành cho admin
+
+// Hàm lấy tất cả sản phẩm
+export async function getAllProducts(token) {
+    try {
+        const response = await axios.get(`${API_URL}/manager/products`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`  // Thêm token vào header
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+        throw error;
+    }
+}
+
+
+// Hàm thêm sản phẩm mới
+export async function addProduct(productData, token) {
+    try {
+        const response = await axios.post(`${API_URL}/manager/products`, productData, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Lỗi khi thêm sản phẩm mới:', error.response ? error.response.data : error.message);
+        throw error;
+    }
+}
+
+
+// Hàm xóa sản phẩm
+export async function deleteProduct(productId, token) {
+    try {
+        const response = await axios.delete(`${API_URL}/manager/products/${productId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        return response.data;  // Trả về thông báo thành công
+    } catch (error) {
+        console.error('Lỗi khi xóa sản phẩm:', error.response ? error.response.data : error.message);
+        throw error;  // Ném lỗi nếu có
+    }
+}
+
+// Hàm cập nhật sản phẩm
+export async function updateProduct(productId, productData, token) {
+    try {
+        const response = await axios.put(`${API_URL}/manager/products/${productId}`,
+            productData,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            }
+        );
+        return response.data; // Trả về dữ liệu sản phẩm đã được cập nhật
+    } catch (error) {
+        console.error(
+            'Lỗi khi cập nhật sản phẩm:',
+            error.response ? error.response.data : error.message
+        );
+        throw error; // Ném lỗi nếu có
+    }
+}
+
+// Hàm get ALL giỏ hàng dành cho manager
 export const getAllOrders = async (token) => {
     try {
         // Gửi request GET đến backend để lấy danh sách tất cả đơn hàng
-        const response = await axios.get(`${API_URL}/admin/orders`, {
+        const response = await axios.get(`${API_URL}/manager/orders`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -27,7 +97,7 @@ export const getAllOrders = async (token) => {
 // Get Order by ID
 export const getOrderById = async (id, token) => {
     try {
-        const response = await axios.get(`${API_URL}/admin/orders/${id}`, {
+        const response = await axios.get(`${API_URL}/manager/orders/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -47,7 +117,7 @@ export const deleteOrder = async (orderId, token) => {
             },
         };
 
-        const response = await axios.delete(`${API_URL}/admin/orders/${orderId}`, config);
+        const response = await axios.delete(`${API_URL}/manager/orders/${orderId}`, config);
         return response.data; // Return the server's response
     } catch (error) {
         // Handle errors and propagate meaningful messages
@@ -59,7 +129,7 @@ export const deleteOrder = async (orderId, token) => {
 export const addCategory = async (token, categoryData) => {
     try {
         // Gửi request POST đến backend để thêm danh mục mới
-        const response = await axios.post(`${API_URL}/admin/add-category`, categoryData, {
+        const response = await axios.post(`${API_URL}/manager/add-category`, categoryData, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -79,7 +149,7 @@ export const addCategory = async (token, categoryData) => {
 export const getAllCategory = async (token) => {
     try {
         // Gửi request GET đến backend để lấy danh sách danh mục
-        const response = await axios.get(`${API_URL}/admin/getAll-category`, {
+        const response = await axios.get(`${API_URL}/manager/getAll-category`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -97,7 +167,7 @@ export const getAllCategory = async (token) => {
 // Hàm xóa danh mục
 export const deleteCategory = async (token, categoryId) => {
     try {
-        const response = await axios.delete(`${API_URL}/admin/delete-category/${categoryId}`, {
+        const response = await axios.delete(`${API_URL}/manager/delete-category/${categoryId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -117,7 +187,7 @@ export const updateOrderStatus = async (orderId, orderStatus, token) => {
     try {
         // Gửi request PUT để cập nhật trạng thái đơn hàng
         const response = await axios.put(
-            `${API_URL}/admin/orders/${orderId}/status`,  // API endpoint để cập nhật trạng thái
+            `${API_URL}/manager/orders/${orderId}/status`,  // API endpoint để cập nhật trạng thái
             { orderStatus },  // Dữ liệu truyền vào là trạng thái đơn hàng mới
             {
                 headers: {
@@ -138,7 +208,7 @@ export const updateOrderStatus = async (orderId, orderStatus, token) => {
 // Hàm thêm coupon
 export async function addCoupon(token, couponData) {
     try {
-        const response = await axios.post(`${API_URL}/admin/coupons/create`, couponData, {
+        const response = await axios.post(`${API_URL}/manager/coupons/create`, couponData, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`  // Thêm token vào header
@@ -153,7 +223,7 @@ export async function addCoupon(token, couponData) {
 
 export async function getActiveCoupons(token) {
     try {
-        const response = await axios.get(`${API_URL}/admin/coupons/active`, {
+        const response = await axios.get(`${API_URL}/manager/coupons/active`, {
             headers: {
                 'Authorization': `Bearer ${token}`  // Pass the token in the header
             }
@@ -167,7 +237,7 @@ export async function getActiveCoupons(token) {
 
 export async function deleteCoupon(token, couponId) {
     try {
-        const response = await axios.delete(`${API_URL}/admin/coupons/delete/${couponId}`, {
+        const response = await axios.delete(`${API_URL}/manager/coupons/delete/${couponId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`  // Pass the token in the header
             }
@@ -181,7 +251,7 @@ export async function deleteCoupon(token, couponId) {
 
 export async function getAllCoupons(token) {
     try {
-        const response = await axios.get(`${API_URL}/admin/coupons/getAll`, {
+        const response = await axios.get(`${API_URL}/manager/coupons/getAll`, {
             headers: {
                 'Authorization': `Bearer ${token}`  // Pass the token in the header
             }
@@ -197,7 +267,7 @@ export async function getAllCoupons(token) {
 
 export async function getAllBlogAdmin(token) {
     try {
-        const response = await axios.get(`${API_URL}/admin/all-blogs`, {
+        const response = await axios.get(`${API_URL}/manager/all-blogs`, {
             headers: {
                 'Authorization': `Bearer ${token}`,  // Pass the token in the header
             }
@@ -211,7 +281,7 @@ export async function getAllBlogAdmin(token) {
 
 export async function deleteBlog(blogId, token) {
     try {
-        const response = await axios.delete(`${API_URL}/admin/delete-blogs/${blogId}`, {
+        const response = await axios.delete(`${API_URL}/manager/delete-blogs/${blogId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,  // Pass the token in the header
             }
@@ -225,7 +295,7 @@ export async function deleteBlog(blogId, token) {
 
 export async function approveBlog(blogId, token) {
     try {
-        const response = await axios.put(`${API_URL}/admin/approve/${blogId}`, {}, {
+        const response = await axios.put(`${API_URL}/manager/approve/${blogId}`, {}, {
             headers: {
                 'Authorization': `Bearer ${token}`,  // Pass the token in the header
             }

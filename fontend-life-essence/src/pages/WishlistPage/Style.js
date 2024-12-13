@@ -4,7 +4,7 @@ export const WishlistContainer = styled.div`
     padding: 20px;
     background-color: #ffffff; /* Background color */
     border-radius: 8px;
-    max-width: 1000px;
+    width: 1000px;
     margin: auto;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 `;
@@ -71,4 +71,20 @@ export const RemoveButton = styled.button`
     &:hover {
         background-color: #c82333; /* Darker shade on hover */
     }
+`;
+// Header (breadcrumb style)
+export const SectionHeader = styled.div`
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 100px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #6c757d;
+
+  @media (max-width: 768px) {
+    padding: 0 20px;
+    font-size: 14px;
+  }
 `;

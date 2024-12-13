@@ -785,10 +785,6 @@ const ProfilePage = () => {
                     </ContentBody>
                 );
 
-
-
-
-
             case 'logout':
                 handleSignOut();
                 return null;

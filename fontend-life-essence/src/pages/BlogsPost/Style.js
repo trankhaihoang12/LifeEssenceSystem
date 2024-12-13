@@ -159,6 +159,7 @@ export const CommentForm = styled.div`
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  position: relative;
 `;
 
 export const FormInput = styled.input`
@@ -168,6 +169,20 @@ export const FormInput = styled.input`
   border: 1px solid #e2e8f0;
   border-radius: 4px;
   font-size: 1em;
+`;
+export const CharCount = styled.p`
+  position: absolute;
+  top: -20px;  /* Khoảng cách từ trên */
+  right: 10px; /* Khoảng cách từ phải */
+  font-size: 14px;
+  color: ${(props) => {
+    if (props.count >= 200) {
+      return 'green'; // Chuyển sang màu xanh khi đạt 200 ký tự
+    }
+    return props.count > 180 ? 'red' : 'gray'; // Màu đỏ nếu vượt quá 180
+  }};  
+  text-align: center;
+  margin: 0;  /* Loại bỏ margin mặc định */
 `;
 
 export const FormTextarea = styled.textarea`

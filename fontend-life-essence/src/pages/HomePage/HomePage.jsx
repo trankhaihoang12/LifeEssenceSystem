@@ -20,7 +20,8 @@ import BlogCardComponent from '../../components/BlogCardComponent/BlogCardCompon
 import IntroductionComponent from '../../components/IntroductionComponent/IntroductionComponent';
 import PopularCategories from '../../components/PopularCategoriesComponent/PopularCategories';
 import useHorizontalScroll from '../../hooks/useHorizontalScroll';
-import * as ProductsService from '../../services/ProductsService'
+import * as ProductsService from '../../services/ProductsService';
+import * as BlogsService from '../../services/BlogsService';
 import { useNavigate } from 'react-router';
 import Loading from '../../components/LoadingComponent/Loading';
 
@@ -31,6 +32,8 @@ import Loading from '../../components/LoadingComponent/Loading';
 const HomePage = () => {
 
   const [products, setProducts] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  console.log('blogs', blogs)
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -64,6 +67,7 @@ const HomePage = () => {
         page: 1,
         limit: 10,
       });
+      console.log("datassss", data)
 
 
       if (data.products.length > 0) {
@@ -80,12 +84,43 @@ const HomePage = () => {
     }
   };
 
+  const loadBlogs = async () => {
+    try {
+      setLoading(true);
+
+      // Kiểm tra dữ liệu từ localStorage
+      const cachedBlogs = JSON.parse(localStorage.getItem('blogs'));
+
+      // Nếu đã có cache blogs, chỉ cần sử dụng cache và không gọi API nữa
+      if (cachedBlogs && cachedBlogs.length > 0) {
+        console.log('Using cached blogs from localStorage');
+        setBlogs(cachedBlogs);
+        return; // Dừng lại và không gọi API
+      }
+
+      // Nếu không có cache, gọi API
+      const response = await BlogsService.getAllBlog(); // Gọi API mà không cần token
+      const data = response.data;
+
+      if (data.blogs.length > 0) {
+        setBlogs(data.blogs);
+        localStorage.setItem('blogs', JSON.stringify(data.blogs)); // Lưu vào localStorage
+      } else {
+        console.log('No blogs found');
+      }
+    } catch (error) {
+      console.error('Error fetching blogs:', error);
+    } finally {
+      setLoading(false); // Kết thúc trạng thái loading
+    }
+  };
 
   useEffect(() => {
     loadProducts();
-    loadCategories()
-  }, []); // Khi `page` thay đổi, load lại sản phẩm
-
+    loadCategories();
+    loadBlogs(); // Đảm bảo rằng phân trang blog được truyền vào đúng
+  }, []); // Khi `page` thay đổi, load lại blogs
+  console.log('Blogs to render:', blogs);
   const handleCategoryClick = (categoryId) => {
     navigate(`/products/${categoryId}`); // Navigate to the category detail page
   };
@@ -231,18 +266,9 @@ const HomePage = () => {
           </div>
           <ProductsContainer ref={blogScroll.scrollRef}>
             <ProductsWrapper>
-              <BlogCardComponent />
-              <BlogCardComponent />
-              <BlogCardComponent />
-              <BlogCardComponent />
-              <BlogCardComponent />
-              <BlogCardComponent />
-              <BlogCardComponent />
-              <BlogCardComponent />
-              <BlogCardComponent />
-              <BlogCardComponent />
-              <BlogCardComponent />
-              <BlogCardComponent />
+              {blogs.map((blog) => (
+                <BlogCardComponent key={blog.id} blog={blog} />
+              ))}
             </ProductsWrapper>
           </ProductsContainer>
           <Button position="left" onClick={blogScroll.scrollPrevious}>

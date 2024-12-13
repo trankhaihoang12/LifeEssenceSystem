@@ -11,12 +11,13 @@ import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
 import ProfileUpdate from '../pages/ProfileUpdate/ProfileUpdate';
 import MyOrderPage from '../pages/MyOrderPage/MyOrderPage';
-import DetailsBlogPage from '../pages/DetailsBlogPage/DetailsBlogs';
+import DetailsBlogPage from '../pages/BlogsPage/DetailsBlogs';
 import OrderSuccess from '../pages/OrderSuccess/OrderSuccess';
 import DetailsOrderPage from '../pages/DetailsOrderPage/DetailsOrderPage';
 import Feedback from "../pages/Feedback/Feedback";
 import ProfilePage from '../pages/ProfilePage/ProfilePage';
 import BlogsPost from '../pages/BlogsPost/BlogsPost';
+import ManagePage from '../pages/ManagePage/ManagePage';
 
 export const routes = [
     {
@@ -85,8 +86,12 @@ export const routes = [
 
     },
     {
-        path: '/admin',
+        path: '/dashboard/admin',
         page: AdminPage,
+    },
+    {
+        path: '/dashboard/manager',
+        page: ManagePage,
     },
     {
         path: '/wishlist',
@@ -133,7 +138,7 @@ export const routes = [
     },
 
     {
-        path: '/blogs-post',
+        path: '/blogs-post/:blogId',
         page: BlogsPost,
         isShowHeader: true,
         isShowFooter: true
