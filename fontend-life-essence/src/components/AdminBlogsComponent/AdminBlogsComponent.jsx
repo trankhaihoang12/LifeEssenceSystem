@@ -14,6 +14,7 @@ const AdminBlogsComponnent = () => {
     const [editBlog, setEditBlog] = useState(null);
     const [showDetailForm, setShowDetailForm] = useState(false); // Hiển thị form chi tiết
     const [detailBlog, setDetailBlog] = useState(null); // Blog đang xem chi tiết
+    console.log('dêtai', detailBlog)
     const [currentPage, setCurrentPage] = useState(1);
     const blogsPerPage = 10;
     const totalPages = Math.ceil(blogs.length / blogsPerPage);
@@ -79,6 +80,7 @@ const AdminBlogsComponnent = () => {
     };
 
     const handleViewDetail = (blog) => {
+        console.log("Blog được chọn để xem chi tiết:", blog); 
         setDetailBlog(blog); // Cập nhật thông tin blog đang xem
         setShowDetailForm(true); // Hiển thị form chi tiết
     };
@@ -138,6 +140,12 @@ const AdminBlogsComponnent = () => {
         setShowEditForm(false);
     };
 
+    const getImageUrl = (path) => {
+        const BASE_URL = "http://localhost:4000/";
+        return path ? `${BASE_URL}${path.replace(/\\/g, '/')}` : null;
+    };
+    console.log("Image URL:", getImageUrl(detailBlog?.image_url));
+
     return (
         <WrapperContainer>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -185,7 +193,7 @@ const AdminBlogsComponnent = () => {
                                 <div style={{ marginTop: '20px', textAlign: 'center' }}>
                                     <h4 style={{ marginBottom: '10px' }}>Image</h4>
                                     <img
-                                        src={detailBlog.image_url}
+                                    src={getImageUrl(detailBlog?.image_url)}
                                         alt="Blog"
                                         style={{
                                             maxWidth: '100%',

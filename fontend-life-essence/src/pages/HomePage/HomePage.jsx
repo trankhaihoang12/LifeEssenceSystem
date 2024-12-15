@@ -88,23 +88,13 @@ const HomePage = () => {
     try {
       setLoading(true);
 
-      // Kiểm tra dữ liệu từ localStorage
-      const cachedBlogs = JSON.parse(localStorage.getItem('blogs'));
-
-      // Nếu đã có cache blogs, chỉ cần sử dụng cache và không gọi API nữa
-      if (cachedBlogs && cachedBlogs.length > 0) {
-        console.log('Using cached blogs from localStorage');
-        setBlogs(cachedBlogs);
-        return; // Dừng lại và không gọi API
-      }
-
       // Nếu không có cache, gọi API
       const response = await BlogsService.getAllBlog(); // Gọi API mà không cần token
       const data = response.data;
 
-      if (data.blogs.length > 0) {
-        setBlogs(data.blogs);
-        localStorage.setItem('blogs', JSON.stringify(data.blogs)); // Lưu vào localStorage
+      if (data && data.length > 0) {
+        setBlogs(data);
+        localStorage.setItem('blogs', JSON.stringify(data)); // Lưu vào localStorage
       } else {
         console.log('No blogs found');
       }
