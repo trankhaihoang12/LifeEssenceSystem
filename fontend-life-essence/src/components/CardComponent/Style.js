@@ -87,3 +87,28 @@ export const AddToCartText = styled.span`
   font-weight: bold;
   cursor: pointer;
 `;
+
+export const FavoriteButton = styled.button`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  svg {
+    color: ${(props) => (props.isFavorite ? "#ff5a5f" : "#888")};
+  }
+`;

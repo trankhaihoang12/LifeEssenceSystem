@@ -22,11 +22,15 @@ export const getAllFavorites = async (userId, token) => {
 // Hàm thêm sản phẩm vào danh sách yêu thích
 export const addFavorite = async (userId, productId, token) => {
     try {
-        const response = await axios.post(`${API_URL}/favorites`, { userId, productId }, {
-            headers: {
-                Authorization: `Bearer ${token}`, // Thêm token vào headers
-            },
-        });
+        const response = await axios.post(
+            `${API_URL}/favorites`, // Đảm bảo endpoint đúng
+            { user_id: userId, product_id: productId }, // Dữ liệu cần gửi
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Thêm token vào headers
+                },
+            }
+        );
         return response.data; // Trả về dữ liệu từ API
     } catch (error) {
         console.error('Error adding favorite:', error);

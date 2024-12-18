@@ -4,6 +4,7 @@ import { Heart, ChevronDown, ChevronUp } from "lucide-react";
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import * as ProductsService from '../../services/ProductsService'
 import * as OrderService from '../../services/OrderService'
+import * as FavortitesService from '../../services/FavoriteService';
 import { GrFormNext } from "react-icons/gr";
 import {
   PageContainer,
@@ -25,21 +26,21 @@ import {
   CartIcon,
   AddToCartText
 } from "./Style";
-import { Rate } from "antd";
-import { useDispatch } from "react-redux";
+import { Modal, Rate } from "antd";
+import { useDispatch, useSelector } from "react-redux";
 import * as message from '../../components/MessageComponent/Message'
 import { addItem } from "../../redux/slides/cartSlice";
+import { addToFavorites } from "../../redux/slides/favoriteSlice";
 
 const ProductPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
   const { categoryId } = useParams();
-  console.log('categoryId', categoryId)
   const [categoryName, setCategoryName] = useState("");
-  const [favorites, setFavorites] = useState(new Set());
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
   const [products, setProducts] = useState([]); // State để lưu sản phẩm theo danh mục
+  const [bestSellers, setBestSellers] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({});
   const [loading, setLoading] = useState(true);
@@ -53,18 +54,19 @@ const ProductPage = () => {
     glucosamine: false
   });
 
+  const { items: favorites } = useSelector((state) => state.favorites);
 
-  const toggleFavorite = (productId) => {
-    setFavorites((prev) => {
-      const newFavorites = new Set(prev);
-      if (newFavorites.has(productId)) {
-        newFavorites.delete(productId);
-      } else {
-        newFavorites.add(productId);
-      }
-      return newFavorites;
-    });
-  };
+  // const toggleFavorite = (productId) => {
+  //   setFavorites((prev) => {
+  //     const newFavorites = new Set(prev);
+  //     if (newFavorites.has(productId)) {
+  //       newFavorites.delete(productId);
+  //     } else {
+  //       newFavorites.add(productId);
+  //     }
+  //     return newFavorites;
+  //   });
+  // };
 
   const toggleSubMenu = (menu) => {
     setOpenSubMenus((prev) => ({
@@ -197,13 +199,11 @@ const ProductPage = () => {
           const response = await ProductsService.fetchAllProducts({
             search: searchQueryParam,
             page: 1, // Trang đầu tiên
-            limit: 10, // Số lượng sản phẩm mỗi trang
+            limit: 12, // Số lượng sản phẩm mỗi trang
             sort: 'asc', // Sắp xếp theo giá tăng dần
           });
-          console.log('response', response)
 
           const data = response.products; // Lấy dữ liệu sản phẩm từ API
-          console.log('data', data)
 
           if (Array.isArray(data)) {
             setProducts(data.map((product) => ({
@@ -222,13 +222,49 @@ const ProductPage = () => {
         }
       };
       fetchProductsBySearch();
+    // } else {
+    //   // Nếu không có từ khóa tìm kiếm, lấy tất cả sản phẩm
+    //   const fetchAllProducts = async () => {
+    //     try {
+    //       const response = await ProductsService.fetchAllProducts({
+    //         page: 1, // Trang đầu tiên
+    //         limit: 12, // Số lượng sản phẩm mỗi trang
+    //         sort: 'asc', // Sắp xếp theo giá tăng dần
+    //       });
+
+    //       const data = response.products; // Lấy dữ liệu sản phẩm từ API
+
+    //       if (Array.isArray(data)) {
+    //         setProducts(data.map((product) => ({
+    //           id: product.id,
+    //           name: product.prod_name,
+    //           category: product.Category?.name || "Chưa có danh mục",
+    //           price: parseFloat(product.price),
+    //           rating: product.ratings,
+    //           imageUrl: product.images?.[0]?.url
+    //             ? `http://localhost:3000/${product.images[0].url.replace(/\\/g, '/')}`
+    //             : `https://picsum.photos/200`,
+    //         })));
+    //       }
+    //     } catch (error) {
+    //       console.error('Lỗi khi lấy tất cả sản phẩm:', error);
+    //     }
+    //   };
+    //   fetchAllProducts();
     }
   }, [location.search]); // Chạy khi `searchQuery` thay đổi
+
+  
 
   const getToken = () => {
     const storedUserData = localStorage.getItem('userData');
     const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
     return parsedUserData?.token || null;
+  };
+  const getUserId = () => {
+    const storedUserData = localStorage.getItem('userData');
+    const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+    return parsedUserData?.user?.id;
   };
 
   const addItemToCart = async (product) => {
@@ -238,6 +274,7 @@ const ProductPage = () => {
       setLoading(true);
       // Gọi API để thêm sản phẩm vào giỏ hàng
       await OrderService.addToCart(product.id, 1, token);
+      console.log('first', product.id)
 
       // Cập nhật giỏ hàng trong state để hiển thị ngay lập tức
       setCartItems((prevItems) => {
@@ -271,6 +308,43 @@ const ProductPage = () => {
       message.error('Lỗi khi thêm sản phẩm vào giỏ hàng!'); // Hiển thị thông báo lỗi
     }
   };
+
+  const handleAddToFavorite = async (product) => {
+    const token = getToken();
+
+    if (!token) {
+      Modal.confirm({
+        title: 'Bạn chưa đăng nhập',
+        content: 'Bạn cần đăng nhập để thêm sản phẩm vào danh sách yêu thích. Bạn có muốn chuyển đến trang đăng nhập không?',
+        okText: 'Đồng ý',
+        cancelText: 'Hủy',
+        onOk: () => navigate('/signIn'),
+      });
+      return;
+    }
+    console.log('first2', product.id)
+
+    try {
+      const userId = getUserId(); // Lấy ID người dùng
+      if (!userId) {
+        throw new Error("Không thể xác định người dùng.");
+      }
+      console.log('first', product.id)
+
+      // Gọi API để thêm sản phẩm vào danh sách yêu thích
+      await FavortitesService.addFavorite(userId, product.id, token);
+
+      // Cập nhật Redux store
+      dispatch(addToFavorites({ userId, productId: product.id, }));
+
+      // Thông báo thành công
+      message.success('Sản phẩm đã được thêm vào danh sách yêu thích.');
+    } catch (err) {
+      console.error('Lỗi khi thêm vào danh sách yêu thích:', err);
+      message.error('Không thể thêm sản phẩm vào danh sách yêu thích.');
+    }
+  };
+
 
 
   return (
@@ -359,8 +433,8 @@ const ProductPage = () => {
                   <AddToCartText onClick={() => addItemToCart(product)}>ADD TO CART</AddToCartText>
                 </AddToCartWrapper>
                 <FavoriteButton
-                  isFavorite={favorites.has(product.id)}
-                  onClick={() => toggleFavorite(product.id)}
+                  // isFavorite={favorites.has(product.id)}
+                  onClick={handleAddToFavorite}
                 >
                   <Heart />
                 </FavoriteButton>

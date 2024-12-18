@@ -243,20 +243,25 @@ export const StyledButtonUpdatePass = styled.button`
 `;
 
 export const EditAddressButton = styled.button`
-  padding: 5px;
+  padding: 3px;
   background-color: #FFA500; /* Orange color */
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
+  font-size: 13px;
+    width: 50px;
 `;
 export const DeleteAddressButton = styled.button`
-  padding: 5px;
+  padding: 3px;
   background-color: #FF0000; /* Orange color */
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
+  font-size: 13px;
+  width: 50px;
+
 `;

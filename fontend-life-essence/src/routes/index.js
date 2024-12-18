@@ -18,6 +18,8 @@ import Feedback from "../pages/Feedback/Feedback";
 import ProfilePage from '../pages/ProfilePage/ProfilePage';
 import BlogsPost from '../pages/BlogsPost/BlogsPost';
 import ManagePage from '../pages/ManagePage/ManagePage';
+import ResetPasswordForm from '../pages/ResetPasswordForm/ResetPasswordForm';
+import ContractPage from '../pages/ContractPage/ContractPage';
 
 export const routes = [
     {
@@ -136,11 +138,21 @@ export const routes = [
         isShowHeader: true,
         isShowFooter: true
     },
+    {
+        path: '/contract',
+        page: ContractPage,
+        isShowHeader: true,
+        isShowFooter: true
+    },
 
     {
         path: '/blogs-post/:blogId',
         page: BlogsPost,
         isShowHeader: true,
         isShowFooter: true
+    },
+    {
+        path: '/reset-password/:token',
+        page: ResetPasswordForm,
     }
 ];

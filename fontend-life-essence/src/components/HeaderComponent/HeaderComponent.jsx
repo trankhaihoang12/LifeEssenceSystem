@@ -24,8 +24,7 @@ const HeaderComponent = () => {
   const [isOpenPopup, setIsOpenPopup] = useState(false)
   const cartItems = useSelector((state) => state.cart.cartItems);
   const totalQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
-  // const wishlistItems = useSelector((state) => state.wishlist.items);
-  // const wishlistCount = wishlistItems.length;
+  const favoritesCount = useSelector((state) => state.favorites.favoritesCount);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -118,7 +117,7 @@ const HeaderComponent = () => {
       {userData?.user?.role === 'manager' && (
         <WrapperContentPopup onClick={() => { navigate('/dashboard/manager'); handleClose() }}>Management product</WrapperContentPopup>
       )}
-      <WrapperContentPopup onClick={() => { navigate('/my-order'); handleClose() }}>Order of me</WrapperContentPopup>
+      <WrapperContentPopup onClick={() => { navigate('/my-order'); handleClose() }}>My order</WrapperContentPopup>
       <WrapperContentPopup onClick={handleSignOut} style={{ color: 'red', textAlign: 'center' }}>LOGOUT</WrapperContentPopup>
     </div>
   );
@@ -172,10 +171,10 @@ const HeaderComponent = () => {
             {error && <div>{error.message}</div>} 
             <WrapperItem>
               <span style={{cursor: 'pointer'}} onClick={()=>navigate('/')}>Home </span>
-              <span style={{cursor: 'pointer'}}>Shop </span>
-              <span style={{cursor: 'pointer'}} onClick={()=>navigate('/blogs')}>Blog </span>
-              <span style={{cursor: 'pointer'}}>On Sale </span>
-              <span>Contract </span>
+              <span style={{ cursor: 'pointer' }} onClick={() => navigate('/products')}>Shop </span>
+              <span style={{ cursor: 'pointer' }} onClick={() => navigate('/blogs')}>Blog </span>
+              {/* <span style={{ cursor: 'pointer' }} onClick={() => navigate('/products?bestSeller=true')}>Best Seller</span> */}
+              <span style={{ cursor: 'pointer' }} onClick={() => navigate('/contract')}>Contract </span>
             </WrapperItem>
           </div>
         </div>
@@ -230,14 +229,14 @@ const HeaderComponent = () => {
                       onChange={(e) => setPassword(e.target.value)}
                     />
                     <LoginButton type='submit'>LOGIN</LoginButton>
-                    <ForgotPasswordLink href="#">Lost your password?</ForgotPasswordLink>
+                      <ForgotPasswordLink onClick={() => navigate('/resetPassword')}>Lost your password?</ForgotPasswordLink>
                   </div>
                 </FormContainer>
               )}
             </>
           )}
           <IconsContainer>
-            <Badge size='small' count={1}>
+            <Badge size='small' count={favoritesCount}>
             <FaRegHeart style={{ fontSize: '2.3rem', cursor: 'pointer' }} onClick={() => navigate('/wishlist')} />
             </Badge>
             <Badge size='small' count={totalQuantity}>

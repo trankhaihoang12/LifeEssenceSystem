@@ -67,7 +67,7 @@ const PopularCategories = () => {
                                   <CategoryTitle>{category.name}</CategoryTitle>
                                   <ProductCount>{category.productCount} products</ProductCount>
                               </CategoryContent>
-                              <CategoryImage src={hardcodedCategories[index + 4].image} alt={category.name} />
+                              <CategoryImage src={hardcodedCategories[index + 4]?.image} alt={category?.name} />
                           </CategoryCard>
                       ))}
                   </CategoryContainer>

@@ -253,3 +253,12 @@ export const ButtonWrapper = styled.div`
     justify-content: flex-end;
     margin-top: 20px;
 `;
+
+
+export const TextArea = styled.textarea`
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+`;

@@ -119,3 +119,33 @@ export async function getActiveCoupons(token) {
         throw error;
     }
 }
+
+// Hàm đặt lại mật khẩu
+export const requestPasswordReset = async (email) => {
+    try {
+        const response = await axios.post(`${API_URL}/users/request-password-reset`, { email });
+        return response.data;
+    } catch (error) {
+        console.error("Error during password reset:", error);
+        throw error;
+    }
+};
+
+// Hàm cập nhật mật khẩu mới
+export const resetPassword = async (token, newPassword, confirmPassword) => {
+    try {
+        const response = await axios.post(
+            `${API_URL}/users/reset-password`,
+            { newPassword, confirmPassword },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}` // Gửi token trong header Authorization
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error during password reset:", error);
+        throw error;
+    }
+};

@@ -21,7 +21,7 @@ import * as OrderService from '../../services/OrderService'
 import * as UserService from '../../services/UserService'
 import * as AddressService from '../../services/AddressService'
 import * as message from '../../components/MessageComponent/Message'
-import { FaCamera } from 'react-icons/fa';
+import { FaCamera, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 // Hàm tiện ích để tái sử dụng kiểu nút
 const buttonStyle = (bgColor) => ({
@@ -38,6 +38,9 @@ const ProfilePage = () => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPasswordCurrent, setShowPasswordCurrent] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
     const [orders, setOrders] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(true);  // Trạng thái loading
@@ -479,7 +482,7 @@ const ProfilePage = () => {
                                                 fontSize: '12px',
                                             }}
                                         >
-                                            <FaCamera style={{fontSize: '20px'}}/>
+                                            <FaCamera style={{ fontSize: '20px' }} />
                                         </label>
                                     )}
                                     <input
@@ -581,13 +584,22 @@ const ProfilePage = () => {
                                         <label style={{ fontSize: '14px', fontWeight: '500', color: '#555' }}>
                                             Current Password
                                         </label>
-                                        <StyledPasswordInput
-                                            type="password"
-                                            placeholder="Enter your current password"
-                                            value={currentPassword}
-                                            onChange={(e) => setCurrentPassword(e.target.value)}
-                                            required
-                                        />
+                                        <div style={{ position: 'relative' }}>
+                                            <StyledPasswordInput
+                                                type={showPasswordCurrent ? 'text' : 'password'}
+                                                placeholder="Enter your current password"
+                                                value={currentPassword}
+                                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                                required
+
+                                            />
+                                            <span
+                                                style={{ zIndex: '10', position: 'absolute', top: '50%', transform: 'translateY(-30%)', right: '8px', cursor: 'pointer', fontSize: '20px' }}
+                                                onClick={() => setShowPasswordCurrent(!showPasswordCurrent)}
+                                            >
+                                                {showPasswordCurrent ? <FaEye /> : <FaEyeSlash />}
+                                            </span>
+                                        </div>
                                     </div>
                                     <div style={{ textAlign: 'left' }}>
                                         <label style={{
@@ -597,13 +609,21 @@ const ProfilePage = () => {
                                         }}>
                                             New Password
                                         </label>
-                                        <StyledPasswordInput
-                                            type="password"
-                                            placeholder="Enter a new password"
-                                            value={newPassword}
-                                            onChange={(e) => setNewPassword(e.target.value)}
-                                            required
-                                        />
+                                        <div style={{ position: 'relative' }}>
+                                            <StyledPasswordInput
+                                                type={showPassword ? 'text' : 'password'}
+                                                placeholder="Enter a new password"
+                                                value={newPassword}
+                                                onChange={(e) => setNewPassword(e.target.value)}
+                                                required
+                                            />
+                                            <span
+                                                style={{ zIndex: '10', position: 'absolute', top: '50%', transform: 'translateY(-30%)', right: '8px', cursor: 'pointer', fontSize: '20px' }}
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            >
+                                                {showPassword ? <FaEye /> : <FaEyeSlash />}
+                                            </span>
+                                        </div>
                                     </div>
                                     <div style={{ textAlign: 'left' }}>
                                         <label style={{
@@ -613,13 +633,21 @@ const ProfilePage = () => {
                                         }}>
                                             Confirm New Password
                                         </label>
-                                        <StyledPasswordInput
-                                            type="password"
-                                            placeholder="Re-enter your new password"
-                                            value={confirmPassword}
-                                            onChange={(e) => setConfirmPassword(e.target.value)}
-                                            required
-                                        />
+                                        <div style={{ position: 'relative' }}>
+                                            <StyledPasswordInput
+                                                type={showPasswordConfirm ? 'text' : 'password'}
+                                                placeholder="Re-enter your new password"
+                                                value={confirmPassword}
+                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                required
+                                            />
+                                            <span
+                                                style={{ zIndex: '10', position: 'absolute', top: '50%', transform: 'translateY(-30%)', right: '8px', cursor: 'pointer', fontSize: '20px' }}
+                                                onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                                            >
+                                                {showPasswordConfirm ? <FaEye /> : <FaEyeSlash />}
+                                            </span>
+                                        </div>
                                     </div>
                                     <StyledButtonUpdatePass type="submit">Update Password</StyledButtonUpdatePass>
                                 </form>
@@ -683,12 +711,12 @@ const ProfilePage = () => {
                                                         );
                                                     })}
 
-                                                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'space-between' }}>
+                                                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
                                                         <EditAddressButton onClick={() => setEditAddressId(null)} style={buttonStyle('#FF0000')}>
-                                                            Hủy
+                                                            Cancel
                                                         </EditAddressButton>
                                                         <EditAddressButton onClick={() => saveEditAddress(address.id)}>
-                                                            Lưu
+                                                            Save
                                                         </EditAddressButton>
                                                     </div>
                                                 </div>
@@ -706,12 +734,12 @@ const ProfilePage = () => {
                                                     <p>
                                                         <strong>Ward:</strong> {address.ward}
                                                     </p>
-                                                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'space-between' }}>
+                                                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                                                         <EditAddressButton onClick={() => startEditAddress(address)}>
-                                                            Cập Nhật
+                                                            Update
                                                         </EditAddressButton>
                                                         <DeleteAddressButton onClick={() => handleDeleteAddress(address.id)}>
-                                                            Xóa
+                                                            Delete
                                                         </DeleteAddressButton>
                                                     </div>
                                                 </div>

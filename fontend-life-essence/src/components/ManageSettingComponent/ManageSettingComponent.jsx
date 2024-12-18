@@ -36,6 +36,7 @@ function ManageSettingComponent() {
     const [couponDetails, setCouponDetails] = useState({ code: '', coupons_percent: '', start_date: '', expiration: '', product_id: '' });
     const [categoryData, setCategoryData] = useState({ category_id: '', name: '', description: '', slug: '' });
     const [showAddCategoryForm, setShowAddCategoryForm] = useState(false);
+    const [formErrors, setFormErrors] = useState({}); 
     const [showAddCouponForm, setShowAddCouponForm] = useState(false);
     const [categories, setCategories] = useState([]);
     const [personalInfo, setPersonalInfo] = useState({ name: '', email: '', phone: '' });
@@ -88,16 +89,74 @@ function ManageSettingComponent() {
 
     const handleAddCategory = async () => {
         const token = getToken();
+
+        // Clear previous errors
+        let hasError = false;
+
+        // Validate fields
+        // Validate category_id
+        if (!categoryData.category_id || categoryData.category_id.trim() === '') {
+            message.error('Category ID là bắt buộc.');
+            hasError = true;
+        } else if (categoryData.category_id.length < 2 || categoryData.category_id.length > 10) {
+            message.error('Category ID phải từ 2 đến 10 ký tự.');
+            hasError = true;
+        } else if (!/^[a-zA-Z0-9]+$/.test(categoryData.category_id)) {
+            message.error('Category ID chỉ được chứa ký tự chữ và số.');
+            hasError = true;
+        }
+
+        // Validate name
+        if (!categoryData.name || categoryData.name.trim() === '') {
+            message.error('Tên danh mục là bắt buộc.');
+            hasError = true;
+        } else if (categoryData.name.length < 3 || categoryData.name.length > 20) {
+            message.error('Tên danh mục phải từ 3 đến 20 ký tự.');
+            hasError = true;
+        }
+
+        // Validate description (optional)
+        if (categoryData.description && (categoryData.description.length < 3 || categoryData.description.length > 20)) {
+            message.error('Mô tả phải từ 3 đến 20 ký tự.');
+            hasError = true;
+        }
+
+        // Validate slug
+        if (!categoryData.slug || categoryData.slug.trim() === '') {
+            message.error('Slug là bắt buộc.');
+            hasError = true;
+        } else if (categoryData.slug.length < 3 || categoryData.slug.length > 20) {
+            message.error('Slug phải từ 3 đến 20 ký tự.');
+            hasError = true;
+        } else if (!/^[a-z0-9-]+$/.test(categoryData.slug)) {
+            message.error('Slug chỉ được chứa ký tự thường, số và dấu gạch ngang.');
+            hasError = true;
+        }
+
+        // If any error exists, stop form submission
+        if (hasError) {
+            return; // Exit without submitting the form
+        }
+
+        // Proceed with the request if no errors
         try {
             const result = await AdminService.addCategory(token, categoryData);
-            message.success('Add Category successfully!');
-            setCategoryData({ category_id: '', name: '', description: '', slug: '' }); // Reset form
+            message.success('Thêm danh mục thành công!');
+            setCategoryData({ category_id: '', name: '', description: '', slug: '' }); // Reset form after success
             setCategories([...categories, result]);
             setShowAddCategoryForm(false); 
         } catch (error) {
-            message.error('Error');
+            if (error.response && error.response.data.errors) {
+                const backendErrors = error.response.data.errors;
+                Object.values(backendErrors).forEach((errorMessage) => {
+                    message.error(errorMessage); // Show backend validation errors as messages
+                });
+            } else {
+                message.error('Có lỗi xảy ra khi thêm danh mục.'); // General error message if something went wrong
+            }
         }
     };
+
     const handleDeleteCategory = async (category_id) => {
         const token = getToken();
         try {
@@ -415,6 +474,7 @@ function ManageSettingComponent() {
                                         onChange={(e) => setCategoryData({ ...categoryData, category_id: e.target.value })}
                                         required
                                     />
+
                                     <Input
                                         type="text"
                                         placeholder="Category Name"
@@ -422,18 +482,21 @@ function ManageSettingComponent() {
                                         onChange={(e) => setCategoryData({ ...categoryData, name: e.target.value })}
                                         required
                                     />
+
                                     <Input
                                         type="text"
                                         placeholder="Description"
                                         value={categoryData.description}
                                         onChange={(e) => setCategoryData({ ...categoryData, description: e.target.value })}
                                     />
+
                                     <Input
                                         type="text"
                                         placeholder="Slug"
                                         value={categoryData.slug}
                                         onChange={(e) => setCategoryData({ ...categoryData, slug: e.target.value })}
                                     />
+
                                     <div style={{display: 'flex', flexDirection: 'row', gap: '10px', marginTop: '20px'}}>
                                         <Button type="submit">Thêm Danh Mục</Button>
                                         <Button type="button" onClick={() => setShowAddCategoryForm(false)}>Hủy</Button>
@@ -441,6 +504,8 @@ function ManageSettingComponent() {
                                 </form>
                             </div>
                         )}
+
+
 
                         {activeContent === 'paymentMethod' && (
                             <PaymentMethod id="paymentMethod">
