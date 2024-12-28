@@ -5,11 +5,18 @@ import ManageOrdersComponent from '../../components/ManageOrdersComponent/Manage
 import ManageProductsComponent from '../../components/ManageProductsComponent/ManageProductsComponent';
 import ManageBlogsComponnent from '../../components/ManageBlogsComponent/ManageBlogsComponent';
 import ManageSettingComponent from '../../components/ManageSettingComponent/ManageSettingComponent';
+import * as message from '../../components/MessageComponent/Message';
+import { useNavigate } from 'react-router';
 
 
 const ManagePage = () => {
+    const navigate = useNavigate();
+    const [userData, setUserData] = useState(null);
   const handleLogout = () => {
-    alert("Bạn đã đăng xuất!"); 
+     localStorage.removeItem('userData');
+        setUserData(null);
+        navigate('/')
+        message.success('Logout successfully')
   };
 
   const [keySelected, setKeySelected] = useState('products');

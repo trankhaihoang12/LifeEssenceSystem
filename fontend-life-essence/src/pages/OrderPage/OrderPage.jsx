@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Minus, Plus, X } from 'lucide-react';
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaShoppingCart } from "react-icons/fa";
 import * as OrderService from '../../services/OrderService'
 import * as ProductsService from '../../services/ProductsService'
 import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { addItem, removeeItem, setCartItems, updateQuantity } from '../../redux/slides/cartSlice';
 import Loading from '../../components/LoadingComponent/Loading';
-import * as message from '../../components/MessageComponent/Message'; 
+import * as message from '../../components/MessageComponent/Message';
+import Step from '../../components/StepComponent/StepComponent';
 
 //sản phẩm có trong cart
 const OrderPage = () => {
@@ -50,7 +51,7 @@ const OrderPage = () => {
           return {
             ...cartItem,
             image: imageUrl, // Ảnh mặc định nếu không có
-            discount: matchingProduct?.discount || 0 
+            discount: matchingProduct?.discount || 0
           };
         });
 
@@ -66,7 +67,6 @@ const OrderPage = () => {
       try {
         setLoading(true);
         const data = await ProductsService.fetchAllProducts({ page, limit: 10 }); // Không cần token
-        console.log('Dữ liệu sản phẩm nhận được:', data.products);
         setProducts(data.products);
         localStorage.setItem('products', JSON.stringify(data.products));
         setTotalPages(data.totalPages);
@@ -80,7 +80,6 @@ const OrderPage = () => {
       try {
         const token = getToken();
         const activeCoupons = await ProductsService.getActiveCoupons(token); // Gọi hàm để lấy coupons
-        console.log('activeCoupons', activeCoupons)
         setCoupons(activeCoupons); // Lưu coupons vào state
       } catch (error) {
         console.error("Lỗi khi tải coupon:", error);
@@ -94,7 +93,7 @@ const OrderPage = () => {
 
   }, []);
 
-  console.log('cartItems', cartItems)
+
 
   // Update quantity of a product in the cart
   const updateCartItemQuantity = async (productId, change) => {
@@ -133,9 +132,6 @@ const OrderPage = () => {
       message.error("Không thể xóa sản phẩm!");
     }
   };
-
-
-
 
 
 
@@ -195,13 +191,46 @@ const OrderPage = () => {
     }, 0);
   }, [cartItems]);
 
-  const shipping = 5.0;
+  // Tính toán phí vận chuyển dựa trên tổng
+  const calculateShipping = (total) => {
+    if (total > 50) return 0; // Miễn phí vận chuyển
+    if (total > 30) return 0.5; // Phí vận chuyển 5$
+    return 1; // Phí vận chuyển 10$
+  };
+
+  const totalBeforeShipping = subtotal - couponDiscount; // Tổng trước khi tính phí vận chuyển
+  const shipping = calculateShipping(totalBeforeShipping); // Tính phí vận chuyển dựa trên tổng trước khi tính phí
 
   const total = useMemo(() => {
-    return subtotal + shipping - couponDiscount;
-  }, [subtotal, shipping, couponDiscount]);
+    return totalBeforeShipping + shipping; // Tổng bao gồm phí vận chuyển
+  }, [totalBeforeShipping, shipping]);
 
+  const itemsDelivery = [
+    {
+      title: '1 $',
+      description: 'Under $30',
+    },
+    {
+      title: '0.5$',
+      description: 'From $30 - Under $50',
+    },
+    {
+      title: '0 $',
+      description: 'Over $50',
+    },
+  ]
 
+  let currentStep = 0; // Bước mặc định
+
+  if (cartItems.length > 0) {
+    if (shipping === 0) {
+      currentStep = 2; // Miễn phí vận chuyển
+    } else if (shipping === 0.5) {
+      currentStep = 1; // Phí vận chuyển 5$
+    } else {
+      currentStep = 3; // Phí vận chuyển 10$
+    }
+  }
   const applyCoupon = () => {
     const coupon = coupons.find(c => c.code === selectedCoupon);
     if (coupon) {
@@ -240,11 +269,29 @@ const OrderPage = () => {
       <div style={{ backgroundColor: "#f4f4f4", padding: "20px", minHeight: "100vh" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "20px" }}>Cart</h1>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "20px" }}>
+            <Step items={itemsDelivery} current={currentStep}/>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "20px" ,marginTop: '2px'}}>
             <div style={{ backgroundColor: "#fff", borderRadius: "8px", padding: "20px" }}>
               {cartItems.length === 0 ? (
-                <p>Your cart is empty</p>
+                <div style={{ textAlign: "center", color: "#888", padding: "50px 0" }}>
+                  <FaShoppingCart size={80} style={{ marginBottom: "20px" }} />
+                  <p style={{ fontSize: "18px", fontWeight: "500" }}>Your cart is empty</p>
+                  <button
+                    onClick={() => navigate('/')}
+                    style={{
+                      marginTop: "20px",
+                      padding: "10px 20px",
+                      borderRadius: "8px",
+                      backgroundColor: "#24AEB1",
+                      color: "#fff",
+                      fontWeight: "500",
+                      cursor: "pointer",
+                      border: "none",
+                    }}
+                  >
+                    Go Shopping
+                  </button>
+                </div>
               ) : (
                 cartItems.map((item) => {
                   // Tìm sản phẩm tương ứng
@@ -344,17 +391,19 @@ const OrderPage = () => {
                 </select>
                 <button
                   onClick={applyCoupon}
+                  disabled={cartItems.length === 0}// Disable nếu chưa chọn mã coupon
                   style={{
                     padding: "10px 20px",
                     borderRadius: "8px",
-                    backgroundColor: "#24AEB1",
-                    color: "#fff",
+                    backgroundColor: cartItems.length === 0 ? "#ccc" : "#24AEB1", // Thay đổi màu khi nút bị disable
+                    color: cartItems.length === 0 ? "#888" : "#fff",
                     border: "none",
-                    cursor: "pointer"
+                    cursor: cartItems.length === 0 ? "not-allowed" : "pointer",
                   }}
                 >
                   APPLY COUPON
                 </button>
+
               </div>
             </div>
 
@@ -378,16 +427,17 @@ const OrderPage = () => {
               </div>
               <button
                 onClick={handleProceedToPayment}
+                disabled={cartItems.length === 0} // Disable nếu giỏ hàng trống
                 style={{
                   marginTop: "20px",
                   padding: "10px 0",
                   width: "100%",
                   borderRadius: "8px",
-                  backgroundColor: "#24AEB1",
-                  color: "#fff",
+                  backgroundColor: cartItems.length === 0 ? "#ccc" : "#24AEB1", // Thay đổi màu khi disable
+                  color: cartItems.length === 0 ? "#888" : "#fff",
                   fontWeight: "500",
-                  cursor: "pointer",
-                  border: "none"
+                  cursor: cartItems.length === 0 ? "not-allowed" : "pointer",
+                  border: "none",
                 }}
               >
                 PROCESS TO CHECKOUT

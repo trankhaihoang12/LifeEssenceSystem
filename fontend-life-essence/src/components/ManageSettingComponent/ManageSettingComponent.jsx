@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { FaUser, FaCreditCard, FaLock, FaBell, FaMoneyBillWave, FaMobileAlt, FaPaypal, FaAtom, FaTrash } from 'react-icons/fa';
+import { FaUser, FaCreditCard, FaLock, FaBell, FaMoneyBillWave, FaMobileAlt, FaPaypal, FaAtom, FaTrash, FaEyeSlash, FaEye } from 'react-icons/fa';
 import { TbCategory } from "react-icons/tb";
 import * as AdminService from '../../services/ManageService'
-import {Container,Row,
+import {
+    Container, Row,
     Col,
     Sidebar,
     NavLink,
@@ -25,9 +26,16 @@ import {Container,Row,
     TableCell
 } from './Style';
 import * as message from '../MessageComponent/Message'
+import * as UserService from '../../services/UserService'
 
 
 function ManageSettingComponent() {
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPasswordCurrent, setShowPasswordCurrent] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
     const [activeContent, setActiveContent] = useState('personalInfo');
     const [isAddingPaymentMethod, setIsAddingPaymentMethod] = useState(false);
     const [paymentMethodName, setPaymentMethodName] = useState('');
@@ -36,7 +44,7 @@ function ManageSettingComponent() {
     const [couponDetails, setCouponDetails] = useState({ code: '', coupons_percent: '', start_date: '', expiration: '', product_id: '' });
     const [categoryData, setCategoryData] = useState({ category_id: '', name: '', description: '', slug: '' });
     const [showAddCategoryForm, setShowAddCategoryForm] = useState(false);
-    const [formErrors, setFormErrors] = useState({}); 
+    const [formErrors, setFormErrors] = useState({});
     const [showAddCouponForm, setShowAddCouponForm] = useState(false);
     const [categories, setCategories] = useState([]);
     const [personalInfo, setPersonalInfo] = useState({ name: '', email: '', phone: '' });
@@ -89,7 +97,6 @@ function ManageSettingComponent() {
 
     const handleAddCategory = async () => {
         const token = getToken();
-
         // Clear previous errors
         let hasError = false;
 
@@ -144,7 +151,7 @@ function ManageSettingComponent() {
             message.success('Thêm danh mục thành công!');
             setCategoryData({ category_id: '', name: '', description: '', slug: '' }); // Reset form after success
             setCategories([...categories, result]);
-            setShowAddCategoryForm(false); 
+            setShowAddCategoryForm(false);
         } catch (error) {
             if (error.response && error.response.data.errors) {
                 const backendErrors = error.response.data.errors;
@@ -290,6 +297,34 @@ function ManageSettingComponent() {
             message.error('Error deleting coupon!');
         }
     };
+
+    const handleChangePassword = async () => {
+        if (newPassword !== confirmPassword) {
+            message.error('New passwords do not match!');
+            return;
+        }
+        if (newPassword.length < 8) {
+            message.error('Password must be at least 8 characters long.');
+            return;
+        }
+
+        try {
+            const token = getToken();
+            const payload = {
+                currentPassword,
+                newPassword,
+                confirmPassword,
+            };
+            const response = await UserService.changePassword(payload, token);
+            message.success('Password updated successfully!');
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+        } catch (error) {
+            console.error(error);
+            message.error('Failed to change password');
+        }
+    };
     return (
         <Container fluid>
             <Row>
@@ -339,7 +374,7 @@ function ManageSettingComponent() {
                                     <p><strong>Email:</strong> {personalInfo.email}</p>
                                     <p><strong>Phone:</strong> {personalInfo.phone}</p>
                                     <p><strong>Address:</strong> {personalInfo.default_address}</p>
-                                    <p><strong>Join now:</strong> {new Date(personalInfo.createdAt).toLocaleDateString('en-US', {year: 'numeric',month: 'long',day: 'numeric'})}</p>
+                                    <p><strong>Join now:</strong> {new Date(personalInfo.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                                     <p><strong>Country:</strong> Việt Nam</p>
                                 </PersonalInfo>
                             </div>
@@ -429,7 +464,7 @@ function ManageSettingComponent() {
                                 </form>
                             </div>
                         )}
-                        
+
                         {activeContent === 'addCategory' && !showAddCategoryForm && (
                             <div id="addCategory" className="content-section">
                                 <h1>Danh sách danh mục</h1>
@@ -451,18 +486,18 @@ function ManageSettingComponent() {
                                                 <TableCell>{category.description}</TableCell>
                                                 <TableCell>{category.slug}</TableCell>
                                                 <TableCell>
-                                                        <FaTrash onClick={() => handleDeleteCategory(category.category_id)} style={{fontSize: '14px', color: 'red', cursor: 'pointer'}} />
+                                                    <FaTrash onClick={() => handleDeleteCategory(category.category_id)} style={{ fontSize: '14px', color: 'red', cursor: 'pointer' }} />
                                                 </TableCell>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
-                                <div style={{marginTop: '20px', display: 'flex', justifyContent: 'center'}}>
+                                <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
                                     <Button onClick={() => setShowAddCategoryForm(true)}>Thêm Danh Mục</Button>
                                 </div>
                             </div>
                         )}
-                        
+
                         {activeContent === 'addCategory' && showAddCategoryForm && (
                             <div id="addCategoryForm" className="content-section">
                                 <h1>Thêm danh mục mới</h1>
@@ -474,7 +509,6 @@ function ManageSettingComponent() {
                                         onChange={(e) => setCategoryData({ ...categoryData, category_id: e.target.value })}
                                         required
                                     />
-
                                     <Input
                                         type="text"
                                         placeholder="Category Name"
@@ -482,30 +516,25 @@ function ManageSettingComponent() {
                                         onChange={(e) => setCategoryData({ ...categoryData, name: e.target.value })}
                                         required
                                     />
-
                                     <Input
                                         type="text"
                                         placeholder="Description"
                                         value={categoryData.description}
                                         onChange={(e) => setCategoryData({ ...categoryData, description: e.target.value })}
                                     />
-
                                     <Input
                                         type="text"
                                         placeholder="Slug"
                                         value={categoryData.slug}
                                         onChange={(e) => setCategoryData({ ...categoryData, slug: e.target.value })}
                                     />
-
-                                    <div style={{display: 'flex', flexDirection: 'row', gap: '10px', marginTop: '20px'}}>
+                                    <div style={{ display: 'flex', flexDirection: 'row', gap: '10px', marginTop: '20px' }}>
                                         <Button type="submit">Thêm Danh Mục</Button>
                                         <Button type="button" onClick={() => setShowAddCategoryForm(false)}>Hủy</Button>
                                     </div>
                                 </form>
                             </div>
                         )}
-
-
 
                         {activeContent === 'paymentMethod' && (
                             <PaymentMethod id="paymentMethod">
@@ -528,15 +557,60 @@ function ManageSettingComponent() {
                             </PaymentMethod>
                         )}
 
-                        
+
                         {activeContent === 'changePassword' && (
                             <ChangePasswordForm id="changePassword">
 
                                 <h5>Change Password</h5>
-                                <form>
-                                    <Input type="password" id="oldPassword" placeholder="Old password*" required />
-                                    <Input type="password" id="newPassword" placeholder="New password*" required />
-                                    <Input type="password" id="confirmNewPassword" placeholder="Confirm new password*" required />
+                                <form onSubmit={(e) => {
+                                    e.preventDefault();
+                                    handleChangePassword();
+                                }}>
+
+                                    <div style={{ position: 'relative' }}>
+                                        <Input
+                                            type={showPasswordCurrent ? 'text' : 'password'}
+                                            value={currentPassword}
+                                            placeholder="Old password*"
+                                            onChange={(e) => setCurrentPassword(e.target.value)}
+                                            required />
+                                        <span
+                                            style={{ zIndex: '10', position: 'absolute', top: '50%', transform: 'translateY(-30%)', right: '8px', cursor: 'pointer', fontSize: '20px' }}
+                                            onClick={() => setShowPasswordCurrent(!showPasswordCurrent)}
+                                        >
+                                            {showPasswordCurrent ? <FaEye /> : <FaEyeSlash />}
+                                        </span>
+                                    </div>
+                                    <div style={{ position: 'relative' }}>
+                                        <Input
+                                            type={showPassword ? 'text' : 'password'}
+                                            placeholder="New password*"
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            required
+                                        />
+                                        <span
+                                            style={{ zIndex: '10', position: 'absolute', top: '50%', transform: 'translateY(-30%)', right: '8px', cursor: 'pointer', fontSize: '20px' }}
+                                            onClick={() => setShowPassword(!showPassword)}
+                                        >
+                                            {showPassword ? <FaEye /> : <FaEyeSlash />}
+                                        </span>
+
+                                    </div>
+                                    <div style={{ position: 'relative' }}>
+                                        <Input
+                                            type={showPasswordConfirm ? 'text' : 'password'}
+                                            value={confirmPassword}
+                                            placeholder="Confirm new password*"
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            required />
+                                        <span
+                                            style={{ zIndex: '10', position: 'absolute', top: '50%', transform: 'translateY(-30%)', right: '8px', cursor: 'pointer', fontSize: '20px' }}
+                                            onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                                        >
+                                            {showPasswordConfirm ? <FaEye /> : <FaEyeSlash />}
+                                        </span>
+                                    </div>
                                     <Button type="submit">Change Password</Button>
                                 </form>
                             </ChangePasswordForm>
@@ -546,31 +620,31 @@ function ManageSettingComponent() {
                                 <h5>By Email:</h5>
                                 <h6>Receive the latest news, update, and industry tutorials for us.</h6>
                                 <label>
-                                    <input 
-                                        type="checkbox" 
-                                        name="exclusiveOffers" 
-                                        checked={notificationSettings.exclusiveOffers} 
-                                        onChange={handleNotificationChange} 
+                                    <input
+                                        type="checkbox"
+                                        name="exclusiveOffers"
+                                        checked={notificationSettings.exclusiveOffers}
+                                        onChange={handleNotificationChange}
                                     />
                                     Exclusive product offers
                                     <p>Used or owned by only one person or group, and not shared with anyone else.</p>
                                 </label>
                                 <label>
-                                    <input 
-                                        type="checkbox" 
-                                        name="dailyMessages" 
-                                        checked={notificationSettings.dailyMessages} 
-                                        onChange={handleNotificationChange} 
+                                    <input
+                                        type="checkbox"
+                                        name="dailyMessages"
+                                        checked={notificationSettings.dailyMessages}
+                                        onChange={handleNotificationChange}
                                     />
                                     Daily Messages
                                     <p>Today is hard, tomorrow will be worse, but the day after tomorrow will be sunshine.</p>
                                 </label>
                                 <label>
-                                    <input 
-                                        type="checkbox" 
-                                        name="weeklySummary" 
-                                        checked={notificationSettings.weeklySummary} 
-                                        onChange={handleNotificationChange} 
+                                    <input
+                                        type="checkbox"
+                                        name="weeklySummary"
+                                        checked={notificationSettings.weeklySummary}
+                                        onChange={handleNotificationChange}
                                     />
                                     Weekly activity summary
                                     <p>Open the activity app on the watch and scroll down to the bottom and tap on "Weekly Summary".</p>
@@ -578,31 +652,31 @@ function ManageSettingComponent() {
                                 <h5>Notification from Us</h5>
                                 <h6>Receive the latest news, update, and industry tutorials for us:</h6>
                                 <label>
-                                    <input 
-                                        type="checkbox" 
-                                        name="newsUpdates" 
-                                        checked={notificationSettings.newsUpdates} 
-                                        onChange={handleNotificationChange} 
+                                    <input
+                                        type="checkbox"
+                                        name="newsUpdates"
+                                        checked={notificationSettings.newsUpdates}
+                                        onChange={handleNotificationChange}
                                     />
                                     News & Updates
                                     <p>Receive the latest news, updates, and industry tutorials for us.</p>
                                 </label>
                                 <label>
-                                    <input 
-                                        type="checkbox" 
-                                        name="bestTrips" 
-                                        checked={notificationSettings.bestTrips} 
-                                        onChange={handleNotificationChange} 
+                                    <input
+                                        type="checkbox"
+                                        name="bestTrips"
+                                        checked={notificationSettings.bestTrips}
+                                        onChange={handleNotificationChange}
                                     />
                                     Best Trips
                                     <p>Receive the latest news, updates, and industry tutorials for us.</p>
                                 </label>
                                 <label>
-                                    <input 
-                                        type="checkbox" 
-                                        name="userResearch" 
-                                        checked={notificationSettings.userResearch} 
-                                        onChange={handleNotificationChange} 
+                                    <input
+                                        type="checkbox"
+                                        name="userResearch"
+                                        checked={notificationSettings.userResearch}
+                                        onChange={handleNotificationChange}
                                     />
                                     User Research
                                     <p>Receive the latest news, updates, and industry tutorials for us.</p>
@@ -611,32 +685,32 @@ function ManageSettingComponent() {
                                 <h5>Comments:</h5>
                                 <h6>Receive the latest news, update, and industry tutorials for us.</h6>
                                 <label>
-                                    <input 
-                                        type="radio" 
-                                        name="commentsNotifications" 
-                                        value="doNotNotify" 
-                                        checked={notificationSettings.commentsNotifications === 'doNotNotify'} 
-                                        onChange={handleNotificationChange} 
+                                    <input
+                                        type="radio"
+                                        name="commentsNotifications"
+                                        value="doNotNotify"
+                                        checked={notificationSettings.commentsNotifications === 'doNotNotify'}
+                                        onChange={handleNotificationChange}
                                     />
                                     Do not notify me
                                 </label>
                                 <label>
-                                    <input 
-                                        type="radio" 
-                                        name="commentsNotifications" 
-                                        value="mentionsOnly" 
-                                        checked={notificationSettings.commentsNotifications === 'mentionsOnly'} 
-                                        onChange={handleNotificationChange} 
+                                    <input
+                                        type="radio"
+                                        name="commentsNotifications"
+                                        value="mentionsOnly"
+                                        checked={notificationSettings.commentsNotifications === 'mentionsOnly'}
+                                        onChange={handleNotificationChange}
                                     />
                                     Mentions only
                                 </label>
                                 <label>
-                                    <input 
-                                        type="radio" 
-                                        name="commentsNotifications" 
-                                        value="allComments" 
-                                        checked={notificationSettings.commentsNotifications === 'allComments'} 
-                                        onChange={handleNotificationChange} 
+                                    <input
+                                        type="radio"
+                                        name="commentsNotifications"
+                                        value="allComments"
+                                        checked={notificationSettings.commentsNotifications === 'allComments'}
+                                        onChange={handleNotificationChange}
                                     />
                                     All comments
                                 </label>

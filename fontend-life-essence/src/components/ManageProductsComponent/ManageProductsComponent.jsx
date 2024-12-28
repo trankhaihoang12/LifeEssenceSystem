@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, AddProduct, ExportButton, WrapperTableHeader, WrapperTableData, WrapperTableRow, WrapperTable, WrapperPagination, EditFormContainer, EditForm, EditFormButton, WarraperInput, RowWrapper, CancelButton, ButtonWrapper } from './Style';
+import { Container, AddProduct, ExportButton, WrapperTableHeader, WrapperTableData, WrapperTableRow, WrapperTable, WrapperPagination, EditFormContainer, EditForm, EditFormButton, WarraperInput, RowWrapper, CancelButton, ButtonWrapper, TextArea } from './Style';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FaPen, FaTrash } from 'react-icons/fa';
@@ -84,16 +84,88 @@ const ManageProductsComponent = () => {
             category_id,
             prod_description,
             cost,
-            prod_percent,
+            discount,
             ratings,
             expiration_date,
             usage_instructions, benefits, origin, additional_info,
             images,
         } = newProduct;
 
-        if (!prod_name || !price || !quantity || !category_id || !prod_description || !cost || !prod_percent || !ratings || !expiration_date || !usage_instructions || !benefits || !origin || !additional_info || !images.length === 0) {
+        if (!prod_name || !price || !quantity || !category_id || !prod_description || !cost || !ratings || !expiration_date || !usage_instructions || !benefits || !discount || !origin || !additional_info || !images.length === 0) {
             alert("Vui lòng điền đầy đủ thông tin.");
             return;
+        }
+        // Kiểm tra độ dài ký tự
+        if (prod_name.length < 3 || prod_name.length > 50) {
+            alert("Tên sản phẩm phải có từ 3 đến 50 ký tự.");
+            return;
+        }
+        if (prod_description.length < 10 || prod_description.length > 200) {
+            alert("Mô tả sản phẩm phải có từ 10 đến 200 ký tự.");
+            return;
+        }
+
+        // Kiểm tra kiểu dữ liệu và giá trị cho các trường số
+        const numericFields = [
+            { name: 'Giá', value: price },
+            { name: 'Số lượng', value: quantity },
+            { name: 'Chi phí', value: cost },
+            { name: 'Giảm giá', value: discount },
+            { name: 'Đánh giá', value: ratings },
+        ];
+
+        for (const field of numericFields) {
+            if (isNaN(field.value)) {
+                alert(`${field.name} phải là một số hợp lệ.`);
+                return;
+            }
+            if (field.value < 0) {
+                alert(`${field.name} không được nhỏ hơn 0.`);
+                return;
+            }
+        }
+        // Kiểm tra rating
+        if (ratings < 1 || ratings > 5) {
+            alert("Đánh giá phải nằm trong khoảng từ 1 đến 5.");
+            return;
+        }
+
+        if (discount < 0 || discount > 1) {
+            alert("Tỷ lệ giảm giá phải nằm trong khoảng từ 0 đến 1.");
+            return;
+        }
+
+        // Kiểm tra định dạng ngày tháng
+        if (new Date(expiration_date) <= new Date()) {
+            alert("Ngày hết hạn phải lớn hơn ngày hiện tại.");
+            return;
+        }
+        // Kiểm tra độ dài cho usage_instructions, benefits, additional_info
+        if (usage_instructions.length < 20 || usage_instructions.length > 500) {
+            alert("Hướng dẫn sử dụng phải có từ 20 đến 500 ký tự.");
+            return;
+        }
+        if (benefits.length < 20 || benefits.length > 500) {
+            alert("Lợi ích phải có từ 20 đến 500 ký tự.");
+            return;
+        }
+        if (additional_info.length < 20 || additional_info.length > 500) {
+            alert("Thông tin bổ sung phải có từ 20 đến 500 ký tự.");
+            return;
+        }
+
+
+        // Kiểm tra kích thước và định dạng hình ảnh (nếu cần)
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        for (let image of images) {
+            if (!validImageTypes.includes(image.type)) {
+                alert("Vui lòng chọn hình ảnh có định dạng JPEG, PNG hoặc GIF.");
+                return;
+            }
+            if (image.size > 5 * 1024 * 1024) { // Giới hạn kích thước hình ảnh là 5MB
+                alert("Kích thước hình ảnh không được vượt quá 5MB.");
+                return;
+            }
         }
 
         const token = getToken();
@@ -112,7 +184,6 @@ const ManageProductsComponent = () => {
             formData.append("price", price);
             formData.append("cost", cost);
             formData.append("quantity", quantity);
-            formData.append("prod_percent", prod_percent);
             formData.append("best_seller", false);
             formData.append("ratings", ratings);
             formData.append("expiration_date", expiration_date);
@@ -141,7 +212,7 @@ const ManageProductsComponent = () => {
                     price: '',
                     cost: '',
                     quantity: '',
-                    prod_percent: '',
+                    discount: '',
                     best_seller: false,
                     ratings: '',
                     expiration_date: '',
@@ -254,13 +325,12 @@ const ManageProductsComponent = () => {
             category_id,
             prod_description,
             cost,
-            prod_percent,
             ratings,
             expiration_date,
             images,
         } = editProduct;
 
-        if (!prod_name || !price || !quantity || !discount || !category_id || !prod_description || !cost || !prod_percent || !ratings || !expiration_date) {
+        if (!prod_name || !price || !quantity || !discount || !category_id || !prod_description || !cost || !ratings || !expiration_date) {
             alert("Vui lòng điền đầy đủ thông tin.");
             return;
         }
@@ -310,7 +380,6 @@ const ManageProductsComponent = () => {
         formData.append("cost", product.cost);
         formData.append("quantity", product.quantity);
         formData.append("discount", product.discount);
-        formData.append("prod_percent", product.prod_percent);
         formData.append("best_seller", product.best_seller);
         formData.append("ratings", product.ratings);
         formData.append("expiration_date", product.expiration_date);
@@ -331,7 +400,6 @@ const ManageProductsComponent = () => {
             cost: '',
             quantity: '',
             discount: '',
-            prod_percent: '',
             best_seller: false,
             ratings: '',
             expiration_date: '',
@@ -392,6 +460,14 @@ const ManageProductsComponent = () => {
             images: updatedImages,
         });
     };
+    const handleRemoveNewImage = (index) => {
+        const updatedImages = [...newProduct.images];
+        updatedImages.splice(index, 1);  // Xóa ảnh tại index
+        setNewProduct({
+            ...newProduct,
+            images: updatedImages,
+        });
+    };
 
     return (
         <Container>
@@ -413,7 +489,7 @@ const ManageProductsComponent = () => {
                 setNewProduct={setNewProduct}
             >
                 <EditForm>
-                    <select style={{width: '200px', padding: '7px', borderRadius: '5px'}}
+                    <select style={{ width: '200px', padding: '7px', borderRadius: '5px' }}
                         value={newProduct.category_id}
                         onChange={(e) => setNewProduct({ ...newProduct, category_id: e.target.value })}
                     >
@@ -424,115 +500,185 @@ const ManageProductsComponent = () => {
                             </option>
                         ))}
                     </select>
-                    <label>Category_id:</label>
-                    <WarraperInput
-                        type="text"
-                        value={newProduct.category_id}
-                        onChange={(e) => setNewProduct({ ...newProduct, category_id: e.target.value })}
-                    />
-                    
-                    <label>Tên sản phẩm:</label>
-                    <WarraperInput
-                        type="text"
-                        value={newProduct.prod_name}
-                        onChange={(e) => setNewProduct({ ...newProduct, prod_name: e.target.value })}
-                    />
-                    <label>Mô tả sản phẩm:</label>
-                    <WarraperInput
-                        type="text"
-                        value={newProduct.prod_description}
-                        onChange={(e) => setNewProduct({ ...newProduct, prod_description: e.target.value })}
-                    />
-                    <label>Giá:</label>
-                    <WarraperInput
-                        type="number"
-                        value={newProduct.price}
-                        onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-                    />
-                    <label>Chi phí:</label>
-                    <WarraperInput
-                        type="number"
-                        value={newProduct.cost}
-                        onChange={(e) => setNewProduct({ ...newProduct, cost: e.target.value })}
-                    />
-                    <label>Số lượng:</label>
-                    <WarraperInput
-                        type="number"
-                        value={newProduct.quantity}
-                        onChange={(e) => setNewProduct({ ...newProduct, quantity: e.target.value })}
-                    />
-                    <label>Giảm giá:</label>
-                    <WarraperInput
-                        type="number"
-                        value={newProduct.discount}
-                        onChange={(e) => setNewProduct({ ...newProduct, discount: e.target.value })}
-                    />
-                    <label>Tỷ lệ giảm giá:</label>
-                    <WarraperInput
-                        type="number"
-                        value={newProduct.prod_percent}
-                        onChange={(e) => setNewProduct({ ...newProduct, prod_percent: e.target.value })}
-                    />
-                    <label>Best Seller:</label>
-                    <input
-                        type="checkbox"
-                        checked={newProduct.best_seller}
-                        onChange={(e) => setNewProduct({ ...newProduct, best_seller: e.target.checked })}
-                    />
-                    <label>Đánh giá:</label>
-                    <WarraperInput
-                        type="number"
-                        value={newProduct.ratings}
-                        onChange={(e) => setNewProduct({ ...newProduct, ratings: e.target.value })}
-                    />
-                    <label>Hướng dẫn sử dụng:</label>
-                    <WarraperInput
-                        type="text"
+                    <RowWrapper columns="1fr 1fr">
+                        <div>
+                            <label>Category_id:</label>
+                            <WarraperInput
+                                type="text"
+                                value={newProduct.category_id}
+                                onChange={(e) => setNewProduct({ ...newProduct, category_id: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Product Name:</label>
+                            <WarraperInput
+                                type="text"
+                                value={newProduct.prod_name}
+                                onChange={(e) => setNewProduct({ ...newProduct, prod_name: e.target.value })}
+                            />
+                        </div>
+                    </RowWrapper>
+                    <div>
+                        <label>Product Descriprion:</label>
+                        <WarraperInput
+                            type="text"
+                            value={newProduct.prod_description}
+                            onChange={(e) => setNewProduct({ ...newProduct, prod_description: e.target.value })}
+                        />
+                    </div>
+                    <RowWrapper columns="1fr 1fr">
+                        <div>
+                            <label>Price:</label>
+                            <WarraperInput
+                                type="number"
+                                value={newProduct.price}
+                                onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Cost:</label>
+                            <WarraperInput
+                                type="number"
+                                value={newProduct.cost}
+                                onChange={(e) => setNewProduct({ ...newProduct, cost: e.target.value })}
+                            />
+                        </div>
+                    </RowWrapper>
+                    <RowWrapper columns="1fr 1fr">
+                        <div>
+                            <label>Quantity:</label>
+                            <WarraperInput
+                                type="number"
+                                value={newProduct.quantity}
+                                onChange={(e) => setNewProduct({ ...newProduct, quantity: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Discount:</label>
+                            <WarraperInput
+                                type="number"
+                                value={newProduct.discount}
+                                onChange={(e) => setNewProduct({ ...newProduct, discount: e.target.value })}
+                            />
+                        </div>
+                    </RowWrapper>
+                    <RowWrapper columns="1fr 1fr">
+                        <div>
+                            <label>Expiration Date:</label>
+                            <WarraperInput
+                                type="date"
+                                value={newProduct.expiration_date}
+                                onChange={(e) => setNewProduct({ ...newProduct, expiration_date: e.target.value })}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
+                            <label>Best Seller:</label>
+                            <input
+                                type="checkbox"
+                                checked={newProduct.best_seller}
+                                onChange={(e) => setNewProduct({ ...newProduct, best_seller: e.target.checked })}
+                            />
+                        </div>
+                    </RowWrapper>
+                    <RowWrapper columns="1fr 1fr">
+                        <div>
+                            <label>Ratings:</label>
+                            <WarraperInput
+                                type="number"
+                                value={newProduct.ratings}
+                                onChange={(e) => setNewProduct({ ...newProduct, ratings: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Origin:</label>
+                            <WarraperInput
+                                type="text"
+                                value={newProduct.origin}
+                                onChange={(e) => setNewProduct({ ...newProduct, origin: e.target.value })}
+                            />
+                        </div>
+                    </RowWrapper>
+                    <label>Usage Instructions:</label>
+                    <TextArea
+                        rows="3"
+                        placeholder="write here"
                         value={newProduct.usage_instructions}
                         onChange={(e) => setNewProduct({ ...newProduct, usage_instructions: e.target.value })}
-                    />
-                    <label>Lợi ích:</label>
-                    <WarraperInput
-                        type="text"
-                        value={newProduct.benefits}
-                        onChange={(e) => setNewProduct({ ...newProduct, benefits: e.target.value })}
-                    />
-                    <label>Nguồn gốc:</label>
-                    <WarraperInput
-                        type="text"
-                        value={newProduct.origin}
-                        onChange={(e) => setNewProduct({ ...newProduct, origin: e.target.value })}
-                    />
-                    <label>Thông tin bổ sung:</label>
-                    <WarraperInput
-                        type="text"
-                        value={newProduct.additional_info}
-                        onChange={(e) => setNewProduct({ ...newProduct, additional_info: e.target.value })}
-                    />
-                    <label>Ngày hết hạn:</label>
-                    <WarraperInput
-                        type="date"
-                        value={newProduct.expiration_date}
-                        onChange={(e) => setNewProduct({ ...newProduct, expiration_date: e.target.value })}
+                        required
                     />
 
-                    <label>Hình ảnh:</label>
+                    <label>Benefits:</label>
+                    <TextArea
+                        rows="3"
+                        placeholder="write here"
+                        value={newProduct.benefits}
+                        onChange={(e) => setNewProduct({ ...newProduct, benefits: e.target.value })}
+                        required
+                    />
+                    <label>Additional Info:</label>
+                    <TextArea
+                        rows="3"
+                        placeholder="write here"
+                        value={newProduct.additional_info}
+                        onChange={(e) => setNewProduct({ ...newProduct, additional_info: e.target.value })}
+                        required
+                    />
+
+                    <label>Images Product:</label>
                     <input
                         type="file"
                         multiple
                         name="images"
                         onChange={handleImageUpload}
+                        id="file-upload"
+                        style={{
+                            display: 'none', // Ẩn input file gốc
+                        }}
                     />
+                    <div style={{ width: '200px', height: '50px', backgroundColor: '#f1f1f1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <label htmlFor="file-upload" style={{
+                            cursor: 'pointer',
+                            backgroundColor: '#24AEB1',
+                            color: '#fff',
+                            padding: '10px 20px',
+                            borderRadius: '4px',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            transition: 'background-color 0.3s ease'
+                        }}>
+                            Choose file
+                        </label>
+                    </div>
+
+                    <span>{newProduct.images.length} file đã chọn</span>
                     <div>
                         {newProduct.images.length > 0 && (
                             <div>
                                 {newProduct.images.map((image, index) => (
-                                    <img
-                                        key={index}
-                                        src={URL.createObjectURL(image)}  // Tạo URL tạm cho ảnh đã chọn
-                                        alt={`product-preview-${index}`}
-                                        style={{ width: "100px", margin: "10px" }}
-                                    />
+                                    <div key={index} style={{ position: 'relative', display: 'inline-block', margin: '10px' }}>
+                                        <img
+                                            src={URL.createObjectURL(image)} // Tạo URL tạm cho ảnh đã chọn
+                                            alt={`product-preview-${index}`}
+                                            style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                                        />
+                                        <button
+                                            onClick={() => handleRemoveNewImage(index)} // Gọi hàm xóa ảnh
+                                            style={{
+                                                position: 'absolute',
+                                                top: '5px',
+                                                right: '5px',
+                                                background: 'rgba(255, 0, 0, 0.7)',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '50%',
+                                                padding: '5px',
+                                                cursor: 'pointer',
+                                                fontSize: '14px',
+                                            }}
+                                        >
+                                            X
+                                        </button>
+                                    </div>
                                 ))}
                             </div>
                         )}
@@ -593,14 +739,6 @@ const ManageProductsComponent = () => {
                                     type="text"
                                     value={editProduct.category_id}
                                     onChange={(e) => setEditProduct({ ...editProduct, category_id: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label>Discount Percent:</label>
-                                <WarraperInput
-                                    type="text"
-                                    value={editProduct.prod_percent}
-                                    onChange={(e) => setEditProduct({ ...editProduct, prod_percent: e.target.value })}
                                 />
                             </div>
                             <div>

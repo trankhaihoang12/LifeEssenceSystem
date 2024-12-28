@@ -15,11 +15,14 @@ import {
     PaginationContainer,
     PaginationButton,
     CancelButton,
-    ButtonWrapper
+    ButtonWrapper,
+    SectionHeader
 } from './Style';
-import { FaCheckCircle, FaTruck, FaTimesCircle, FaHourglassHalf, FaCheck } from 'react-icons/fa';
+import { FaCheckCircle, FaTruck, FaTimesCircle, FaHourglassHalf, FaCheck, FaRegSadTear } from 'react-icons/fa';
 import * as OrderService from '../../services/OrderService'
 import Loading from '../../components/LoadingComponent/Loading';
+import * as message from '../../components/MessageComponent/Message'
+
 
 const MyOrderPage = () => {
     const [orders, setOrders] = useState([]);
@@ -62,37 +65,40 @@ const MyOrderPage = () => {
     const handleCancelOrder = async (orderId) => {
         const token = getToken();
         try {
-            const result = await OrderService.cancelOrder(orderId, token); // Gọi API huỷ đơn hàng
+            const result = await OrderService.cancelOrder(orderId, token); // Gọi API hủy đơn hàng
             if (result.success) {
-                // Cập nhật trạng thái đơn hàng sau khi huỷ thành công
-                alert('Đơn hàng đã được huỷ thành công!');
-                setOrders(orders.map(order =>
-                    order.id === orderId ? { ...order, status: 'canceled' } : order
-                ));
+                message.success('Order has been cancelled successfully!')
+                // Cập nhật trạng thái đơn hàng trực tiếp trong danh sách
+                setOrders(prevOrders =>
+                    prevOrders.map(order =>
+                        order.orderId === orderId ? { ...order, status: 'canceled' } : order
+                    )
+                );
             } else {
-                alert('Có lỗi xảy ra khi huỷ đơn hàng');    
+                message.error('An error occurred while canceling the order.')
             }
         } catch (error) {
-            alert('Có lỗi xảy ra khi huỷ đơn hàng!');
+            message.error('An error occurred while canceling the order!')
         }
     };
-    
+
 
     const handleConfirmOrder = async (orderId) => {
         const token = getToken();  // Lấy token từ localStorage
         try {
             const result = await OrderService.confirmOrder(orderId, token);  // Gọi hàm confirmOrder
             if (result.success) {
-                alert('Đơn hàng đã được xác nhận thành công!');
+                message.success('Order confirmed successfully!');
                 // Cập nhật lại trạng thái đơn hàng trong giao diện nếu cần
                 setOrders(orders.map(order =>
                     order.orderId === orderId ? { ...order, status: 'confirmed' } : order
                 ));
             } else {
-                alert(result.message || 'Không thể xác nhận đơn hàng.');
+                message.error('Unable to confirm order.')
             }
         } catch (error) {
-            alert('Có lỗi xảy ra khi xác nhận đơn hàng!');
+            message.error('Unable to confirm order.')
+            alert('An error occurred while confirming the order!');
         }
     };
 
@@ -125,39 +131,46 @@ const MyOrderPage = () => {
 
     return (
         <Loading isPending={loading}>
-            <div style={{ backgroundColor: '#F4f4f4', width: '100%', height: '800px', display: 'flex', alignItems: 'center' }}>
+            <div style={{ backgroundColor: '#F4f4f4', width: '100%', height: '800px',  alignItems: 'center' }}>
+                <SectionHeader>Purchase History</SectionHeader>
                 <Container>
-                    <Header>Lịch Sử Mua Hàng</Header>
                     <OrderList>
                         {currentOrders.length === 0 ? (
-                            <p>Bạn chưa có đơn hàng nào.</p>
+                            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                                <FaRegSadTear size={50} color="#888" />
+                                <p style={{ color: '#888', fontSize: '18px' }}>You have no orders yet.</p>
+                            </div>
                         ) : (
                             currentOrders.map((order) => (
                                 <OrderCard key={order.id}>
                                     <OrderDetails>
                                         {getStatusIcon(order.status)}
                                         <OrderInfo>
-                                            <OrderCode>Mã đơn hàng: {order.orderId}</OrderCode>
-                                            <OrderDate>Ngày đặt: {order.createdAt}</OrderDate> {/* Sử dụng createdAt */}
-                                            <OrderStatus status={order.status}>Trạng thái: {order.status}</OrderStatus>
-                                            <OrderTotal>Tổng tiền: {order.total.toLocaleString()} VND</OrderTotal>
+                                            <OrderCode>Order code: {order.orderId}</OrderCode>
+                                            <OrderDate>Date booked: {new Intl.DateTimeFormat('en-US', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric',
+                                            }).format(new Date(order.createdAt))}</OrderDate>
+                                            <OrderStatus status={order.status}>Status: {order.status}</OrderStatus>
+                                            <OrderTotal>Total amount: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(order.total)}</OrderTotal>
                                         </OrderInfo>
                                     </OrderDetails>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                                         <DetailsButton onClick={() => handleViewDetails(order.orderId)}>
-                                            Xem chi tiết
+                                            View details
                                         </DetailsButton>
                                         {(order.status === 'pending' || order.status === 'progress') && (
                                             <CancelButton onClick={() => handleCancelOrder(order.orderId)}>
-                                                Hủy đơn hàng
+                                                Cancel order
                                             </CancelButton>
                                         )}
 
                                         {(order.status === 'completed') && (
-                                            <ButtonWrapper onClick={() => handleConfirmOrder(order.orderId)}>Xác nhận đơn hàng</ButtonWrapper>
+                                            <ButtonWrapper onClick={() => handleConfirmOrder(order.orderId)}>Order Confirmation</ButtonWrapper>
                                         )}
                                         {(order.status === 'confirmed') && (
-                                            <ButtonWrapper onClick={() => handleWriteFeedback(order.orderId)} >Đánh giá</ButtonWrapper>
+                                            <ButtonWrapper onClick={() => handleWriteFeedback(order.orderId)} >Feedback</ButtonWrapper>
                                         )}
                                     </div>
                                 </OrderCard>
@@ -171,14 +184,14 @@ const MyOrderPage = () => {
                             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
                         >
-                            Trước
+                            Before
                         </PaginationButton>
-                        <span>Trang {currentPage} / {totalPages}</span>
+                        <span>Page {currentPage} / {totalPages}</span>
                         <PaginationButton
                             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                             disabled={currentPage === totalPages}
                         >
-                            Sau
+                            After
                         </PaginationButton>
                     </PaginationContainer>
                 </Container>

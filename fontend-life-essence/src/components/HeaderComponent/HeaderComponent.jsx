@@ -128,13 +128,21 @@ const HeaderComponent = () => {
     <div>
       <WrapperHeaderOn>
         <div style={{ alignItems: 'center', fontSize: '13px', color: '#fff' }}>
-          Free Shipping for all Order of $99
+          Free Shipping for all Order of $50
         </div>
         <div style={{ display: 'flex', width: '200px', justifyContent: 'space-between' }}>
-          <RiFacebookFill style={{ color: 'white', width: '25px', height: '25px' }} />
-          <FaGoogle style={{ color: 'white', width: '23px', height: '23px' }} />
-          <FaTwitter style={{ color: 'white', width: '23px', height: '23px' }} />
-          <RiCameraFill style={{ color: 'white', width: '25px', height: '25px' }} />
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+            <RiFacebookFill style={{ color: 'white', width: '25px', height: '25px' }} />
+          </a>
+          <a href="https://google.com" target="_blank" rel="noopener noreferrer">
+            <FaGoogle style={{ color: 'white', width: '23px', height: '23px' }} />
+          </a>
+          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+            <FaTwitter style={{ color: 'white', width: '23px', height: '23px' }} />
+          </a>
+          <a href="https://example.com/camera" target="_blank" rel="noopener noreferrer">
+            <RiCameraFill style={{ color: 'white', width: '25px', height: '25px' }} />
+          </a>
         </div>
       </WrapperHeaderOn>
 
@@ -146,7 +154,7 @@ const HeaderComponent = () => {
             <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', borderRadius: '20px', width: '750px', height: '44px' }}>
               <WrapperInput
                 type="text"
-                placeholder="Tìm kiếm..."
+                placeholder="Search product ..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={handleSearch} // Xử lý khi nhấn Enter

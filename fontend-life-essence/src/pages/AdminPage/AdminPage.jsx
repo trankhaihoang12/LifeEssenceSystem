@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Container,Sidebar,Profile,Navigation,MainContent,} from './Style';
+import { Container, Sidebar, Profile, Navigation, MainContent, } from './Style';
 import AdminDashboard from '../../components/AdminDashboard/AdminDashboard';
 import AdminUsersComponent from '../../components/AdminUsersComponent/AdminUsersComponent';
 import AdminOrdersComponent from '../../components/AdminOrdersComponent/AdminOrdersComponent';
@@ -9,11 +9,18 @@ import AdminSettingComponent from '../../components/AdminSettingComponent/AdminS
 import AdminProductsComponent from '../../components/AdminProductsComponent/AdminProductsComponent';
 import { FaUser, FaProductHunt, FaShoppingCart, FaFileInvoice, FaHistory, FaCog, FaSignOutAlt, FaTachometerAlt, FaAtlassian } from 'react-icons/fa';
 import AdminBlogsComponnent from '../../components/AdminBlogsComponent/AdminBlogsComponent';
-
+import { useNavigate } from 'react-router';
+import * as message from '../../components/MessageComponent/Message';
 
 const AdminPage = () => {
-  const handleLogout = () => {
-    alert("Bạn đã đăng xuất!"); 
+  const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
+
+  const handleSignOut = () => {
+    localStorage.removeItem('userData');
+    setUserData(null);
+    navigate('/')
+    message.success('Logout successfully')
   };
 
   const [keySelected, setKeySelected] = useState('dashboard');
@@ -30,10 +37,10 @@ const AdminPage = () => {
         return <AdminOrdersComponent />;
       case 'blogs':
         return <AdminBlogsComponnent />;
-      case 'invoice':
-        return <AdminInvoiceComponent />;
-      case 'history':
-        return <AdminHistoryComponent />;
+      // case 'invoice':
+      //   return <AdminInvoiceComponent />;
+      // case 'history':
+      //   return <AdminHistoryComponent />;
       case 'setting':
         return <AdminSettingComponent />;
       default:
@@ -61,10 +68,10 @@ const AdminPage = () => {
             <li onClick={() => handleOnClick('products')}><FaProductHunt /> Products</li> {/* Giữ lại mục Products */}
             <li onClick={() => handleOnClick('order')}><FaShoppingCart /> Orders</li>
             <li onClick={() => handleOnClick('blogs')}><FaAtlassian /> Blogs</li>
-            <li onClick={() => handleOnClick('invoice')}><FaFileInvoice /> Invoice</li>
-            <li onClick={() => handleOnClick('history')}><FaHistory /> History</li>
+            {/* <li onClick={() => handleOnClick('invoice')}><FaFileInvoice /> Invoice</li>
+            <li onClick={() => handleOnClick('history')}><FaHistory /> History</li> */}
             <li onClick={() => handleOnClick('setting')}><FaCog /> Settings</li>
-            <li onClick={handleLogout}><FaSignOutAlt /> Logout</li>
+            <li onClick={handleSignOut}><FaSignOutAlt /> Logout</li>
           </ul>
         </Navigation>
       </Sidebar>

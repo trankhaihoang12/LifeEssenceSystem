@@ -34,8 +34,6 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
     const navigate = useNavigate();
     const location = useLocation();
     const {couponDiscount} = location.state || {};
-    console.log('location Discount:', location);
-    console.log('Coupon Discount:', couponDiscount);
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
     const cartItems = useSelector((state) => state.cart.cartItems);
@@ -43,12 +41,13 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
     const [updatedProducts, setUpdatedProducts] = useState([]);
     const [sdkReady, setsdkReady] = useState(false);
     const [clientId, setClientId] = useState('');
-    const [addresses, setAddresses] = useState([]); // Danh sách địa chỉ
     const [selectedAddress, setSelectedAddress] = useState('');
+    const [isAddressSelected, setIsAddressSelected] = useState(false);
+    const [manualAddress, setManualAddress] = useState('');
     const [showAddressList, setShowAddressList] = useState(false);
+    const [addresses, setAddresses] = useState(''); 
     const [fullName, setFullName] = useState('');
     const [phone, setPhone] = useState('');
-    console.log('cartItems', cartItems)
     useEffect(() => {
       if (cartItems.length > 0) {
         setLoading(true);
@@ -84,7 +83,6 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
       }, 0);
     }, [cartItems]);
 
-    const shipping = 5.0;
 
     // Đảm bảo couponDiscount là một số
     const memoizedCouponDiscount = useMemo(() => {
@@ -95,13 +93,21 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
       }
       return 0; // Trả về 0 nếu không có giá trị hợp lệ
     }, [couponDiscount]);
-    console.log('memoizedCouponDiscount', memoizedCouponDiscount)
 
+    // Tính toán phí vận chuyển
+    const calculateShipping = (total) => {
+      if (total > 50) return 0; // Miễn phí vận chuyển
+      if (total > 30) return 0.5; // Phí vận chuyển 0.5$
+      return 1; // Phí vận chuyển 1$
+    };
+
+    // Tính toán tổng với useMemo
     const total = useMemo(() => {
-      return subtotal + shipping - memoizedCouponDiscount; // Sử dụng couponDiscount đã được memoize
-    }, [subtotal, shipping, memoizedCouponDiscount]);
+      const shipping = calculateShipping(subtotal - memoizedCouponDiscount);
+      return subtotal - memoizedCouponDiscount + shipping; // Tổng bao gồm phí vận chuyển
+    }, [subtotal, memoizedCouponDiscount]);
 
-    
+
     // Thay đổi phương thức thanh toán
     const handlePaymentChange = (method) => setPaymentMethod(method);
     const getToken = () => {
@@ -145,7 +151,6 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
         orderDetails,
         total: total.toFixed(2)
       };
-      console.log('orderData', orderData)
 
       try {
         setLoading(true);
@@ -177,7 +182,6 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
         const userId = getUserId()
         try {
           const response = await AddressService.getAllDeliveryAddresses(userId, token);
-          console.log('fetchedAddresses', response); // Ghi log phản hồi để kiểm tra
           // Kiểm tra xem response có dữ liệu và dữ liệu có phải là mảng không
           if (response && Array.isArray(response.data)) {
             setAddresses(response.data); // Cập nhật địa chỉ từ dữ liệu
@@ -196,8 +200,11 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
 
     const handleAddressSelect = (address) => {
       setSelectedAddress(`${address.detail_address}, ${address.ward}, ${address.district}, ${address.province}`);
+      setManualAddress(''); 
+      setIsAddressSelected(true);
       setShowAddressList(false);
     };
+
     useEffect(() => {
       const storedUserData = localStorage.getItem('userData');
       console.log('storedUserData', storedUserData)
@@ -209,9 +216,51 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
     }, []);
 
 
-    const handleMomoPayment = () => {
-      // Logic để xử lý thanh toán qua Momo
-      alert("Momo payment processing...");
+    const handleVnpayPayment = async () => {
+      const fullName = document.querySelector('input[placeholder="Enter Full Name"]').value;
+      const phone = document.querySelector('input[placeholder="Enter Phone Number"]').value;
+      const address = document.querySelector('input[placeholder="Enter Address"]').value;
+      const notes = document.querySelector('textarea[placeholder="Notes"]').value;
+
+      if (!fullName || !phone || !address) {
+        alert("Please fill in all required fields!");
+        return;
+      }
+
+      const token = getToken(); // Lấy token người dùng
+      const orderDetails = cartItems.map((product) => ({
+        product_id: product.product_id,
+        prod_name: product.prod_name,
+        description: product.prod_description,
+        price: product.price,
+        quantity: product.quantity,
+        image: product.image
+      }));
+
+      const orderData = {
+        paymentMethods: paymentMethod,
+        name: fullName,
+        phone,
+        address,
+        note: notes,
+        orderDetails,
+        total: total.toFixed(2)
+      };
+
+      try {
+        setLoading(true);
+        const response = await OrderService.createVnpayOrder(orderData, token); // Gọi API tạo đơn hàng VNPAY
+        if (response && response.data) {
+          window.location.href = response.data.paymentUrl; // Chuyển hướng đến URL thanh toán VNPAY
+        } else {
+          alert("Đặt hàng thất bại. Vui lòng thử lại.");
+        }
+      } catch (error) {
+        console.error("Error placing order with VNPAY:", error);
+        alert("Failed to place order. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
     };
 
     const onSuccessPaypal = async (details, data) => {
@@ -332,9 +381,12 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
               <Input
                 type="text"
                 placeholder="Enter Address"
-                value={selectedAddress}
-                readOnly
-                style={{ cursor: 'pointer' }} // Đổi con trỏ khi không thể chỉnh sửa
+                value={isAddressSelected ? selectedAddress : manualAddress} // Hiển thị địa chỉ đã chọn hoặc địa chỉ nhập thủ công
+                onChange={(e) => {
+                  setManualAddress(e.target.value);
+                  setIsAddressSelected(false); // Đặt là false nếu người dùng đang nhập địa chỉ thủ công
+                }}
+                style={{ cursor: 'text' }} // Đổi con trỏ khi có thể chỉnh sửa
               />
               <button
                 onClick={() => setShowAddressList(!showAddressList)}
@@ -389,11 +441,11 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
                 </div>
               )}
             </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            {/* <div style={{ display: 'flex', gap: '8px' }}>
               <Select><option>Select City</option></Select>
               <Select><option>Select District</option></Select>
               <Select><option>Select Ward/Commune</option></Select>
-            </div>
+            </div> */}
             <TextArea placeholder="Notes" />
             <PaymentMethodContainer>
               <h2>PAYMENT METHOD</h2>
@@ -402,9 +454,9 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
                   <input type="radio" checked={paymentMethod === "COD"} readOnly />
                   <FaTruck style={{ color: 'red', fontSize: '20px' }} /><span> Cash On Delivery (COD)</span>
                 </PaymentMethod>
-                <PaymentMethod onClick={() => handlePaymentChange("Momo")}>
-                  <input type="radio" checked={paymentMethod === "Momo"} readOnly />
-                  <RiBankCardLine style={{ color: '#CC0000', fontSize: '20px' }} /><span>Momo</span>
+                <PaymentMethod onClick={() => handlePaymentChange("VNPAY")}>
+                  <input type="radio" checked={paymentMethod === "VNPAY"} readOnly />
+                  <RiBankCardLine style={{ color: '#CC0000', fontSize: '20px' }} /><span>VNPAY</span>
                 </PaymentMethod>
                 <PaymentMethod onClick={() => handlePaymentChange("Paypal")}>
                   <input type="radio" checked={paymentMethod === "Paypal"} readOnly />
@@ -435,7 +487,7 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
                 </ProductList>
                 <SummaryContainer>
                   <TotalRow><span>SubTotal:</span><span>${subtotal.toFixed(2)}</span></TotalRow>
-                  <TotalRow><span>Shipping:</span><span>${shipping.toFixed(2)}</span></TotalRow>
+                  <TotalRow><span>Shipping:</span><span>${calculateShipping(subtotal - memoizedCouponDiscount).toFixed(2)}</span></TotalRow>
                   <TotalRow><span>Coupon Discount:</span><span>${memoizedCouponDiscount.toFixed(2)}</span></TotalRow>
                   <TotalRow><strong>Total:</strong><strong>${total.toFixed(2)}</strong></TotalRow>
                 </SummaryContainer>
@@ -454,8 +506,8 @@ import { clearCart, updateQuantity } from '../../redux/slides/cartSlice';
                     />
 
 
-                  ) : paymentMethod === "Momo" ? (
-                    <PlaceOrderButton onClick={handleMomoPayment}>PAYMENT WITH MOMO</PlaceOrderButton>
+                  ) : paymentMethod === "VNPAY" ? (
+                      <PlaceOrderButton onClick={handleVnpayPayment}>PAYMENT WITH VNPAY</PlaceOrderButton>
                   ) : (
                     <PlaceOrderButton onClick={handlePlaceOrder}>PAYMENT OF ORDER</PlaceOrderButton>
                   )}

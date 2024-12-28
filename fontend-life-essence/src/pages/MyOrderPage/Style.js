@@ -170,3 +170,19 @@ export const PaginationButton = styled.button`
         transform: translateY(0);
     }
 `;
+
+export const SectionHeader = styled.div`
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 100px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #6c757d;
+
+  @media (max-width: 768px) {
+    padding: 0 20px;
+    font-size: 14px;
+  }
+`;

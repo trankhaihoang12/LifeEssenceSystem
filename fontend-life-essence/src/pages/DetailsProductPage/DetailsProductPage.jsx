@@ -37,6 +37,7 @@ import { FaEnvelope, FaFacebook, FaGoogle, FaInstagram, FaMinus, FaPlus, FaTwitt
 import { Modal, Rate } from "antd";
 import BlogCardComponent from "../../components/BlogCardComponent/BlogCardComponent";
 import ReviewForm from "../../components/ReviewForm/ReviewForm";
+import { addToFavorites } from '../../redux/slides/favoriteSlice';
 
 
 
@@ -69,16 +70,21 @@ const HealthStore = () => {
     return parsedUserData ? parsedUserData.token : null;
   };
 
+  const getUserId = () => {
+    const storedUserData = localStorage.getItem('userData');
+    const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+    return parsedUserData?.user?.id;
+  };
 
   // Hàm xử lý khi thêm sản phẩm vào giỏ
   const handleAddToCart = async () => {
     const token = getToken();
     if (!token) {
       Modal.confirm({
-        title: 'Bạn chưa đăng nhập',
-        content: 'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng. Bạn có muốn chuyển đến trang đăng nhập không?',
-        okText: 'Đồng ý',
-        cancelText: 'Hủy',
+        title: 'You are not logged in',
+        content: 'You need to log in to add products to your cart. Do you want to go to the login page?',
+        okText: 'Agree',
+        cancelText: 'Cancel',
         onOk: () => navigate('/signIn'), // Đường dẫn đến trang đăng nhập của bạn
       });
       return;
@@ -86,11 +92,11 @@ const HealthStore = () => {
 
     try {
       const response = await OrderService.addToCart(product.id, quantity, token); // Gọi API
-      message.success('Sản phẩm đã được thêm vào giỏ hàng!');
+      message.success('Product has been added to cart!');
       dispatch(addItem(product));
       // Thực hiện xử lý nếu thành công, ví dụ hiển thị thông báo hoặc cập nhật giỏ hàng
     } catch (error) {
-      message.error("Không thể thêm sản phẩm vào giỏ hàng.");
+      message.error("Cannot add product to cart.");
     }
   };
 
@@ -130,6 +136,30 @@ const HealthStore = () => {
   const handleThumbnailClick = (imageUrl) => {
     setSelectedImage(imageUrl);  // Cập nhật hình ảnh lớn khi click vào ảnh nhỏ
   };
+
+      const handleAddToFavorite = async () => {
+          const token = getToken();
+  
+          if (!token) {
+              Modal.confirm({
+                  title: 'Bạn chưa đăng nhập',
+                  content: 'Bạn cần đăng nhập để thêm sản phẩm vào danh sách yêu thích. Bạn có muốn chuyển đến trang đăng nhập không?',
+                  okText: 'Đồng ý',
+                  cancelText: 'Hủy',
+                  onOk: () => navigate('/signIn'),
+              });
+              return;
+          }
+  
+          try {
+              const userId = getUserId();
+              await dispatch(addToFavorites({ userId, productId: product.id, token })); // Gọi API thêm vào yêu thích
+              message.success('Sản phẩm đã được thêm vào danh sách yêu thích.');
+          } catch (err) {
+              console.error('Add to favorite error:', err);
+              message.error('Không thể thêm sản phẩm vào danh sách yêu thích.');
+          }
+      };
 
   return (
     <PageContainer>
@@ -197,7 +227,7 @@ const HealthStore = () => {
             </QuantitySelector>
             <ActionButtons>
               <ActionButton primary onClick={handleAddToCart}>Add to Cart</ActionButton>
-              <ActionButton>Add to Wishlist</ActionButton>
+              <ActionButton onClick={handleAddToFavorite}>Add to Wishlist</ActionButton>
             </ActionButtons>
             <div style={{ height: '200px', width: '100%', marginTop: '50px', display: 'flex', flexDirection: 'column' }}>
               <span style={{ fontWeight: 'bold', fontSize: '12px', marginTop: '10px' }}>SKU : <span style={{ fontWeight: 'normal', color: '#666' }}>12345XYZ</span></span>

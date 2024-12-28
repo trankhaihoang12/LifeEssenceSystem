@@ -20,6 +20,7 @@ import BlogsPost from '../pages/BlogsPost/BlogsPost';
 import ManagePage from '../pages/ManagePage/ManagePage';
 import ResetPasswordForm from '../pages/ResetPasswordForm/ResetPasswordForm';
 import ContractPage from '../pages/ContractPage/ContractPage';
+import UnderConstruction from '../pages/UnderConstructionPage/UnderConstructionPage';
 
 export const routes = [
     {
@@ -109,8 +110,8 @@ export const routes = [
     },
     {
         path: '/blogs',
-        page: DetailsBlogPage,
         isShowHeader: true,
+        page: DetailsBlogPage,
         isShowFooter: true
     },
     {
@@ -154,5 +155,9 @@ export const routes = [
     {
         path: '/reset-password/:token',
         page: ResetPasswordForm,
+    },
+    {
+        path: '/page-contruction',
+        page: UnderConstruction,
     }
 ];

@@ -236,3 +236,112 @@ export async function approveBlog(blogId, token) {
         throw error;
     }
 }
+
+
+// Hàm lấy doanh thu hàng tháng dành cho admin
+export const getMonthlyRevenue = async (token) => {
+    try {
+        // Gửi request GET đến backend để lấy doanh thu hàng tháng
+        const response = await axios.get(`${API_URL}/admin/reports/sales/monthly`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        // Trả về dữ liệu từ API
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi lấy doanh thu hàng tháng:", error.response ? error.response.data : error.message);
+        throw error;  // Ném lỗi để component có thể xử lý
+    }
+};
+
+// Hàm lấy customer hàng tháng dành cho admin
+export const getMonthlyCustomers = async (token) => {
+    try {
+        // Gửi request GET đến backend để lấy doanh thu hàng tháng
+        const response = await axios.get(`${API_URL}/admin/reports/customers/monthly`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        // Trả về dữ liệu từ API
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi lấy doanh thu hàng tháng:", error.response ? error.response.data : error.message);
+        throw error;  // Ném lỗi để component có thể xử lý
+    }
+};
+
+//báo cáo tổng doanh thu
+// Hàm lấy báo cáo doanh thu
+export const getSalesReport = async (token) => {
+    try {
+        const response = await axios.get(`${API_URL}/admin/reports/sales`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi lấy báo cáo doanh thu:", error.response ? error.response.data : error.message);
+        throw error;  // Ném lỗi để component có thể xử lý
+    }
+};
+
+// Hàm lấy tổng số đơn hàng
+export const getTotalOrders = async (token) => {
+    try {
+        const response = await axios.get(`${API_URL}/admin/reports/total-orders`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        return response.data; // Giả sử API trả về tổng số đơn hàng trong response.data
+    } catch (error) {
+        console.error("Lỗi khi lấy tổng số đơn hàng:", error.response ? error.response.data : error.message);
+        throw error; // Ném lỗi để xử lý ở nơi gọi hàm
+    }
+};
+// Hàm lấy tổng số member
+export const getTotalMembers = async (token) => {
+    try {
+        const response = await axios.get(`${API_URL}/admin/reports/total-members`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        return response.data; // Giả sử API trả về tổng số đơn hàng trong response.data
+    } catch (error) {
+        console.error("Lỗi khi lấy tổng số đơn hàng:", error.response ? error.response.data : error.message);
+        throw error; // Ném lỗi để xử lý ở nơi gọi hàm
+    }
+};
+
+// Hàm get phân bổ doanh thu dành cho admin
+export const getRevenueDistribution = async (token) => {
+    try {
+        // Gửi request GET đến backend để lấy dữ liệu phân bổ doanh thu
+        const response = await axios.get(`${API_URL}/admin/reports/sales/distribution`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        // Trả về dữ liệu từ API
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu phân bổ doanh thu:", error.response ? error.response.data : error.message);
+        throw error;  // Ném lỗi để component có thể xử lý
+    }
+};

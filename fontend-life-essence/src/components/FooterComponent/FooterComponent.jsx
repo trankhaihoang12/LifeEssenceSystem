@@ -1,9 +1,37 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Footer, FooterBottom, FooterContent, FooterLink, FooterLinks, FooterSection, WrapperButton, WrapperHeaderFooter, WrapperInput, WrapperLogoFooter, WrapperLogoMini } from './Style';
 import logo from '../../assets/images/Logo1.png';
 import logoAddress from '../../assets/images/web-address-icon.png';
 import logoCall from '../../assets/images/call-icon.png';
+import emailjs from '@emailjs/browser';
 const FooterComponent = () => {
+    const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('');
+
+    const handleSubscribe = (e) => {
+        e.preventDefault();
+
+        // Config thông tin template từ EmailJS
+        const serviceID = process.env.REACT_APP_EMAILJS_SERVICE_ID;
+        const templateID = process.env.REACT_APP_EMAILJS_TEMPLATE_ID1; 
+        const publicKey = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
+
+
+        const templateParams = {
+            user_email: email, // Tham số từ email nhập vào
+        };
+
+        emailjs.send(serviceID, templateID, templateParams, publicKey)
+            .then((response) => {
+                console.log('SUCCESS!', response.status, response.text);
+                setMessage('You have successfully subscribed! 🎉');
+                setEmail(''); // Reset trường input
+            })
+            .catch((error) => {
+                console.error('FAILED...', error);
+                setMessage('Oops! Something went wrong. Please try again.');
+            });
+    };
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'center', backgroundColor: '#F4f4f4', }}>
@@ -12,16 +40,21 @@ const FooterComponent = () => {
                     <div style={{ width: '200px', marginTop: '10px', textAlign: 'center', color: '#7d879c'}}>
                         <p>Join 60.000+ Subscribers and get a new discount coupon on every Saturday.</p>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #fff', borderRadius: '20px', width: '500px', height: '35px', backgroundColor: '#fff' , marginTop: '20px'}}>
-                        <WrapperInput
-                            type="text"
-                            placeholder="Your email address"
-
-                        />
-                        <WrapperButton onClick={''}>
-                            <span style={{ fontSize: '10px', color: '#fff' ,fontWeight: 600}}>SUBSCRIBE .. </span>
-                        </WrapperButton>
-                    </div>
+                    <form onSubmit={handleSubscribe}>
+                        <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #fff', borderRadius: '20px', width: '500px', height: '35px', backgroundColor: '#fff', marginTop: '20px' }}>
+                            <WrapperInput
+                                type="email"
+                                placeholder="Your email address"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                            <WrapperButton type="submit">
+                                <span style={{ fontSize: '10px', color: '#fff', fontWeight: 600 }}>SUBSCRIBE</span>
+                            </WrapperButton>
+                        </div>
+                    </form>
+                    {message && <p style={{ color: '#007bff', marginTop: '10px' }}>{message}</p>}
                 </div>
             </div>
             <div style={{ height: '450px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', backgroundColor: 'rgb(239, 239, 239)' }}>
@@ -33,7 +66,7 @@ const FooterComponent = () => {
                                 <div style={{
                                     color: 'black', fontWeight: 'bold', textAlign: 'left'
                                 }}>Address</div>
-                                <h4 style={{ color: 'black', fontSize: '14px' }}>9066 Green Lake Drive Chevy Chase, MD 20815</h4>
+                                <h4 style={{ color: 'black', fontSize: '14px' }}>254 Nguyen Van Linh, Da Nang, Viet Nam</h4>
                             </div>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -41,8 +74,8 @@ const FooterComponent = () => {
                             <div>
                                 <div style={{
                                     color: 'black', fontWeight: 'bold', textAlign: 'left'
-                                }}>Nguyễn Tiến Mạnh</div>
-                                <h4 style={{ color: 'black', fontSize: '14px' }}>(1800)-88-66-990</h4>
+                                }}>Nguyen Tien Manh</div>
+                                <h4 style={{ color: 'black', fontSize: '14px' }}>+84 931 378 551</h4>
                             </div>
 
 
@@ -56,39 +89,39 @@ const FooterComponent = () => {
                         <FooterSection className="footer-links">
                             <span style={{ color: 'black', fontWeight: 'bold', textTransform: 'uppercase', fontSize: '15px' }}>information</span>
                             <FooterLinks>
-                                <FooterLink><a href="/">Newsroom</a></FooterLink>
-                                <FooterLink><a href="/">Sell Your Pharmacy</a></FooterLink>
-                                <FooterLink><a href="/">Affiliate Program</a></FooterLink>
-                                <FooterLink><a href="/">Careers</a></FooterLink>
-                                <FooterLink><a href="/">Investor Relations</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Newsroom</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Sell Your Pharmacy</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Affiliate Program</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Careers</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Investor Relations</a></FooterLink>
                             </FooterLinks>
                         </FooterSection>
                         <div className="footer-contact" style={{ margin: '10px' }}>
                             <span style={{ fontWeight: 'bold', textTransform: 'uppercase', color: 'black', fontSize: '15px' }}>Categories</span>
                             <FooterLinks>
-                                <FooterLink><a href="/">Devices</a></FooterLink>
-                                <FooterLink><a href="/">Family Care</a></FooterLink>
-                                <FooterLink><a href="/">Fitness</a></FooterLink>
-                                <FooterLink><a href="/">Lifestyle</a></FooterLink>
-                                <FooterLink><a href="/">Personal care</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Devices</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Family Care</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Fitness</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Lifestyle</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Personal care</a></FooterLink>
                             </FooterLinks>
                         </div>
                         <div className="footer-contact" style={{ margin: '10px' }}>
                             <span style={{ fontWeight: 'bold', textTransform: 'uppercase', color: 'black', fontSize: '15px' }}>Our services</span>
                             <FooterLinks>
-                                <FooterLink><a href="/">Shipping</a></FooterLink>
-                                <FooterLink><a href="/">Returns</a></FooterLink>
-                                <FooterLink><a href="/">Product Recalls</a></FooterLink>
-                                <FooterLink><a href="/">Contact Us</a></FooterLink>
-                                <FooterLink><a href="/">Site Map</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Shipping</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Returns</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Product Recalls</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Contact Us</a></FooterLink>
+                                <FooterLink><a href="/page-contruction">Site Map</a></FooterLink>
                             </FooterLinks>
                         </div>
                         <div className="footer-social" style={{ margin: '10px' }}>
                             <span style={{ fontWeight: 'bold', textTransform: 'uppercase', color: 'black', fontSize: '15px' }}>Our services</span>
                             <FooterLinks>
                                 <FooterLink><a href="/">254 Nguyen Van Linh, Da Nang, Viet Nam</a></FooterLink>
-                                <FooterLink><a href="/">📞+351 910 331 000</a></FooterLink>
-                                <FooterLink><a href="/">✉️ contact @example.com</a></FooterLink>
+                                <FooterLink><a href="/">📞+84 931 378 551</a></FooterLink>
+                                <FooterLink><a href="/">✉️ ngyenmanh002347@gmail.com</a></FooterLink>
                             </FooterLinks>
                         </div>
                     </FooterContent>

@@ -31,6 +31,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as message from '../../components/MessageComponent/Message'
 import { addItem } from "../../redux/slides/cartSlice";
 import { addToFavorites } from "../../redux/slides/favoriteSlice";
+import { FaRegSadTear } from "react-icons/fa";
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ const ProductPage = () => {
   const [categoryName, setCategoryName] = useState("");
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
   const [products, setProducts] = useState([]); // State để lưu sản phẩm theo danh mục
+  console.log('product', products)
   const [bestSellers, setBestSellers] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({});
@@ -54,7 +56,7 @@ const ProductPage = () => {
     glucosamine: false
   });
 
-  const { items: favorites } = useSelector((state) => state.favorites);
+  // const { items: favorites } = useSelector((state) => state.favorites);
 
   // const toggleFavorite = (productId) => {
   //   setFavorites((prev) => {
@@ -102,8 +104,8 @@ const ProductPage = () => {
       [filterKey]: filterValue, // Giữ lại giá trị rating khi search
     }));
   };
-  
-  
+
+
 
   // useEffect 1: Hiển thị sản phẩm theo category
   useEffect(() => {
@@ -222,39 +224,39 @@ const ProductPage = () => {
         }
       };
       fetchProductsBySearch();
-    // } else {
-    //   // Nếu không có từ khóa tìm kiếm, lấy tất cả sản phẩm
-    //   const fetchAllProducts = async () => {
-    //     try {
-    //       const response = await ProductsService.fetchAllProducts({
-    //         page: 1, // Trang đầu tiên
-    //         limit: 12, // Số lượng sản phẩm mỗi trang
-    //         sort: 'asc', // Sắp xếp theo giá tăng dần
-    //       });
+      // } else {
+      //   // Nếu không có từ khóa tìm kiếm, lấy tất cả sản phẩm
+      //   const fetchAllProducts = async () => {
+      //     try {
+      //       const response = await ProductsService.fetchAllProducts({
+      //         page: 1, // Trang đầu tiên
+      //         limit: 12, // Số lượng sản phẩm mỗi trang
+      //         sort: 'asc', // Sắp xếp theo giá tăng dần
+      //       });
 
-    //       const data = response.products; // Lấy dữ liệu sản phẩm từ API
+      //       const data = response.products; // Lấy dữ liệu sản phẩm từ API
 
-    //       if (Array.isArray(data)) {
-    //         setProducts(data.map((product) => ({
-    //           id: product.id,
-    //           name: product.prod_name,
-    //           category: product.Category?.name || "Chưa có danh mục",
-    //           price: parseFloat(product.price),
-    //           rating: product.ratings,
-    //           imageUrl: product.images?.[0]?.url
-    //             ? `http://localhost:3000/${product.images[0].url.replace(/\\/g, '/')}`
-    //             : `https://picsum.photos/200`,
-    //         })));
-    //       }
-    //     } catch (error) {
-    //       console.error('Lỗi khi lấy tất cả sản phẩm:', error);
-    //     }
-    //   };
-    //   fetchAllProducts();
+      //       if (Array.isArray(data)) {
+      //         setProducts(data.map((product) => ({
+      //           id: product.id,
+      //           name: product.prod_name,
+      //           category: product.Category?.name || "Chưa có danh mục",
+      //           price: parseFloat(product.price),
+      //           rating: product.ratings,
+      //           imageUrl: product.images?.[0]?.url
+      //             ? `http://localhost:3000/${product.images[0].url.replace(/\\/g, '/')}`
+      //             : `https://picsum.photos/200`,
+      //         })));
+      //       }
+      //     } catch (error) {
+      //       console.error('Lỗi khi lấy tất cả sản phẩm:', error);
+      //     }
+      //   };
+      //   fetchAllProducts();
     }
   }, [location.search]); // Chạy khi `searchQuery` thay đổi
 
-  
+
 
   const getToken = () => {
     const storedUserData = localStorage.getItem('userData');
@@ -309,7 +311,7 @@ const ProductPage = () => {
     }
   };
 
-  const handleAddToFavorite = async (product) => {
+  const handleAddToFavorite = async (productId) => {
     const token = getToken();
 
     if (!token) {
@@ -322,29 +324,18 @@ const ProductPage = () => {
       });
       return;
     }
-    console.log('first2', product.id)
 
     try {
-      const userId = getUserId(); // Lấy ID người dùng
-      if (!userId) {
-        throw new Error("Không thể xác định người dùng.");
-      }
-      console.log('first', product.id)
-
-      // Gọi API để thêm sản phẩm vào danh sách yêu thích
-      await FavortitesService.addFavorite(userId, product.id, token);
-
-      // Cập nhật Redux store
-      dispatch(addToFavorites({ userId, productId: product.id, }));
-
-      // Thông báo thành công
+      const userId = getUserId();
+      console.log("Adding ProductId to favorites:", productId);
+      await dispatch(addToFavorites({ userId, productId, token })); // Gọi API thêm vào yêu thích
+      console.log('UserId:', userId, 'ProductId:', productId, 'Token:', token);
       message.success('Sản phẩm đã được thêm vào danh sách yêu thích.');
     } catch (err) {
-      console.error('Lỗi khi thêm vào danh sách yêu thích:', err);
+      console.error('Add to favorite error:', err);
       message.error('Không thể thêm sản phẩm vào danh sách yêu thích.');
     }
   };
-
 
 
   return (
@@ -356,9 +347,10 @@ const ProductPage = () => {
             Canxi & Vitamin {openSubMenus.calcium ? <ChevronUp /> : <ChevronDown />}
           </CategoryItem>
           <SubMenu isOpen={openSubMenus.calcium}>
-            <SubMenuItem onClick={() => handleFilter('category', 'Vitamin A')}>Vitamin A</SubMenuItem>
+            <SubMenuItem onClick={() => handleFilter('category', 'vitamin')}>Vitamin A</SubMenuItem>
             <SubMenuItem onClick={() => handleFilter('category', 'Vitamin B')}>Vitamin B</SubMenuItem>
             <SubMenuItem onClick={() => handleFilter('category', 'Vitamin C')}>Vitamin C</SubMenuItem>
+            <SubMenuItem onClick={() => handleFilter('category', 'Vitamin D')}>Vitamin C</SubMenuItem>
           </SubMenu>
 
           <CategoryItem onClick={() => toggleSubMenu('goldenHealth')}>
@@ -434,14 +426,46 @@ const ProductPage = () => {
                 </AddToCartWrapper>
                 <FavoriteButton
                   // isFavorite={favorites.has(product.id)}
-                  onClick={handleAddToFavorite}
+         
+                  onClick={() => handleAddToFavorite(product.id)}
                 >
                   <Heart />
                 </FavoriteButton>
               </ProductCard>
             ))
           ) : (
-            <p>Không có sản phẩm nào để hiển thị.</p>
+            <div style={{ width: '1250px', }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  color: "#888",
+                  padding: "50px 0",
+                  height: "60vh", // Đảm bảo căn giữa theo chiều dọc
+                }}
+              >
+                <FaRegSadTear size={80} style={{ marginBottom: "20px" }} /> {/* Icon từ Font Awesome */}
+                <p style={{ fontSize: "18px", fontWeight: "500" }}>Uh-oh! No products available right now.</p>
+                <button
+                  onClick={() => navigate('/')}
+                  style={{
+                    marginTop: "20px",
+                    padding: "10px 20px",
+                    borderRadius: "8px",
+                    backgroundColor: "#24AEB1",
+                    color: "#fff",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    border: "none",
+                  }}
+                >
+                  Back to Home
+                </button>
+              </div>
+            </div>
           )}
         </ProductsContainer>
       </MainContent>

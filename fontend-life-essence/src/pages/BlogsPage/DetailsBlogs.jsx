@@ -107,28 +107,69 @@ const DetailsBlogs = () => {
   return (
     <div style={{ backgroundColor: 'rgb(244, 244, 244)', width: '100%', minHeight: '1000px' }}>
       {/* Banner Section */}
-      <BannerContainer style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px' }}>
-        <BannerTitle style={{ flex: '1' }}>Healthy living</BannerTitle>
+      <BannerContainer style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px',
+        background: 'linear-gradient(to right, #28B463, #1E88E5)', // Gradient xanh lá và xanh dương
+        color: 'white', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+        transition: 'all 0.3s ease-in-out',
+      }}>
+        <BannerTitle style={{
+          flex: '1', fontSize: '32px', fontWeight: 'bold', textAlign: 'left', textShadow: '2px 2px 5px rgba(0, 0, 0, 0.3)',
+          transition: 'transform 0.3s ease-in-out', cursor: 'pointer',
+        }} onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'} onMouseLeave={(e) => e.target.style.transform = 'scale(1)'} >
+          Healthy Living
+        </BannerTitle>
         <SearchSection style={{ flex: '2', textAlign: 'center' }}>
-          <SearchField>
-            <select id="topic-select" style={{ width: '400px', borderRadius: '8px' }}>
-              <option value="all" style={{ fontSize: '12px' }}>All topics</option>
+          <SearchField style={{
+            display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative',
+            borderRadius: '50px', backgroundColor: '#ffffff', padding: '8px 16px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            transition: 'all 0.3s ease', width: '100%' // Chiều rộng của phần search field
+          }}>
+            {/* Icon tìm kiếm */}
+            <i className="fa fa-search" style={{
+              position: 'absolute', left: '12px', fontSize: '18px', color: '#888', transition: 'color 0.3s ease'
+            }}></i>
+            <select id="topic-select" style={{
+              width: '90%', // Điều chỉnh lại độ rộng của select
+              border: 'none',
+              borderRadius: '50px',
+              padding: '12px 40px', // Tăng padding để phần tìm kiếm dài ra và dễ sử dụng
+              fontSize: '16px',
+              backgroundColor: '#f7f7f7',
+              color: '#333',
+              appearance: 'none',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              transition: 'background-color 0.3s ease, padding 0.3s ease',
+              outline: 'none'
+            }}
+              onFocus={(e) => e.target.style.backgroundColor = '#eeeeee'}
+              onBlur={(e) => e.target.style.backgroundColor = '#f7f7f7'}>
+              <option value="all">All topics</option>
               <option value="vitamins">Vitamins</option>
               <option value="health">Health</option>
             </select>
           </SearchField>
         </SearchSection>
         <div style={{ flex: '1', textAlign: 'right' }}>
-          <BlogButton onClick={() => setShowForm(!showForm)}>
+          <BlogButton onClick={() => setShowForm(!showForm)} style={{
+            backgroundColor: '#FF4081', color: 'white', padding: '12px 25px', borderRadius: '5px', cursor: 'pointer',
+            fontSize: '16px', transition: 'background-color 0.3s ease-in-out', border: 'none', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            opacity: showForm ? '0.8' : '1',
+          }}>
             {showForm ? 'Cancel' : 'Create New Blog'}
           </BlogButton>
         </div>
       </BannerContainer>
 
 
+
       {/* Blog Creation Form */}
       {showForm && (
-        <BlogForm onSubmit={handleFormSubmit}>
+        <BlogForm onSubmit={handleFormSubmit} style={{
+          padding: '25px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.15)',
+          transition: 'transform 0.3s ease-in-out',
+        }}>
           <BlogFormTitle>Create New Blog</BlogFormTitle>
           <BlogInput
             type="text"
@@ -137,6 +178,10 @@ const DetailsBlogs = () => {
             placeholder="Blog Title"
             onChange={handleInputChange}
             required
+            style={{
+              padding: '12px', marginBottom: '15px', width: '100%', borderRadius: '8px', border: '1px solid #ccc',
+              fontSize: '16px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', transition: 'all 0.3s ease-in-out',
+            }}
           />
           <BlogInput
             type="file"
@@ -144,6 +189,10 @@ const DetailsBlogs = () => {
             onChange={handleFileChange}
             accept="image/*" // Chỉ cho phép chọn hình ảnh
             required
+            style={{
+              padding: '12px', marginBottom: '15px', width: '100%', borderRadius: '8px', border: '1px solid #ccc',
+              fontSize: '16px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', transition: 'all 0.3s ease-in-out',
+            }}
           />
           <BlogInput
             as="textarea"
@@ -152,17 +201,15 @@ const DetailsBlogs = () => {
             placeholder="Content"
             onChange={handleInputChange}
             required
+            style={{
+              padding: '12px', marginBottom: '15px', width: '100%', borderRadius: '8px', border: '1px solid #ccc',
+              fontSize: '16px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', transition: 'all 0.3s ease-in-out',
+            }}
           />
-          <BlogInput
-            as="select"
-            name="category"
-            value={formData.category}
-            onChange={handleInputChange}
-          >
-            <option value="vitamins">Vitamins</option>
-            <option value="health">Health</option>
-          </BlogInput>
-          <BlogButton type="submit" disabled={isSubmitting}>
+          <BlogButton type="submit" disabled={isSubmitting} style={{
+            backgroundColor: '#4CAF50', color: 'white', padding: '12px 25px', borderRadius: '5px', cursor: 'pointer',
+            fontSize: '16px', transition: 'background-color 0.3s ease-in-out', border: 'none',
+          }}>
             {isSubmitting ? 'Submitting...' : 'Submit Blog'}
           </BlogButton>
         </BlogForm>

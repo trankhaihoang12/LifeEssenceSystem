@@ -194,7 +194,7 @@ const ManageOrdersComponent = () => {
             <WrapperTableHeader>Customer Name</WrapperTableHeader>
             <WrapperTableHeader>Date</WrapperTableHeader>
             <WrapperTableHeader>Payment Status</WrapperTableHeader>
-            <WrapperTableHeader>Amount</WrapperTableHeader>
+            <WrapperTableHeader>Total</WrapperTableHeader>
             <WrapperTableHeader>Payment Method</WrapperTableHeader>
             <WrapperTableHeader>Order Status</WrapperTableHeader>
             <WrapperTableHeader>Actions</WrapperTableHeader>
@@ -216,7 +216,7 @@ const ManageOrdersComponent = () => {
                   </StatusBadge>
                 </WrapperTableData>
               </WrapperTableData>
-              <WrapperTableData>{order.total}</WrapperTableData>
+              <WrapperTableData>{order.total.toFixed(2)}</WrapperTableData>
               <WrapperTableData>{order.paymentMethods}</WrapperTableData>
               <WrapperTableData>
                 <span
@@ -305,7 +305,7 @@ const ManageOrdersComponent = () => {
             <Text><Strong>Products:</Strong></Text>
             <ProductList>
               {selectedOrder.products.map((product, index) => (
-                <ProductItem key={index}>{product.prod_name} (x{product.quantity})</ProductItem>
+                <ProductItem key={index}>{product.prod_name} (x{product.OrderDetail.quantity})</ProductItem>
               ))}
             </ProductList>
             <CloseButtonContainer>

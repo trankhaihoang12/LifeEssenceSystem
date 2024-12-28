@@ -212,3 +212,10 @@ export const clearCart = async (token) => {
         throw error; // Ném lỗi để có thể xử lý trong component
     }
 };
+
+export const createVnpayOrder = async (orderData, token) => {
+    const response = await axios.post(`${API_URL}/payment-vnpay/vnp`, orderData, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    return response;
+};

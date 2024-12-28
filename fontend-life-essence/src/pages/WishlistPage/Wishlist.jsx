@@ -14,6 +14,7 @@ import * as message from '../../components/MessageComponent/Message'
 import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchFavorites, removeFromFavorites } from '../../redux/slides/favoriteSlice';
+import { FaRegHeart } from 'react-icons/fa';
 
 
 const WishlistComponent = () => {
@@ -69,7 +70,6 @@ const WishlistComponent = () => {
     <div style={{ height: '650px', backgroundColor: '#F4f4f4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
       <SectionHeader>Home / Wishlist</SectionHeader>
       <WishlistContainer>
-        <WishlistTitle>My Wishlist</WishlistTitle>
         <Wishlist>
           {items.length > 0 ? (
             items.map(item => (
@@ -87,7 +87,10 @@ const WishlistComponent = () => {
               </WishlistItem>
             ))
           ) : (
-            <div>No items in your wishlist.</div>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                <FaRegHeart size={50} color="#888" />
+                <p style={{ color: '#888', fontSize: '18px' }}>Your wishlist is empty.</p>
+              </div>
           )}
         </Wishlist>
       </WishlistContainer>
