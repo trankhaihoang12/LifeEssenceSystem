@@ -118,7 +118,7 @@ const HeaderComponent = () => {
       {userData?.user?.role === 'manager' && (
         <WrapperContentPopup onClick={() => { navigate('/dashboard/manager'); handleClose() }}>Management product</WrapperContentPopup>
       )}
-      <WrapperContentPopup onClick={() => { navigate('/my-order'); handleClose() }}>Order of me</WrapperContentPopup>
+      <WrapperContentPopup onClick={() => { navigate('/my-order'); handleClose() }}>My Order</WrapperContentPopup>
       <WrapperContentPopup onClick={handleSignOut} style={{ color: 'red', textAlign: 'center' }}>LOGOUT</WrapperContentPopup>
     </div>
   );

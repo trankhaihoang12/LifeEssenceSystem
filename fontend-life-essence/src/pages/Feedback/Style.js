@@ -74,7 +74,14 @@ export const UploadSection = styled.div`
 `;
 
 export const UploadLabel = styled.label`
-  display: block;
+
+width: 150px; 
+height: 50px;
+background-color: #ccc;
+border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-weight: 500;
   margin-bottom: 10px;
   color: #555;
