@@ -6,15 +6,20 @@ import * as message from '../../components/MessageComponent/Message'
 
 const DetailsBlogs = () => {
   const [blogPosts, setBlogPosts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [showForm, setShowForm] = useState(false); // State to toggle form visibility
   const [formData, setFormData] = useState({
     title: '',
-    content: '',
+    content1: '',
+    content2: '',
+    content3: '',
     author_id: '',
     image_url: '',
+    highlightedContent: '', 
+    category: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const categories = ['Category 1', 'Category 2', 'Category 3'];
   // Fetch all blogs on component mount
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -65,25 +70,34 @@ const DetailsBlogs = () => {
 
     const formDataToSend = new FormData();
     formDataToSend.append('title', formData.title); // Kiểm tra xem formData.title có giá trị không
-    formDataToSend.append('content', formData.content); // Kiểm tra xem formData.content có giá trị không
+    formDataToSend.append('content1', formData.content1);
+    formDataToSend.append('content2', formData.content2);
+    formDataToSend.append('content3', formData.content3);
     formDataToSend.append('author_id', userId); // Đảm bảo author_id không phải là null
     formDataToSend.append('image_url', formData.image_url);
+    formDataToSend.append('highlightedContent', formData.highlightedContent);
+    formDataToSend.append('category', formData.category);
     formDataToSend.append('is_approved', false);
+
     try {
       const token = localStorage.getItem('token');
       await BlogsService.writeBlog(formDataToSend, token);
 
-      message.success('Bài viết đã được gửi thành công và đang chờ admin duyệt.!');
+      message.success('The article has been sent successfully and is waiting for admin approval.!');
       setShowForm(false);
       // Reset form
       setFormData({
         title: '',
-        content: '',
+        content1: '',
+        content2: '',
+        content3: '',
         author_id: '',
         image_url: '',
+        highlightedContent: '',
+        category: '',
       });
     } catch (error) {
-      message.error('Bài viết gửi Thất bại!');
+      message.error('Post sent Failed!');
       console.error('Error creating blog:', error.response ? error.response.data : error.message);
     } finally {
       setIsSubmitting(false);
@@ -141,13 +155,15 @@ const DetailsBlogs = () => {
               cursor: 'pointer',
               fontWeight: 'bold',
               transition: 'background-color 0.3s ease, padding 0.3s ease',
-              outline: 'none'
+              outline: 'none',
             }}
-              onFocus={(e) => e.target.style.backgroundColor = '#eeeeee'}
-              onBlur={(e) => e.target.style.backgroundColor = '#f7f7f7'}>
-              <option value="all">All topics</option>
-              <option value="vitamins">Vitamins</option>
-              <option value="health">Health</option>
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>{category}</option>
+              ))}
             </select>
           </SearchField>
         </SearchSection>
@@ -171,6 +187,23 @@ const DetailsBlogs = () => {
           transition: 'transform 0.3s ease-in-out',
         }}>
           <BlogFormTitle>Create New Blog</BlogFormTitle>
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleInputChange}
+            required
+            style={{
+              padding: '12px', marginBottom: '15px', width: '100%', borderRadius: '8px', border: '1px solid #ccc',
+              fontSize: '16px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', transition: 'all 0.3s ease-in-out',
+            }}
+          >
+            <option value="" disabled>Select a category</option>
+            <option value="technology">Technology</option>
+            <option value="health">Health</option>
+            <option value="lifestyle">Lifestyle</option>
+            <option value="education">Education</option>
+            <option value="finance">Finance</option>
+          </select>
           <BlogInput
             type="text"
             name="title"
@@ -196,9 +229,45 @@ const DetailsBlogs = () => {
           />
           <BlogInput
             as="textarea"
-            name="content"
-            value={formData.content}
-            placeholder="Content"
+            name="content1"
+            value={formData.content1}
+            placeholder="Content1"
+            onChange={handleInputChange}
+            required
+            style={{
+              padding: '12px', marginBottom: '15px', width: '100%', borderRadius: '8px', border: '1px solid #ccc',
+              fontSize: '16px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', transition: 'all 0.3s ease-in-out',
+            }}
+          />
+          <BlogInput
+            as="textarea"
+            name="content2"
+            value={formData.content2}
+            placeholder="Content2"
+            onChange={handleInputChange}
+            required
+            style={{
+              padding: '12px', marginBottom: '15px', width: '100%', borderRadius: '8px', border: '1px solid #ccc',
+              fontSize: '16px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', transition: 'all 0.3s ease-in-out',
+            }}
+          />
+          <BlogInput
+            as="textarea"
+            name="content3"
+            value={formData.content3}
+            placeholder="Content3"
+            onChange={handleInputChange}
+            required
+            style={{
+              padding: '12px', marginBottom: '15px', width: '100%', borderRadius: '8px', border: '1px solid #ccc',
+              fontSize: '16px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', transition: 'all 0.3s ease-in-out',
+            }}
+          />
+          <BlogInput
+            as="textarea"
+            name="highlightedContent"
+            value={formData.highlightedContent}
+            placeholder="highlightedContent"
             onChange={handleInputChange}
             required
             style={{
@@ -239,7 +308,7 @@ const DetailsBlogs = () => {
                       marginBottom: '0.75rem',
                       display: 'inline-block'
                     }}>
-                      {post.category === 'vitamins' ? 'Vitamin & Dinh dưỡng' : 'Sức khỏe & An toàn'}
+                      {post.category}
                     </span>
                   </div>
                   <BlogPostTitle>{post.title}</BlogPostTitle>
@@ -247,9 +316,9 @@ const DetailsBlogs = () => {
                     Author: {post.author_id} • {post.date} • {post.estimatedReadTime}
                   </BlogPostAuthor>
                   <BlogPostExcerpt>
-                    {post.content.length > 150
-                      ? `${post.content.substring(0, 150)}...`
-                      : post.content}
+                    {post.content1.length > 150
+                      ? `${post.content1.substring(0, 150)}...`
+                      : post.content1}
                   </BlogPostExcerpt>
                   <BlogPostLink href={`/blogs-post/${post.id}`} onClick={() => viewBlogDetails(post.id)}>Read more</BlogPostLink>
                 </BlogPostContent>

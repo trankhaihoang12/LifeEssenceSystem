@@ -130,7 +130,7 @@ export const EditFormContainer = styled.div`
 `;
 
 export const EditForm = styled.div`
-   width: 900px;
+    width: 900px;
     background: #fff;
     padding: 20px;
     margin: auto;

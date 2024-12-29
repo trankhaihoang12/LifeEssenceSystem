@@ -12,6 +12,15 @@ export async function getAllBlog() { // Không cần token
         throw error;
     }
 }
+export async function getRecentPosts() { // Không cần token
+    try {
+        const response = await axios.get(`${API_URL}/blog/all`); // Gọi API mà không có header Authorization
+        return response.data; // Trả về dữ liệu từ API
+    } catch (error) {
+        console.error('Error fetching all blogs:', error);
+        throw error;
+    }
+}
 
 export async function writeBlog(formData, token) {
     try {

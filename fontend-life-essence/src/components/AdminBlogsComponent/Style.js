@@ -339,4 +339,14 @@ export const CancelButton = styled.button`
     border-radius: 4px;
     cursor: pointer;
 `;
-
+export const InputBlogDetail = styled.input`
+  width: 100%; /* Giữ nguyên */
+  padding: 10px; /* Đổi padding thành 10px */
+  margin-bottom: 10px; /* Thêm margin-bottom */
+  font-size: 16px;
+  background-color: #f7fafc;
+  border-radius: 4px; /* Đổi border-radius thành 4px */
+  border: 1px solid #ddd; /* Đổi border thành 1px solid #ddd */
+  height: 150px;
+  resize: none; /* Có thể xóa nếu không cần */
+`;

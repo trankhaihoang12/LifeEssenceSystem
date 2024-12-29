@@ -306,3 +306,20 @@ export async function approveBlog(blogId, token) {
         throw error;
     }
 }
+
+export async function searchBlogs(title, token) {
+    try {
+        const response = await axios.get(`${API_URL}/manager/search-blogs`, {
+            params: {
+                title: title, // Truyền title làm tham số query
+            },
+            headers: {
+                'Authorization': `Bearer ${token}`,  // Gửi token trong header để xác thực
+            }
+        });
+        return response.data; // Trả về dữ liệu từ API
+    } catch (error) {
+        console.error('Error searching blogs:', error);
+        throw error;  // Ném lỗi ra ngoài để xử lý ở nơi gọi hàm
+    }
+}

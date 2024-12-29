@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { FaPen, FaTrash } from 'react-icons/fa';
-import { ExportButton, StatusBadge, WrapperButton, WrapperContainer, WrapperHeader, WrapperInput, WrapperPagination, WrapperTable, WrapperTableData, WrapperTableHeader, WrapperTableRow } from './Style';
+import { ExportButton, InputBlogDetail, StatusBadge, WrapperButton, WrapperContainer, WrapperHeader, WrapperInput, WrapperPagination, WrapperTable, WrapperTableData, WrapperTableHeader, WrapperTableRow } from './Style';
 import { LuSearch } from 'react-icons/lu';
 import { EditFormContainer, EditForm, Input, EditFormButton, CancelButton } from './Style'; // Thêm vào các styled-component cho form chỉnh sửa
 import * as AdminService from '../../services/AdminService'; // Sửa từ UserService thành BlogService
-
+import * as XLSX from 'xlsx';
 
 const AdminBlogsComponnent = () => {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [blogs, setBlogs] = useState([]);
-    console.log(blogs)
     const [selectedBlogs, setSelectedBlogs] = useState([]);
     const [showEditForm, setShowEditForm] = useState(false);
     const [editBlog, setEditBlog] = useState(null);
     const [showDetailForm, setShowDetailForm] = useState(false); // Hiển thị form chi tiết
     const [detailBlog, setDetailBlog] = useState(null); // Blog đang xem chi tiết
-    console.log('dêtai', detailBlog)
     const [currentPage, setCurrentPage] = useState(1);
     const blogsPerPage = 10;
     const totalPages = Math.ceil(blogs.length / blogsPerPage);
@@ -54,7 +54,21 @@ const AdminBlogsComponnent = () => {
     }, []);
 
     const handleExport = () => {
-        alert('Xuất file Excel');
+        // Tạo dữ liệu để xuất ra Excel
+        const exportData = blogs.map(blog => ({
+            ID: blog.id,
+            Title: blog.title,
+            CreatedAt: new Date(blog.created_at).toLocaleDateString(),
+            Status: blog.is_approved ? 'Approved' : 'Pending',
+        }));
+
+        // Tạo workbook từ dữ liệu
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Blogs');
+
+        // Xuất file Excel
+        XLSX.writeFile(wb, 'Blogs_Management.xlsx');
     };
 
 
@@ -80,7 +94,6 @@ const AdminBlogsComponnent = () => {
     };
 
     const handleViewDetail = (blog) => {
-        console.log("Blog được chọn để xem chi tiết:", blog); 
         setDetailBlog(blog); // Cập nhật thông tin blog đang xem
         setShowDetailForm(true); // Hiển thị form chi tiết
     };
@@ -94,7 +107,6 @@ const AdminBlogsComponnent = () => {
 
         try {
             const response = await AdminService.approveBlog(blogId, token);
-            console.log("Duyệt blog thành công:", response);
 
             setBlogs((prevBlogs) =>
                 prevBlogs.map((blog) =>
@@ -130,7 +142,21 @@ const AdminBlogsComponnent = () => {
         setCurrentPage(page);
     };
 
-    const displayedBlogs = blogs.slice(
+    const handleSearch = () => {
+        setSearchTerm(searchQuery); // Cập nhật từ khóa thực sự để tìm kiếm
+    };
+
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
+    const filteredBlogs = blogs.filter(blog =>
+        blog.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const displayedBlogs = filteredBlogs.slice(
         (currentPage - 1) * blogsPerPage,
         currentPage * blogsPerPage
     );
@@ -140,18 +166,19 @@ const AdminBlogsComponnent = () => {
         setShowEditForm(false);
     };
 
-    const getImageUrl = (path) => {
-        const BASE_URL = "http://localhost:4000/";
-        return path ? `${BASE_URL}${path.replace(/\\/g, '/')}` : null;
-    };
-    console.log("Image URL:", getImageUrl(detailBlog?.image_url));
 
     return (
         <WrapperContainer>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', borderRadius: '20px', width: '750px', height: '44px', marginBottom: '20px' }}>
-                    <WrapperInput type="text" placeholder="Tìm kiếm..." />
-                    <WrapperButton>
+                    <WrapperInput
+                        type="text"
+                        placeholder="Search..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                    />
+                    <WrapperButton onClick={handleSearch}>
                         <span style={{ fontSize: '20px', color: '#fff' }}><LuSearch /></span>
                     </WrapperButton>
                 </div>
@@ -166,9 +193,9 @@ const AdminBlogsComponnent = () => {
 
             {/* Form hiển thị chi tiết bài viết */}
             {showDetailForm && detailBlog && (
-                <EditFormContainer>
+                <EditFormContainer style={{ overflowY: "auto" }}>
                     <EditForm style={{ maxWidth: '900px', margin: 'auto', padding: '20px', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
-                        <h3 style={{ display: 'flex',justifyContent: 'center', textAlign: 'center', marginBottom: '20px', fontSize: '24px', fontWeight: '600' }}>Blog Detail</h3>
+                        <h3 style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', marginBottom: '20px', fontSize: '24px', fontWeight: '600' }}>Blog Detail</h3>
 
                         {/* Title Input */}
                         <div style={{ marginBottom: '20px' }}>
@@ -188,41 +215,64 @@ const AdminBlogsComponnent = () => {
                                 }}
                             />
                         </div>
-                            {/* Blog Image */}
-                            {detailBlog?.image_url && (
-                                <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                                    <h4 style={{ marginBottom: '10px' }}>Image</h4>
-                                    <img
-                                    src={getImageUrl(detailBlog?.image_url)}
-                                        alt="Blog"
-                                        style={{
-                                            maxWidth: '100%',
-                                            maxHeight: '300px',
-                                            objectFit: 'cover',
-                                            borderRadius: '8px',
-                                            border: '1px solid #e2e8f0',
-                                        }}
-                                    />
-                                </div>
-                            )}
+                        {/* Blog Image */}
+                        {detailBlog?.image_url && (
+                            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                                <h4 style={{ marginBottom: '10px' }}>Image</h4>
+                                <img
+                                    src={`http://localhost:4000/${detailBlog.image_url.replace(/\\/g, '/')}`}
+                                    alt="Blog"
+                                    style={{
+                                        maxWidth: '100%',
+                                        maxHeight: '300px',
+                                        objectFit: 'cover',
+                                        borderRadius: '8px',
+                                        border: '1px solid #e2e8f0',
+                                        marginBottom: '10px',
+                                    }}
+                                />
+                            </div>
+                        )}
 
-                        {/* Content Input */}
-                        <div style={{ marginBottom: '20px' }}>
-                            <Input
+                        <div style={{ marginBottom: '10px' }}>
+                            <h4 style={{ marginBottom: '10px' }}>Highlighted Content</h4>
+                            <InputBlogDetail
                                 type="text"
-                                value={detailBlog?.content || ''}
+                                value={detailBlog?.highlightedContent || ''}
                                 readOnly
-                                placeholder="Content"
-                                style={{
-                                    width: '100%',
-                                    padding: '12px',
-                                    fontSize: '16px',
-                                    backgroundColor: '#f7fafc',
-                                    borderRadius: '8px',
-                                    border: '1px solid #e2e8f0',
-                                    height: '150px',
-                                    resize: 'none',
-                                }}
+                                placeholder="highlightedContent"
+
+                            />
+                        </div>
+                        {/* Content Input */}
+                        <div style={{ marginBottom: '10px' }}>
+                            <h4 style={{ marginBottom: '10px' }}>Content 1</h4>
+                            <InputBlogDetail
+                                type="text"
+                                value={detailBlog?.content1 || ''}
+                                readOnly
+                                placeholder="Content1"
+
+                            />
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <h4 style={{ marginBottom: '10px' }}>Content 2</h4>
+                            <InputBlogDetail
+                                type="text"
+                                value={detailBlog?.content2 || ''}
+                                readOnly
+                                placeholder="Content2"
+
+                            />
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <h4 style={{ marginBottom: '10px' }}>Content 1</h4>
+                            <InputBlogDetail
+                                type="text"
+                                value={detailBlog?.content3 || ''}
+                                readOnly
+                                placeholder="Content3"
+
                             />
                         </div>
 

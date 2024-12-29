@@ -7,7 +7,6 @@ import * as AdminService from '../../services/AdminService'
 const AdminDashboard = () => {
   const [revenueData, setRevenueData] = useState([]);
   const [monthlyCustomers, setMonthlyCustomers] = useState([]);
-  console.log('first', monthlyCustomers)
   const [revenueDistribution, setrevenueDistribution] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(null);
   const [totalOrders, setTotalOrders] = useState(0);

@@ -6,6 +6,9 @@ import { FaPen, FaTrash } from 'react-icons/fa';
 import ModalComponent from '../ModalComponent/ModalComponent';
 import * as ProductsService from '../../services/ProductsService'
 import * as ManageService from '../../services/ManageService'
+import * as XLSX from 'xlsx';
+import * as message from '../../components/MessageComponent/Message'
+
 
 const ManageProductsComponent = () => {
     const [products, setProducts] = useState([]);
@@ -26,6 +29,10 @@ const ManageProductsComponent = () => {
         best_seller: false,
         ratings: '',
         expiration_date: '',
+        usage_instructions: '',
+        benefits: '',
+        origin: '',
+        additional_info: '',
         images: [],
     }
     ); // Dữ liệu sản phẩm cần chỉnh sửa
@@ -41,6 +48,10 @@ const ManageProductsComponent = () => {
         best_seller: false,
         ratings: '',
         expiration_date: '',
+        usage_instructions: '',
+        benefits: '',
+        origin: '',
+        additional_info: '',
         images: [],
     });
 
@@ -216,9 +227,9 @@ const ManageProductsComponent = () => {
                     best_seller: false,
                     ratings: '',
                     expiration_date: '',
-                    usage_instructions: '', 
-                    benefits: '', 
-                    origin: '', 
+                    usage_instructions: '',
+                    benefits: '',
+                    origin: '',
                     additional_info: '',
                     images: [],
                 });
@@ -264,7 +275,30 @@ const ManageProductsComponent = () => {
     }, [isModalOpen]);
 
     const handleExport = () => {
-        alert('Xuất file Excel');
+        // Kiểm tra nếu không có sản phẩm
+        if (products.length === 0) {
+            message.error("There are no products to export.");
+            return;
+        }
+
+        // Chuyển đổi mảng sản phẩm thành dữ liệu Excel (tạo sheet)
+        const sheet = XLSX.utils.json_to_sheet(products.map(product => ({
+            "Tên sản phẩm": product.prod_name,
+            "Mô tả": product.prod_description,
+            "Giá": product.price,
+            "Số lượng": product.quantity,
+            "Danh mục": product.category_name, // Giả sử bạn có thuộc tính category_name
+            "Đánh giá": product.ratings,
+            "Ngày hết hạn": product.expiration_date,
+            "Giảm giá": product.prod_percent,
+        })));
+
+        // Tạo workbook từ sheet
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, sheet, "Sản phẩm");
+
+        // Xuất file Excel
+        XLSX.writeFile(wb, "Danh_sach_san_pham.xlsx");
     };
 
     const handleEdit = (product) => {
@@ -292,11 +326,11 @@ const ManageProductsComponent = () => {
     };
 
     const handleDeleteProduct = async (id) => {
-        if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+        if (window.confirm('Are you sure you want to delete this product?')) {
             const token = getToken();
 
             if (!token) {
-                alert("Không tìm thấy token. Vui lòng đăng nhập lại.");
+                message.error("Please log in again.");
                 return;
             }
 
@@ -308,10 +342,10 @@ const ManageProductsComponent = () => {
                 setProducts(products.filter(product => product.id !== id));
                 setSelectedProducts(selectedProducts.filter(productId => productId !== id));
 
-                alert("Sản phẩm đã bị xóa.");
+                message.success("Product deleted successfully.");
             } catch (error) {
                 console.error("Lỗi khi xóa sản phẩm:", error);
-                alert("Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại.");
+                message.error("An error occurred while deleting the product. Please try again.");
             }
         }
     };
@@ -327,18 +361,22 @@ const ManageProductsComponent = () => {
             cost,
             ratings,
             expiration_date,
+            usage_instructions,
+            benefits,
+            origin,
+            additional_info,
             images,
         } = editProduct;
 
-        if (!prod_name || !price || !quantity || !discount || !category_id || !prod_description || !cost || !ratings || !expiration_date) {
-            alert("Vui lòng điền đầy đủ thông tin.");
+        if (!prod_name || !price || !quantity || !discount || !category_id || !prod_description || !cost || !ratings || !expiration_date || !usage_instructions || !benefits || !origin || !additional_info) {
+            message.error("Please fill in all information.");
             return;
         }
 
         const token = getToken();
 
         if (!token) {
-            alert("Không tìm thấy token. Vui lòng đăng nhập lại.");
+            message.error("Please login again.");
             return;
         }
 
@@ -346,7 +384,6 @@ const ManageProductsComponent = () => {
             const formData = createFormData(editProduct);
 
             const updatedProduct = await ManageService.updateProduct(editProduct.id, formData, token);
-            console.log("Sản phẩm đã cập nhật:", updatedProduct);
 
             if (updatedProduct && updatedProduct.product && updatedProduct.product.id) {
                 // Cập nhật sản phẩm mà không cần tải lại trang
@@ -359,14 +396,14 @@ const ManageProductsComponent = () => {
                 resetEditProduct();
 
                 // Hiển thị thông báo thành công
-                alert("Cập nhật sản phẩm thành công!");
+                message.success("Product update successful!");
             } else {
                 throw new Error("API không trả về dữ liệu sản phẩm đã cập nhật.");
             }
         } catch (error) {
             console.error("Lỗi khi cập nhật sản phẩm:", error);
-            alert(
-                error.response?.data?.message || "Có lỗi xảy ra khi cập nhật sản phẩm. Vui lòng thử lại."
+            message.error(
+                error.response?.data?.message || "An error occurred while updating the product. Please try again."
             );
         }
     };
@@ -383,6 +420,10 @@ const ManageProductsComponent = () => {
         formData.append("best_seller", product.best_seller);
         formData.append("ratings", product.ratings);
         formData.append("expiration_date", product.expiration_date);
+        formData.append("usage_instructions", product.usage_instructions);
+        formData.append("benefits", product.benefits);
+        formData.append("origin", product.origin);
+        formData.append("additional_info", product.additional_info);
 
         product.images.forEach(image => {
             formData.append("images", image);
@@ -403,6 +444,10 @@ const ManageProductsComponent = () => {
             best_seller: false,
             ratings: '',
             expiration_date: '',
+            usage_instructions: '',
+            benefits: '',
+            origin: '',
+            additional_info: '',
             images: [],
         });
     };
@@ -480,7 +525,7 @@ const ManageProductsComponent = () => {
             </ExportButton>
             {/* Modal thêm sản phẩm */}
             <ModalComponent
-                title="Thêm sản phẩm mới"
+                title="Add new product"
                 isOpen={isModalOpen}
                 onCancel={() => setIsModalOpen(false)}
                 onAdd={handleAddProduct}
@@ -688,7 +733,7 @@ const ManageProductsComponent = () => {
 
             {/* Form chỉnh sửa sản phẩm */}
             {isEditing && (
-                <EditFormContainer>
+                <EditFormContainer style={{ overflowY: "auto" }}>
                     <EditForm>
                         <h2>Edit Product</h2>
                         <div>
@@ -760,10 +805,42 @@ const ManageProductsComponent = () => {
                         </RowWrapper>
                         <div>
                             <label>Description:</label>
-                            <WarraperInput
+                            <TextArea
                                 type="text"
                                 value={editProduct.prod_description}
                                 onChange={(e) => setEditProduct({ ...editProduct, prod_description: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Instructions for use:</label>
+                            <TextArea
+                                type="text"
+                                value={editProduct.usage_instructions}
+                                onChange={(e) => setEditProduct({ ...editProduct, usage_instructions: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Benefits:</label>
+                            <TextArea
+                                type="text"
+                                value={editProduct.benefits}
+                                onChange={(e) => setEditProduct({ ...editProduct, benefits: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Origin:</label>
+                            <TextArea
+                                type="text"
+                                value={editProduct.origin}
+                                onChange={(e) => setEditProduct({ ...editProduct, origin: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Additional_info:</label>
+                            <TextArea
+                                type="text"
+                                value={editProduct.additional_info}
+                                onChange={(e) => setEditProduct({ ...editProduct, additional_info: e.target.value })}
                             />
                         </div>
                         <div>

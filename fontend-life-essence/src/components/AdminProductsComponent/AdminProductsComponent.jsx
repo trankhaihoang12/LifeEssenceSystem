@@ -6,6 +6,8 @@ import { FaPen, FaTrash } from 'react-icons/fa';
 import ModalComponent from '../ModalComponent/ModalComponent';
 import * as ProductsService from '../../services/ProductsService'
 import * as AdminService from '../../services/AdminService'
+import * as XLSX from 'xlsx';
+import * as message from '../../components/MessageComponent/Message'
 
 const AdminProductComponent = () => {
     const [products, setProducts] = useState([]);
@@ -26,6 +28,10 @@ const AdminProductComponent = () => {
         best_seller: false,
         ratings: '',
         expiration_date: '',
+        usage_instructions: '',
+        benefits: '',
+        origin: '',
+        additional_info: '',
         images: [],
     }
     ); // Dữ liệu sản phẩm cần chỉnh sửa
@@ -41,6 +47,10 @@ const AdminProductComponent = () => {
         best_seller: false,
         ratings: '',
         expiration_date: '',
+        usage_instructions: '',
+        benefits: '',
+        origin: '',
+        additional_info: '',
         images: [],
     });
 
@@ -92,16 +102,16 @@ const AdminProductComponent = () => {
         } = newProduct;
 
         if (!prod_name || !price || !quantity || !category_id || !prod_description || !cost || !ratings || !expiration_date || !usage_instructions || !benefits || !discount || !origin || !additional_info || !images.length === 0) {
-            alert("Vui lòng điền đầy đủ thông tin.");
+            message.error("Please fill in all information.");
             return;
         }
         // Kiểm tra độ dài ký tự
         if (prod_name.length < 3 || prod_name.length > 50) {
-            alert("Tên sản phẩm phải có từ 3 đến 50 ký tự.");
+            message.error("Product name must be between 3 and 50 characters.");
             return;
         }
         if (prod_description.length < 10 || prod_description.length > 200) {
-            alert("Mô tả sản phẩm phải có từ 10 đến 200 ký tự.");
+            message.error(" Product description must be between 10 and 200 characters.");
             return;
         }
 
@@ -116,41 +126,41 @@ const AdminProductComponent = () => {
 
         for (const field of numericFields) {
             if (isNaN(field.value)) {
-                alert(`${field.name} phải là một số hợp lệ.`);
+                message.error(`${field.name} must be a valid number.`);
                 return;
             }
             if (field.value < 0) {
-                alert(`${field.name} không được nhỏ hơn 0.`);
+                message.error(`${field.name} must not be less than 0.`);
                 return;
             }
         }
         // Kiểm tra rating
         if (ratings < 1 || ratings > 5) {
-            alert("Đánh giá phải nằm trong khoảng từ 1 đến 5.");
+            message.error("Rating must be between 1 and 5.");
             return;
         }
 
         if (discount < 0 || discount > 1) {
-            alert("Tỷ lệ giảm giá phải nằm trong khoảng từ 0 đến 1.");
+            message.error("Discount must be between 0 and 1.");
             return;
         }
 
         // Kiểm tra định dạng ngày tháng
         if (new Date(expiration_date) <= new Date()) {
-            alert("Ngày hết hạn phải lớn hơn ngày hiện tại.");
+            message.error("Expiry date must be greater than current date.");
             return;
         }
         // Kiểm tra độ dài cho usage_instructions, benefits, additional_info
         if (usage_instructions.length < 20 || usage_instructions.length > 500) {
-            alert("Hướng dẫn sử dụng phải có từ 20 đến 500 ký tự.");
+            message.error("Instructions for use must be between 20 and 500 characters.");
             return;
         }
         if (benefits.length < 20 || benefits.length > 500) {
-            alert("Lợi ích phải có từ 20 đến 500 ký tự.");
+            message.error("Benefits must be between 20 and 500 characters.");
             return;
         }
         if (additional_info.length < 20 || additional_info.length > 500) {
-            alert("Thông tin bổ sung phải có từ 20 đến 500 ký tự.");
+            message.error("Additional information must be between 20 and 500 characters.");
             return;
         }
 
@@ -159,11 +169,11 @@ const AdminProductComponent = () => {
         const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
         for (let image of images) {
             if (!validImageTypes.includes(image.type)) {
-                alert("Vui lòng chọn hình ảnh có định dạng JPEG, PNG hoặc GIF.");
+                message.error("Please select image in JPEG, PNG or GIF format.");
                 return;
             }
             if (image.size > 5 * 1024 * 1024) { // Giới hạn kích thước hình ảnh là 5MB
-                alert("Kích thước hình ảnh không được vượt quá 5MB.");
+                message.error("Image size must not exceed 5MB.");
                 return;
             }
         }
@@ -171,12 +181,12 @@ const AdminProductComponent = () => {
         const token = getToken();
 
         if (!token) {
-            alert("Không tìm thấy token. Vui lòng đăng nhập lại.");
+            message.error("Please login again.");
             return;
         }
 
         try {
-            
+
             // Tạo FormData để gửi hình ảnh
             const formData = new FormData();
             formData.append("category_id", category_id);
@@ -228,7 +238,7 @@ const AdminProductComponent = () => {
                 setIsModalOpen(false);
 
                 // Hiển thị thông báo thành công
-                alert("Thêm sản phẩm thành công!");
+                message.success("Product added successfully!");
             } else {
                 // Xử lý khi API không trả về dữ liệu hợp lệ
                 throw new Error("API không trả về dữ liệu sản phẩm mới.");
@@ -238,9 +248,9 @@ const AdminProductComponent = () => {
             console.error("Lỗi khi thêm sản phẩm:", error);
 
             // Thông báo lỗi rõ ràng hơn
-            alert(
+            message.error(
                 error.response?.data?.message ||
-                "Có lỗi xảy ra khi thêm sản phẩm. Vui lòng thử lại."
+                "An error occurred while adding the product. Please try again."
             );
         }
     };
@@ -266,7 +276,30 @@ const AdminProductComponent = () => {
     }, [isModalOpen]);
 
     const handleExport = () => {
-        alert('Xuất file Excel');
+        // Kiểm tra nếu không có sản phẩm
+        if (products.length === 0) {
+            message.error("There are no products to export.");
+            return;
+        }
+
+        // Chuyển đổi mảng sản phẩm thành dữ liệu Excel (tạo sheet)
+        const sheet = XLSX.utils.json_to_sheet(products.map(product => ({
+            "Tên sản phẩm": product.prod_name,
+            "Mô tả": product.prod_description,
+            "Giá": product.price,
+            "Số lượng": product.quantity,
+            "Danh mục": product.category_name, // Giả sử bạn có thuộc tính category_name
+            "Đánh giá": product.ratings,
+            "Ngày hết hạn": product.expiration_date,
+            "Giảm giá": product.prod_percent,
+        })));
+
+        // Tạo workbook từ sheet
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, sheet, "Sản phẩm");
+
+        // Xuất file Excel
+        XLSX.writeFile(wb, "Danh_sach_san_pham.xlsx");
     };
 
     const handleEdit = (product) => {
@@ -294,11 +327,11 @@ const AdminProductComponent = () => {
     };
 
     const handleDeleteProduct = async (id) => {
-        if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+        if (window.confirm('Are you sure you want to delete this product?')) {
             const token = getToken();
 
             if (!token) {
-                alert("Không tìm thấy token. Vui lòng đăng nhập lại.");
+                message.error("Please login again.");
                 return;
             }
 
@@ -310,10 +343,10 @@ const AdminProductComponent = () => {
                 setProducts(products.filter(product => product.id !== id));
                 setSelectedProducts(selectedProducts.filter(productId => productId !== id));
 
-                alert("Sản phẩm đã bị xóa.");
+                message.success("Product deleted successfully!");
             } catch (error) {
                 console.error("Lỗi khi xóa sản phẩm:", error);
-                alert("Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại.");
+                message.error("An error occurred while deleting the product. Please try again.");
             }
         }
     };
@@ -329,18 +362,22 @@ const AdminProductComponent = () => {
             cost,
             ratings,
             expiration_date,
+            usage_instructions,
+            benefits,
+            origin,
+            additional_info,
             images,
         } = editProduct;
 
-        if (!prod_name || !price || !quantity || !discount || !category_id || !prod_description || !cost || !ratings || !expiration_date) {
-            alert("Vui lòng điền đầy đủ thông tin.");
+        if (!prod_name || !price || !quantity || !discount || !category_id || !prod_description || !cost || !ratings || !expiration_date || !usage_instructions || !benefits || !origin || !additional_info) {
+            message.error("Please fill in all information.");
             return;
         }
 
         const token = getToken();
 
         if (!token) {
-            alert("Không tìm thấy token. Vui lòng đăng nhập lại.");
+            message.error("Please login again.");
             return;
         }
 
@@ -361,14 +398,14 @@ const AdminProductComponent = () => {
                 resetEditProduct();
 
                 // Hiển thị thông báo thành công
-                alert("Cập nhật sản phẩm thành công!");
+                message.success("Product update successful!");
             } else {
                 throw new Error("API không trả về dữ liệu sản phẩm đã cập nhật.");
             }
         } catch (error) {
             console.error("Lỗi khi cập nhật sản phẩm:", error);
-            alert(
-                error.response?.data?.message || "Có lỗi xảy ra khi cập nhật sản phẩm. Vui lòng thử lại."
+            message.error(
+                error.response?.data?.message || "An error occurred while updating the product. Please try again."
             );
         }
     };
@@ -385,6 +422,10 @@ const AdminProductComponent = () => {
         formData.append("best_seller", product.best_seller);
         formData.append("ratings", product.ratings);
         formData.append("expiration_date", product.expiration_date);
+        formData.append("usage_instructions", product.usage_instructions);
+        formData.append("benefits", product.benefits);
+        formData.append("origin", product.origin);
+        formData.append("additional_info", product.additional_info);
 
         product.images.forEach(image => {
             formData.append("images", image);
@@ -405,6 +446,10 @@ const AdminProductComponent = () => {
             best_seller: false,
             ratings: '',
             expiration_date: '',
+            usage_instructions: '',
+            benefits: '',
+            origin: '',
+            additional_info: '',
             images: [],
         });
     };
@@ -691,7 +736,7 @@ const AdminProductComponent = () => {
 
             {/* Form chỉnh sửa sản phẩm */}
             {isEditing && (
-                <EditFormContainer>
+                <EditFormContainer style={{ overflowY: "auto" }}>
                     <EditForm>
                         <h2>Edit Product</h2>
                         <div>
@@ -767,6 +812,38 @@ const AdminProductComponent = () => {
                                 type="text"
                                 value={editProduct.prod_description}
                                 onChange={(e) => setEditProduct({ ...editProduct, prod_description: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Instructions for use:</label>
+                            <WarraperInput
+                                type="text"
+                                value={editProduct.usage_instructions}
+                                onChange={(e) => setEditProduct({ ...editProduct, usage_instructions: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Benefits:</label>
+                            <WarraperInput
+                                type="text"
+                                value={editProduct.benefits}
+                                onChange={(e) => setEditProduct({ ...editProduct, benefits: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Origin:</label>
+                            <WarraperInput
+                                type="text"
+                                value={editProduct.origin}
+                                onChange={(e) => setEditProduct({ ...editProduct, origin: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label>Additional_info:</label>
+                            <WarraperInput
+                                type="text"
+                                value={editProduct.additional_info}
+                                onChange={(e) => setEditProduct({ ...editProduct, additional_info: e.target.value })}
                             />
                         </div>
                         <div>

@@ -3,6 +3,8 @@ import { Container, ButtonGroup, WrapperTable, WrapperTableHeader, WrapperTableD
 import { FaPlus, FaPen, FaTrash } from 'react-icons/fa';
 import { LuSearch } from 'react-icons/lu';
 import * as AdminService from '../../services/ManageService'
+import * as message from '../../components/MessageComponent/Message'
+import * as XLSX from 'xlsx';
 const ManageOrdersComponent = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [orders, setOrders] = useState([]);
@@ -54,7 +56,27 @@ const ManageOrdersComponent = () => {
   };
 
   const handleExport = () => {
-    alert('Xuất file Excel');
+    if (orders.length === 0) {
+      message.error("There are no orders to export.");
+      return;
+    }
+
+    // Chuyển đổi dữ liệu đơn hàng thành định dạng Excel
+    const sheet = XLSX.utils.json_to_sheet(orders.map(order => ({
+      "ID": order.id,
+      "Tên khách hàng": order.customerName,
+      "Trạng thái": order.orderStatus,
+      "Ngày tạo": order.createdAt,
+      "Tổng tiền": order.totalAmount,
+      // Thêm các thông tin khác nếu cần
+    })));
+
+    // Tạo workbook và xuất file Excel
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, sheet, "Danh sách đơn hàng");
+
+    // Xuất file Excel
+    XLSX.writeFile(wb, "Danh_sach_don_hang.xlsx");
   };
   const handleEditOrder = (id) => {
     alert(`Edit order with ID: ${id}`);
@@ -75,9 +97,9 @@ const ManageOrdersComponent = () => {
         order.id === selectedOrderId ? { ...order, orderStatus: newOrderStatus } : order
       ));
       setShowStatusModal(false); // Close the modal after update
-      alert('Cập nhật trạng thái thành công!');
+      message.success('Status updated successfully!');
     } catch (err) {
-      alert('Cập nhật trạng thái thất bại!');
+      message.error('Status update failed!');
     }
   };
 
@@ -147,9 +169,7 @@ const ManageOrdersComponent = () => {
       <h1>Order Management</h1>
       <ButtonGroup>
         <div style={{ marginRight: 'auto' }}>
-          <AddButton onClick={handleAddOrder}>
-            <FaPlus style={{ fontSize: '2rem' }} /> Add Order
-          </AddButton>
+
         </div>
         <ExportButton onClick={handleExport}>
           Export Excel

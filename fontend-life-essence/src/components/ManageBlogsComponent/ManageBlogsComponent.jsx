@@ -4,11 +4,12 @@ import { ExportButton, StatusBadge, WrapperButton, WrapperContainer, WrapperHead
 import { LuSearch } from 'react-icons/lu';
 import { EditFormContainer, EditForm, Input, EditFormButton, CancelButton } from './Style'; // Thêm vào các styled-component cho form chỉnh sửa
 import * as AdminService from '../../services/ManageService'; // Sửa từ UserService thành BlogService
-
+import * as XLSX from 'xlsx'; 
 
 const ManageBlogsComponnent = () => {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [blogs, setBlogs] = useState([]);
-    console.log(blogs)
     const [selectedBlogs, setSelectedBlogs] = useState([]);
     const [showEditForm, setShowEditForm] = useState(false);
     const [editBlog, setEditBlog] = useState(null);
@@ -36,6 +37,7 @@ const ManageBlogsComponnent = () => {
                     // Kiểm tra dữ liệu trả về từ API
                     if (fetchedBlogs?.data && Array.isArray(fetchedBlogs.data)) {
                         setBlogs(fetchedBlogs.data); // Lưu dữ liệu bài blog vào state
+                        console.log("Dữ liệu API trả về:", fetchedBlogs.data);
                     } else {
                         console.error("Dữ liệu API không hợp lệ hoặc có lỗi:", fetchedBlogs);
                         setBlogs([]); // Nếu có lỗi, set state là mảng rỗng
@@ -53,7 +55,21 @@ const ManageBlogsComponnent = () => {
     }, []);
 
     const handleExport = () => {
-        alert('Xuất file Excel');
+        // Tạo dữ liệu để xuất ra Excel
+        const exportData = blogs.map(blog => ({
+            ID: blog.id,
+            Title: blog.title,
+            CreatedAt: new Date(blog.created_at).toLocaleDateString(),
+            Status: blog.is_approved ? 'Approved' : 'Pending',
+        }));
+
+        // Tạo workbook từ dữ liệu
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Blogs');
+
+        // Xuất file Excel
+        XLSX.writeFile(wb, 'Blogs_Management.xlsx');
     };
 
 
@@ -127,11 +143,25 @@ const ManageBlogsComponnent = () => {
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
+    const handleSearch = () => {
+        setSearchTerm(searchQuery); // Cập nhật từ khóa thực sự để tìm kiếm
+    };
 
-    const displayedBlogs = blogs.slice(
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
+    const filteredBlogs = blogs.filter(blog =>
+        blog.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const displayedBlogs = filteredBlogs.slice(
         (currentPage - 1) * blogsPerPage,
         currentPage * blogsPerPage
     );
+
     console.log('displayedBlogs', displayedBlogs)
 
     const handleCancelEdit = () => {
@@ -142,8 +172,14 @@ const ManageBlogsComponnent = () => {
         <WrapperContainer>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', borderRadius: '20px', width: '750px', height: '44px', marginBottom: '20px' }}>
-                    <WrapperInput type="text" placeholder="Tìm kiếm..." />
-                    <WrapperButton>
+                    <WrapperInput
+                        type="text"
+                        placeholder="Search..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                    />
+                    <WrapperButton onClick={handleSearch}>
                         <span style={{ fontSize: '20px', color: '#fff' }}><LuSearch /></span>
                     </WrapperButton>
                 </div>
@@ -184,17 +220,17 @@ const ManageBlogsComponnent = () => {
                             {detailBlog?.image_url && (
                                 <div style={{ marginTop: '20px', textAlign: 'center' }}>
                                     <h4 style={{ marginBottom: '10px' }}>Image</h4>
-                                    <img
-                                        src={detailBlog.image_url}
-                                        alt="Blog"
-                                        style={{
-                                            maxWidth: '100%',
-                                            maxHeight: '300px',
-                                            objectFit: 'cover',
-                                            borderRadius: '8px',
-                                            border: '1px solid #e2e8f0',
-                                        }}
-                                    />
+                                <img
+                                    src={`http://localhost:4000/${detailBlog.image_url.replace(/\\/g, '/')}`}
+                                    alt="Blog"
+                                    style={{
+                                        maxWidth: '100%',
+                                        maxHeight: '300px',
+                                        objectFit: 'cover',
+                                        borderRadius: '8px',
+                                        border: '1px solid #e2e8f0',
+                                    }}
+                                />
                                 </div>
                             )}
 

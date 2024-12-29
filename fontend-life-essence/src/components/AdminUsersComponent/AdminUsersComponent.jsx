@@ -4,6 +4,9 @@ import { ExportButton, StatusBadge, WrapperButton, WrapperContainer, WrapperHead
 import { LuSearch } from 'react-icons/lu';
 import { EditFormContainer, EditForm, Input, EditFormButton, CancelButton } from './Style'; // Thêm vào các styled-component cho form chỉnh sửa
 import * as UserService from '../../services/UserService'
+import * as XLSX from 'xlsx'; 
+import * as message from '../../components/MessageComponent/Message'
+
 
 const AdminUsersComponnent = () => {
     const [users , setUsers] = useState([]);
@@ -50,7 +53,26 @@ useEffect(() => {
 
 
     const handleExport = () => {
-        alert('Xuất file Excel');
+        if (users.length === 0) {
+            message.error("No users to export.");
+            return;
+        }
+
+        // Chuyển đổi danh sách người dùng thành dữ liệu Excel (tạo sheet)
+        const sheet = XLSX.utils.json_to_sheet(users.map(user => ({
+            "Tên người dùng": user.username,  // Giả sử bạn có thuộc tính username
+            "Email": user.email,              // Giả sử bạn có thuộc tính email
+            "Số điện thoại": user.phone,     // Giả sử bạn có thuộc tính phone
+            "Ngày tạo": user.created_at,     // Giả sử bạn có thuộc tính created_at
+            "Trạng thái": user.status ? "Kích hoạt" : "Chưa kích hoạt", // Giả sử bạn có thuộc tính status
+        })));
+
+        // Tạo workbook từ sheet
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, sheet, "Người dùng");
+
+        // Xuất file Excel
+        XLSX.writeFile(wb, "Danh_sach_nguoi_dung.xlsx");
     };
 
     const handleEdit = (user) => {
@@ -65,7 +87,7 @@ useEffect(() => {
             return;
         }
 
-        if (window.confirm("Bạn có chắc chắn muốn xóa người dùng này không?")) {
+        if (window.confirm("Are you sure you want to delete this user?")) {
             try {
                 // Gọi API deleteUser từ UserService
                 const response = await UserService.deleteUser(id, token);
@@ -73,10 +95,10 @@ useEffect(() => {
 
                 // Cập nhật lại danh sách người dùng sau khi xóa
                 setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-                alert("Người dùng đã được xóa thành công!");
+                message.success("User has been successfully deleted!");
             } catch (error) {
                 console.error("Lỗi khi xóa người dùng:", error);
-                alert("Có lỗi xảy ra khi xóa người dùng.");
+                message.error("An error occurred while deleting the user.");
             }
         }
     };

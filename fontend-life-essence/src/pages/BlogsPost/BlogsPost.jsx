@@ -22,7 +22,7 @@ import {
   PostInfo, PostTitle, PostDate,
   CharCount,
 } from './Style';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import * as BlogsService from '../../services/BlogsService'
 import * as message from '../../components/MessageComponent/Message'
 
@@ -32,58 +32,9 @@ const BlogPost = () => {
   const [blog, setBlog] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
-  const article = {
-    // title: 'Vitamin A - Chìa Khóa Cho Đôi Mắt Sáng Khỏe',
-    // author: 'Tiến Sĩ Nguyễn Văn Hùng',
-    // date: '12 March, 2024',
-    // time: '9:00 PM',
-    // imageUrl: 'https://prod-cdn.pharmacity.io/blog/vitamin-a-2-1.jpg',
-    // content: `
-    //   Vitamin A là một vi chất dinh dưỡng quan trọng không thể thiếu cho sức khỏe đôi mắt. 
-    //   Nó đóng vai trò quan trọng trong việc duy trì thị lực, bảo vệ giác mạc và ngăn ngừa các 
-    //   vấn đề về mắt như quáng gà, khô mắt và suy giảm thị lực.Vitamin A được mệnh danh là "vitamin của đôi mắt", 
-    //   đóng vai trò quan trọng trong việc duy trì thị lực và sức khỏe của mắt. Ngoài ra, loại vitamin này còn có nhiệm vụ tăng cường hệ miễn dịch,
-    //   hỗ trợ quá trình sinh trưởng và phát triển của cơ thể.Nguồn vitamin A dồi dào có trong các loại thực phẩm như cà rốt, khoai lang, trứng, và gan động vật',
-    // `,
-    // highlightedContent: `
-    //   Việc bổ sung Vitamin A đúng cách sẽ giúp bảo vệ đôi mắt của bạn một cách hiệu quả, 
-    //   mang lại ánh mắt sáng khỏe và tinh anh.
-    // `,
-    comments: [
-      {
-        id: 1,
-        author: 'Tien Manh Nguyen',
-        date: '24 July, 2024',
-        content: 'Bài viết rất bổ ích và chi tiết. Cảm ơn tác giả đã chia sẻ!',
-      },
-      {
-        id: 2,
-        author: 'Tran Hoang',
-        date: '20 December, 2024',
-        content: 'Thông tin rất hữu ích cho việc chăm sóc sức khỏe mắt.',
-      },
-    ],
-  };
-  const recentPosts = [
-    {
-      id: 1,
-      title: 'Vitamin C - Tăng Cường Hệ Miễn Dịch',
-      date: '10 Dec, 2024',
-      thumbnail: 'https://prod-cdn.pharmacity.io/blog/Q0gx3s5T-cam-2.webp',
-    },
-    {
-      id: 2,
-      title: 'Tầm Quan Trọng Của Việc Uống Đủ Nước Để Ngăn Ngừa Sỏi Thận',
-      date: '05 Dec, 2024',
-      thumbnail: 'https://prod-cdn.pharmacity.io/blog/FFdM1nbV-soi-than-2.jpg',
-    },
-    {
-      id: 3,
-      title: 'Tháp dinh dưỡng cân đối cho người trưởng thành',
-      date: '01 Dec, 2024',
-      thumbnail: 'https://prod-cdn.pharmacity.io/blog/thap-dinh-duong-1024x576.jpg',
-    },
-  ];
+  const [recentPosts, setRecentPosts] = useState([]);
+  const navigate = useNavigate();
+
 
 
   const getToken = () => {
@@ -112,8 +63,17 @@ const BlogPost = () => {
         console.error('Error fetching blog or comments:', error);
       }
     };
+    const fetchRecentPosts = async () => {
+      try {
+        const recentPostsResponse = await BlogsService.getRecentPosts();
+        setRecentPosts(recentPostsResponse.data); // Cập nhật state với dữ liệu recentPosts
+      } catch (error) {
+        console.error('Error fetching recent posts:', error);
+      }
+    };
 
     fetchBlogDetailsAndComments();
+    fetchRecentPosts(); 
   }, [blogId]); // Khi ID thay đổi, sẽ gọi lại API
 
 
@@ -186,17 +146,27 @@ const BlogPost = () => {
 
         {/* Meta Information */}
         <MetaInfo>
-          <span>Tác giả: {article.author}</span>
-          <span>{blog?.created_at}</span>
+          <span>Author: {blog?.author_id}</span>
+          <span>
+            {new Date(blog?.created_at).toLocaleString('vi-VN', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false, // Không sử dụng định dạng 12 giờ
+            })}
+          </span>
         </MetaInfo>
 
         {/* Article Content */}
-        <Content>{blog?.content}</Content>
+        <Content>{blog?.content1}</Content>
 
         {/* Highlighted Content */}
-        <HighlightBox>{article.highlightedContent}</HighlightBox>
+        <HighlightBox>{blog?.highlightedContent}</HighlightBox>
 
-        <Content>{blog?.content}</Content>
+        <Content>{blog?.content2}</Content>
+        <Content>{blog?.content3}</Content>
 
         {/* Comments Section */}
         <CommentsSection>
@@ -204,8 +174,8 @@ const BlogPost = () => {
           {comments.map((comment) => (
             <CommentWrapper key={comment.id}>
               <CommentHeader>
-                <CommentAuthor>{comment?.User?.name || 'Nguyễn tiến Mạnh'}</CommentAuthor>
-                <CommentDate>{comment.created_at}</CommentDate>
+                <CommentAuthor>{comment?.User?.name}</CommentAuthor>
+                <CommentDate>{new Date(comment.created_at).toLocaleDateString()}</CommentDate>
                 {UserId === comment.author_id && (
                   <button onClick={() => handleDeleteComment(comment.id)}>Delete</button>
                 )}
@@ -241,12 +211,12 @@ const BlogPost = () => {
       {/* Sidebar */}
       <Sidebar>
         <SidebarTitle>Recently Posts </SidebarTitle>
-        {recentPosts.map((post) => (
-          <RecentPostItem key={post.id}>
-            <PostThumb src={post.thumbnail} alt={post.title} />
+        {recentPosts.slice(0, 5).map((post) => (
+          <RecentPostItem key={post.id} onClick={() => navigate(`/blogs-post/${post.id}`)}>
+            <PostThumb src={getFullImageUrl(post.image_url)} alt={post.title || 'Blog Title'} />
             <PostInfo>
               <PostTitle>{post.title}</PostTitle>
-              <PostDate>{post.date}</PostDate>
+              <PostDate>{new Date(post.created_at).toLocaleDateString()}</PostDate>
             </PostInfo>
           </RecentPostItem>
         ))}
