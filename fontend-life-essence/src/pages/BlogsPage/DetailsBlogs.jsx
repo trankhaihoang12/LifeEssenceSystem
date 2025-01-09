@@ -6,6 +6,7 @@ import * as message from '../../components/MessageComponent/Message'
 
 const DetailsBlogs = () => {
   const [blogPosts, setBlogPosts] = useState([]);
+  const [filteredBlogs, setFilteredBlogs] = useState([]); // State để lưu các blog đã lọc
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showForm, setShowForm] = useState(false); // State to toggle form visibility
   const [formData, setFormData] = useState({
@@ -19,13 +20,14 @@ const DetailsBlogs = () => {
     category: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const categories = ['Category 1', 'Category 2', 'Category 3'];
+  const categories = ['Health & Wellness', 'FFitness & Nutrition', 'Lifestyle & Wellbeing', 'Beauty & Skincare'];
   // Fetch all blogs on component mount
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         const blogs = await BlogsService.getAllBlog(); // Fetch all blogs
         setBlogPosts(blogs.data);
+        setFilteredBlogs(blogs.data);
       } catch (error) {
         console.error('Error fetching blogs:', error);
       }
@@ -33,6 +35,17 @@ const DetailsBlogs = () => {
 
     fetchBlogs();
   }, []);
+
+  // Lọc blog theo category
+  useEffect(() => {
+    if (selectedCategory) {
+      setFilteredBlogs(
+        blogPosts.filter((post) => post.category === selectedCategory)
+      );
+    } else {
+      setFilteredBlogs(blogPosts); // Hiển thị tất cả blog nếu không chọn category
+    }
+  }, [selectedCategory, blogPosts]);
 
   // Handle input changes in the form
   const handleInputChange = (e) => {
@@ -198,11 +211,10 @@ const DetailsBlogs = () => {
             }}
           >
             <option value="" disabled>Select a category</option>
-            <option value="technology">Technology</option>
-            <option value="health">Health</option>
-            <option value="lifestyle">Lifestyle</option>
-            <option value="education">Education</option>
-            <option value="finance">Finance</option>
+            <option value="Health & Wellness">Health & Wellness</option>
+            <option value="FFitness & Nutrition">Fitness & Nutrition</option>
+            <option value="Lifestyle & Wellbeing">Lifestyle & Wellbeing</option>
+            <option value="Beauty & Skincare">Beauty & Skincare</option>
           </select>
           <BlogInput
             type="text"
@@ -288,8 +300,8 @@ const DetailsBlogs = () => {
       <BlogSection>
         <BlogSectionTitle>Latest Articles & Blogs</BlogSectionTitle>
         <BlogPostsContainer>
-          {Array.isArray(blogPosts) ? (
-            blogPosts.map((post) => (
+          {filteredBlogs.length > 0 ? (
+            filteredBlogs.map((post) => (
               <BlogPost key={post.id}>
                 <BlogPostImage
                   src={post.image_url}

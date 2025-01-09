@@ -242,3 +242,34 @@ export const ProductImage = styled.img`
   margin: 10px;
   border-radius: 0.75rem;
 `;
+
+export const ProductsContainer = styled.div`
+  display: flex;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  width: 100%; /* Hoặc chiều rộng cố định như 1200px */
+  margin-top: 40px;
+  justify-content: center;
+  height: 370px;
+`;
+
+export const ProductsWrapper = styled.div`
+  display: flex;
+  gap: 20px;
+  width: 1500px;
+  align-items: center;
+`;
+export const Buttonnn = styled.button`
+  background-color: #2EA5B6;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  ${({ position }) => (position === 'left' ? 'left: 0;' : 'right: 0;')}
+  z-index: 1;
+`;

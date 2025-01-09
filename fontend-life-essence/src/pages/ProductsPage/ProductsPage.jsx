@@ -169,7 +169,7 @@ const ProductPage = () => {
             setProducts(data.map(product => ({
               id: product.id,
               name: product.prod_name,
-              category: product.Category?.name || "Chưa có danh mục",
+              category: product.Category?.name || "",
               price: parseFloat(product.price),
               rating: product.ratings,
               imageUrl: product.images?.[0]?.url
@@ -344,7 +344,7 @@ const ProductPage = () => {
         <h1 style={{ fontWeight: 'bold' }}>Categories</h1>
         <CategoryList>
           <CategoryItem onClick={() => toggleSubMenu('calcium')}>
-            Canxi & Vitamin {openSubMenus.calcium ? <ChevronUp /> : <ChevronDown />}
+            Vitamins & Minerals {openSubMenus.calcium ? <ChevronUp /> : <ChevronDown />}
           </CategoryItem>
           <SubMenu isOpen={openSubMenus.calcium}>
             <SubMenuItem onClick={() => handleFilter('category', 'vitamin')}>Vitamin A</SubMenuItem>
@@ -354,41 +354,50 @@ const ProductPage = () => {
           </SubMenu>
 
           <CategoryItem onClick={() => toggleSubMenu('goldenHealth')}>
-            Golden Health {openSubMenus.goldenHealth ? <ChevronUp /> : <ChevronDown />}
+           Cardiovascular {openSubMenus.goldenHealth ? <ChevronUp /> : <ChevronDown />}
           </CategoryItem>
           <SubMenu isOpen={openSubMenus.goldenHealth}>
-            <SubMenuItem onClick={() => handleFilter('category', 'Liver')}>Liver Detoxification</SubMenuItem>
-            <SubMenuItem onClick={() => handleFilter('category', 'Cardiovascular Health')}>Cardiovascular Health</SubMenuItem>
+            <SubMenuItem onClick={() => handleFilter('category', 'Blackmores')}>Blackmores</SubMenuItem>
+            <SubMenuItem onClick={() => handleFilter('category', 'Vitabiotics Cardioace')}>Vitabiotics Cardioace</SubMenuItem>
             <SubMenuItem onClick={() => handleFilter('category', 'Brain Health')}>Brain Health</SubMenuItem>
             <SubMenuItem onClick={() => handleFilter('category', 'Anti-Aging')}>Anti-Aging</SubMenuItem>
           </SubMenu>
 
           <CategoryItem onClick={() => toggleSubMenu('collagen')}>
-            Collagen {openSubMenus.collagen ? <ChevronUp /> : <ChevronDown />}
+            Respiration {openSubMenus.collagen ? <ChevronUp /> : <ChevronDown />}
           </CategoryItem>
           <SubMenu isOpen={openSubMenus.collagen}>
-            <SubMenuItem onClick={() => handleFilter('category', 'skin')}>Beautiful skin</SubMenuItem>
+            <SubMenuItem onClick={() => handleFilter('category', 'Quantum')}>Quantum Health</SubMenuItem>
           </SubMenu>
 
           <CategoryItem onClick={() => toggleSubMenu('omega3')}>
-            Omega-3 Fish Oil {openSubMenus.omega3 ? <ChevronUp /> : <ChevronDown />}
+            Neurological Group {openSubMenus.omega3 ? <ChevronUp /> : <ChevronDown />}
           </CategoryItem>
           <SubMenu isOpen={openSubMenus.omega3}>
-            <SubMenuItem onClick={() => handleFilter('category', 'Eye')}>Eye-catching</SubMenuItem>
+            <SubMenuItem onClick={() => handleFilter('category', 'Ginkgo')}>Ginkgo Biloba</SubMenuItem>
           </SubMenu>
 
           <CategoryItem onClick={() => toggleSubMenu('heightGrowth')}>
-            Height Growth {openSubMenus.heightGrowth ? <ChevronUp /> : <ChevronDown />}
+            Blood sugar {openSubMenus.heightGrowth ? <ChevronUp /> : <ChevronDown />}
           </CategoryItem>
           <SubMenu isOpen={openSubMenus.heightGrowth}>
-            <SubMenuItem onClick={() => handleFilter('category', 'height')}>Improve your figure</SubMenuItem>
+            <SubMenuItem onClick={() => handleFilter('category', 'Cinnamon Extract')}>Cinnamon Extract</SubMenuItem>
+          </SubMenu>
+          <SubMenu isOpen={openSubMenus.heightGrowth}>
+            <SubMenuItem onClick={() => handleFilter('category', 'Berberine')}>Berberine</SubMenuItem>
           </SubMenu>
 
           <CategoryItem onClick={() => toggleSubMenu('glucosamine')}>
-            Glucosamine {openSubMenus.glucosamine ? <ChevronUp /> : <ChevronDown />}
+            Bones and joints {openSubMenus.glucosamine ? <ChevronUp /> : <ChevronDown />}
           </CategoryItem>
           <SubMenu isOpen={openSubMenus.glucosamine}>
-            <SubMenuItem onClick={() => handleFilter('category', 'Xuong')}>Bone and joint supplement</SubMenuItem>
+            <SubMenuItem onClick={() => handleFilter('category', 'Glucosamine')}>Bone and joint supplement</SubMenuItem>
+          </SubMenu>
+          <CategoryItem onClick={() => toggleSubMenu('beauty')}>
+            Beauty {openSubMenus.beauty ? <ChevronUp /> : <ChevronDown />}
+          </CategoryItem>
+          <SubMenu isOpen={openSubMenus.beauty}>
+            <SubMenuItem onClick={() => handleFilter('category', 'beauty')}>Skincare</SubMenuItem>
           </SubMenu>
 
         </CategoryList>

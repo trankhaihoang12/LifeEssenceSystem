@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Label, WrapperInfo, WrapperContainer, WrapperValue, WrapperItemOrder, WrapperItemsOrderInfo } from './Style';
+import { Label, WrapperInfo, WrapperContainer, WrapperValue, WrapperItemOrder, WrapperItemsOrderInfo, SectionHeader } from './Style';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import Loading from '../../components/LoadingComponent/Loading';
@@ -35,20 +35,20 @@ const OrderSuccess = () => {
         <div style={{ background: '#f5f5fa', width: '100%', height: '100vh' }}>
             <Loading isPending={loading}>
                 <div style={{ height: '100%', width: '1270px', margin: '0 auto' }}>
-                    <h3>Order Success</h3>
+                    <SectionHeader>Order Success</SectionHeader>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <WrapperContainer>
                             <WrapperInfo>
                                 <div>
-                                    <Label>Phương thức Giao hàng</Label>
+                                    <Label>Delivery method</Label>
                                     <WrapperValue>
-                                        <span style={{ color: '#ea8500', fontWeight: 'bold' }}>ôkekekek</span> Giao hàng tiết kiệm
+                                        <span style={{ color: '#ea8500', fontWeight: 'bold' }}>FAST </span> Economy delivery
                                     </WrapperValue>
                                 </div>
                             </WrapperInfo>
                             <WrapperInfo>
                                 <div>
-                                    <Label>Phương thức thanh toán</Label>
+                                    <Label>Payment method</Label>
                                     <WrapperValue>
                                         {order.order.paymentMethods}
                                     </WrapperValue>
@@ -57,7 +57,7 @@ const OrderSuccess = () => {
                             <WrapperItemsOrderInfo>
                                 <div style={{ textAlign: 'right' }}>
                                     <span style={{ fontSize: '20px', color: '#4CAF50', fontWeight: 700 }}>
-                                        Đặt thành công !!!
+                                        Order successful !!!
                                     </span>
                                 </div>
 
@@ -82,10 +82,10 @@ const OrderSuccess = () => {
                                         </div>
                                         <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <span>
-                                                <span style={{ fontSize: '14px', color: '#242424' }}>Giá tiền : {item.price}</span>
+                                                <span style={{ fontSize: '14px', color: '#242424' }}>Price : ${item.price}</span>
                                             </span>
                                             <span style={{ marginLeft: 'auto' }}>
-                                                <span style={{ fontSize: '14px', color: '#242424' }}>Số lượng : {item.quantity}</span>
+                                                <span style={{ fontSize: '14px', color: '#242424' }}>Quantity : {item.quantity}</span>
                                             </span>
                                         </div>
                                     </WrapperItemOrder>
@@ -94,7 +94,7 @@ const OrderSuccess = () => {
 
                             </WrapperItemsOrderInfo>
                             <div style={{ textAlign: 'right' }}>
-                                <span style={{ fontSize: '16px', color: 'red', fontWeight: 'bold' }}>Tổng tiền : {order.order.total}</span>
+                                <span style={{ fontSize: '16px', color: 'red', fontWeight: 'bold' }}>Total : $ {order.order.total}</span>
                             </div>
                         </WrapperContainer>
                     </div>

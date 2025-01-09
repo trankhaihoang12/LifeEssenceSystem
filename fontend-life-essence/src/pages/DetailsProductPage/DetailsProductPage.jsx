@@ -45,6 +45,7 @@ const HealthStore = () => {
   const [selectedTab, setSelectedTab] = useState("description");
   const { id } = useParams();  // Lấy ID sản phẩm từ URL
   const [product, setProduct] = useState(null);
+  console.log('product',product)
   const [selectedImage, setSelectedImage] = useState("");  // Lưu trữ hình ảnh được chọn
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState(null);
@@ -132,7 +133,7 @@ const HealthStore = () => {
     return <div>Loading...</div>;
   }
   // Cập nhật các giá trị từ API
-  const { prod_name, prod_description, price, images, ratings, discount } = product;
+  const { prod_name, prod_description, price, images, ratings, discount, additional_info, benefits, usage_instructions } = product;
   const handleThumbnailClick = (imageUrl) => {
     setSelectedImage(imageUrl);  // Cập nhật hình ảnh lớn khi click vào ảnh nhỏ
   };
@@ -142,10 +143,10 @@ const HealthStore = () => {
   
           if (!token) {
               Modal.confirm({
-                  title: 'Bạn chưa đăng nhập',
-                  content: 'Bạn cần đăng nhập để thêm sản phẩm vào danh sách yêu thích. Bạn có muốn chuyển đến trang đăng nhập không?',
-                  okText: 'Đồng ý',
-                  cancelText: 'Hủy',
+                title: 'You are not logged in',
+                content: 'You need to login to add products to your wishlist. Do you want to go to the login page?',
+                okText: 'Agree',
+                cancelText: 'Cancel',
                   onOk: () => navigate('/signIn'),
               });
               return;
@@ -154,10 +155,10 @@ const HealthStore = () => {
           try {
               const userId = getUserId();
               await dispatch(addToFavorites({ userId, productId: product.id, token })); // Gọi API thêm vào yêu thích
-              message.success('Sản phẩm đã được thêm vào danh sách yêu thích.');
+            message.success('The product has been added to your wishlist.');
           } catch (err) {
               console.error('Add to favorite error:', err);
-              message.error('Không thể thêm sản phẩm vào danh sách yêu thích.');
+            message.error('Unable to add product to wishlist.');
           }
       };
 
@@ -321,21 +322,29 @@ const HealthStore = () => {
             </TabItem>
           </TabContainer>
           <TabContent>
-            {selectedTab === "description" && <p>{prod_description}</p>}
-            {selectedTab === "additional" && <p>Additional information about the product...</p>}
+            {selectedTab === "description" && (
+              <p>
+                {prod_description} <br /> {usage_instructions}
+              </p>
+            )}
+            {selectedTab === "additional" && (
+              <p>
+                {additional_info} <br /> {benefits}
+              </p>
+            )}
             {selectedTab === "reviews" && <ReviewForm />}
           </TabContent>
         </reviewDetail>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <RelatedProductsContainer>
+        {/* <RelatedProductsContainer>
           <h1 style={{ fontWeight: 'bold', marginBottom: '50px' }}>Related Products</h1>
           <RelatedProducts>
             <BlogCardComponent></BlogCardComponent>
             <BlogCardComponent></BlogCardComponent>
             <BlogCardComponent></BlogCardComponent>
           </RelatedProducts>
-        </RelatedProductsContainer>
+        </RelatedProductsContainer> */}
       </div>
     </PageContainer>
   );

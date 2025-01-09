@@ -182,7 +182,7 @@ const HeaderComponent = () => {
               <span style={{ cursor: 'pointer' }} onClick={() => navigate('/products')}>Shop </span>
               <span style={{ cursor: 'pointer' }} onClick={() => navigate('/blogs')}>Blog </span>
               {/* <span style={{ cursor: 'pointer' }} onClick={() => navigate('/products?bestSeller=true')}>Best Seller</span> */}
-              <span style={{ cursor: 'pointer' }} onClick={() => navigate('/contract')}>Contract </span>
+              <span style={{ cursor: 'pointer' }} onClick={() => navigate('/contract')}>Contact </span>
             </WrapperItem>
           </div>
         </div>

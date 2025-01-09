@@ -17,7 +17,7 @@ export const ImageWrapper = styled.div`
 `;
 
 export const TextWrapper = styled.div`
-  width: 510px;
+  width: 620px;
   display: flex;
   flex-direction: column;
   margin: auto 0;

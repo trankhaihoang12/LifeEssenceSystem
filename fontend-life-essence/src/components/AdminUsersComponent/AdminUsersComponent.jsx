@@ -20,6 +20,7 @@ const AdminUsersComponnent = () => {
 
     const getToken = () => {
         const storedUserData = localStorage.getItem('userData');
+        console.log(storedUserData)
         const parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
         return parsedUserData ? parsedUserData.token : null;
     };
@@ -34,7 +35,13 @@ useEffect(() => {
 
                 // Chỉ đặt state khi fetchedUsers.data là mảng
                 if (Array.isArray(fetchedUsers.data)) {
-                    setUsers(fetchedUsers.data);
+                    const currentUser = JSON.parse(localStorage.getItem('userData'));
+                    const currentUserId = currentUser?.user?.id;
+                    console.log('currentUserId', currentUserId)
+
+                    // Kiểm tra nếu có currentUserId và lọc bỏ chính mình khỏi danh sách
+                    const filteredUsers = fetchedUsers.data.filter(user => user.id !== currentUserId);
+                    setUsers(filteredUsers);  // Cập nhật lại state
                 } else {
                     console.error("Dữ liệu API không phải là mảng:", fetchedUsers.data);
                     setUsers([]); // Đặt thành mảng rỗng nếu có lỗi

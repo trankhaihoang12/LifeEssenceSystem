@@ -178,9 +178,10 @@ const ProfilePage = () => {
             message.error("Invalid file type. Please upload an image (jpeg, png, gif).");
             return;
         }
+        console.log('file.size', file.size)
 
-        // Kiểm tra kích thước file (ví dụ: dưới 2MB)
-        const maxSize = 2 * 1024 * 1024; // 2MB
+        // Kiểm tra kích thước file (ví dụ: dưới 5MB)
+        const maxSize = 5 * 1024 * 1024; // 5MB
         if (file.size > maxSize) {
             message.error("File size exceeds 2MB. Please upload a smaller file.");
             return;
@@ -218,7 +219,6 @@ const ProfilePage = () => {
 
             // Gửi yêu cầu thêm địa chỉ mới
             const response = await AddressService.addDeliveryAddress(addressData, token);
-            console.log('first', response)
 
             // Kiểm tra phản hồi
             if (response && response.message === "Delivery address added successfully") {
@@ -386,69 +386,6 @@ const ProfilePage = () => {
 
     const renderContent = () => {
         switch (selectedSection) {
-            // case 'accountInfo':
-            //     return (
-            //         <ContentBody>
-            //             <div style={{ display: 'flex', flexDirection: 'column' }}>
-            //                 <div style={{ display: 'flex', alignItems: 'center', gap: '50px', width: '700px' }}>
-            //                     {/* Profile Image */}
-            //                     <img
-            //                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR--APtc5Nnz3w43NQTVrDCon1p33k9xWBgGg&s" // Placeholder image URL
-            //                         alt="Profile"
-            //                         style={{
-            //                             width: '100px',
-            //                             height: '100px',
-            //                             borderRadius: '50%',
-            //                             margin: '0 30px',
-            //                             border: '2px solid #ccc',
-            //                         }}
-            //                     />
-
-            //                     {/* Account Information */}
-            //                     <div style={{ display: 'flex', flexDirection: 'column', width: '400px' }}>
-            //                         <p><strong>Name:</strong> {editMode ? <input type="text" value={name} onChange={(e) => setName(e.target.value)} /> : userData.user.name}</p>
-            //                         <p><strong>Email:</strong> {userData.user.email}</p>
-            //                         <p><strong>Phone:</strong> {editMode ? <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} /> : userData.user.phone}</p>
-            //                         <p><strong>Since Member:</strong> {userData.user.createdAt ? new Date(userData.user.createdAt).toLocaleDateString() : 'N/A'}</p>
-            //                         <p><strong>Address:</strong> {editMode ? <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} /> : userData.user.default_address}</p>
-            //                     </div>
-            //                 </div>
-            //                 <div style={{
-            //                     display: 'flex', justifyContent: 'flex-end', alignItems: 'center', width: '100%',
-            //                 }}
-            //                 >
-            //                     {editMode ? (
-            //                         < EditButton
-            //                             onClick={handleSave}
-            //                             onMouseEnter={(e) => {
-            //                                 e.target.style.backgroundColor = '#1B8D8F'; // Darker hover color
-            //                                 e.target.style.transform = 'scale(1.05)'; // Slight zoom
-            //                             }}
-            //                             onMouseLeave={(e) => {
-            //                                 e.target.style.backgroundColor = '#24AEB1'; // Reset color
-            //                                 e.target.style.transform = 'scale(1)'; // Reset zoom
-            //                             }}
-            //                         >
-            //                             Save</EditButton>
-            //                     ) : (
-            //                         <EditButton
-            //                             onMouseEnter={(e) => {
-            //                                 e.target.style.backgroundColor = '#1B8D8F'; // Darker hover color
-            //                                 e.target.style.transform = 'scale(1.05)'; // Slight zoom
-            //                             }}
-            //                             onMouseLeave={(e) => {
-            //                                 e.target.style.backgroundColor = '#24AEB1'; // Reset color
-            //                                 e.target.style.transform = 'scale(1)'; // Reset zoom
-            //                             }}
-            //                             onClick={() => setEditMode(true)}  // Placeholder action
-            //                         >
-            //                             Edit
-            //                         </EditButton>
-            //                     )}
-            //                 </div>
-            //             </div>
-            //         </ContentBody>
-            //     );
 
             case 'accountInfo':
                 return (
