@@ -28,6 +28,17 @@ Project Dependencies
   # Or install using yarn
   $ yarn install
 
+4. Tools Used
+
+  - React: For building the user interface.
+
+  - React Router: For managing routing in the application.
+
+  - Redux (optional): For state management (if configured).
+
+  - Axios: For making HTTP requests to the backend.
+
+  - Bootstrap/Tailwind CSS: For styling and layout (if used).
 4. Running the Project
   4.1 Start the Application
   # Start the development server
